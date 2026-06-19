@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Porównanie egzaminów: 2024 vs 2024/2025</title>
+<style>
+  :root {
+    --bg: #0a0c11;
+    --surface: #14171e;
+    --surface2: #1d212b;
+    --border: #2a313e;
+    --a: #34d399;        /* egzamin A - zielony */
+    --b: #f59e0b;        /* egzamin B - bursztyn */
+    --accent4: #60a5fa;
+    --accent3: #fcd34d;
+    --purple: #c084fc;
+    --pink: #f472b6;
+    --text: #eaeef4;
+    --text-muted: #8a94a6;
+    --critical: #f87171;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.6; }
+  .hero { background: linear-gradient(135deg, #0a0c11 0%, #161b26 50%, #0a0c11 100%); border-bottom: 1px solid var(--border); padding: 38px 24px 28px; text-align: center; }
+  .hero h1 { font-size: 1.9em; font-weight: 800; background: linear-gradient(90deg, var(--a), var(--b)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 6px; }
+  .hero .subtitle { color: var(--text-muted); font-size: 0.93em; max-width: 720px; margin: 0 auto; }
+  .legend { display: flex; gap: 14px; justify-content: center; margin-top: 14px; flex-wrap: wrap; }
+  .leg { display: flex; align-items: center; gap: 7px; font-size: 0.84em; }
+  .dot { width: 12px; height: 12px; border-radius: 3px; }
+  .dot-a { background: var(--a); }
+  .dot-b { background: var(--b); }
+  .container { max-width: 1180px; margin: 0 auto; padding: 24px; }
+  .toc { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px; margin-bottom: 26px; }
+  .toc h3 { color: var(--accent4); margin-bottom: 10px; font-size: 0.85em; text-transform: uppercase; letter-spacing: 1px; }
+  .toc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px,1fr)); gap: 5px; }
+  .toc a { color: var(--text-muted); text-decoration: none; font-size: 0.84em; padding: 4px 8px; border-radius: 6px; }
+  .toc a:hover { color: var(--a); background: rgba(52,211,153,0.08); }
+  .section { margin-bottom: 30px; scroll-margin-top: 20px; }
+  .section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 2px solid var(--border); }
+  .section-num { background: var(--a); color: #000; font-weight: 900; font-size: 0.78em; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .section-header h2 { font-size: 1.22em; font-weight: 700; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-bottom: 12px; }
+  .card-title { font-size: 0.78em; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 12px; font-weight: 700; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.84em; }
+  th { background: var(--surface2); color: var(--accent4); padding: 9px 11px; text-align: left; font-size: 0.76em; text-transform: uppercase; letter-spacing: 0.5px; }
+  td { padding: 8px 11px; border-top: 1px solid var(--border); vertical-align: top; line-height: 1.5; }
+  tr:hover td { background: rgba(255,255,255,0.02); }
+  .tag-a { color: var(--a); font-weight: 700; font-family: monospace; }
+  .tag-b { color: var(--b); font-weight: 700; font-family: monospace; }
+  .same { color: var(--text-muted); }
+  .diff { color: var(--pink); font-weight: 600; }
+  /* dual bar comparison */
+  .cmp-grid { display: grid; gap: 10px; }
+  .cmp-row { display: grid; grid-template-columns: 200px 1fr; gap: 12px; align-items: center; }
+  .cmp-label { font-size: 0.85em; }
+  .cmp-bars { display: grid; gap: 3px; }
+  .cmp-bar-wrap { display: grid; grid-template-columns: 30px 1fr 36px; gap: 6px; align-items: center; }
+  .cmp-bar-track { background: var(--surface2); border-radius: 3px; height: 13px; overflow: hidden; }
+  .cmp-bar { height: 100%; border-radius: 3px; }
+  .bar-a { background: var(--a); }
+  .bar-b { background: var(--b); }
+  .cmp-tag { font-size: 0.72em; font-weight: 700; }
+  .cmp-val { font-size: 0.78em; color: var(--text-muted); text-align: right; }
+  .callout { background: var(--surface2); border-radius: 8px; padding: 11px 14px; font-size: 0.87em; color: var(--text-muted); margin-top: 12px; }
+  .callout strong { color: var(--accent3); }
+  .verdict { background: linear-gradient(135deg, rgba(52,211,153,0.06), rgba(245,158,11,0.06)); border: 1px solid rgba(52,211,153,0.2); border-radius: 10px; padding: 15px; margin-bottom: 11px; }
+  .verdict h4 { color: var(--a); margin-bottom: 8px; font-size: 0.95em; }
+  .verdict p, .verdict li { font-size: 0.87em; color: var(--text-muted); margin-bottom: 4px; }
+  .verdict li { margin-left: 16px; }
+  .pill { display: inline-block; font-size: 0.7em; font-weight: 700; padding: 2px 8px; border-radius: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .pill-same { background: rgba(52,211,153,0.18); color: var(--a); }
+  .pill-diff { background: rgba(244,114,182,0.18); color: var(--pink); }
+  .pill-new { background: rgba(245,158,11,0.18); color: var(--b); }
+  .twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .col-card { background: var(--surface2); border-radius: 8px; padding: 14px; }
+  .col-card.a { border-top: 3px solid var(--a); }
+  .col-card.b { border-top: 3px solid var(--b); }
+  .col-card h5 { font-size: 0.9em; margin-bottom: 8px; }
+  .col-card.a h5 { color: var(--a); }
+  .col-card.b h5 { color: var(--b); }
+  .col-card ul { list-style: none; }
+  .col-card li { font-size: 0.83em; color: var(--text-muted); padding: 3px 0 3px 14px; position: relative; }
+  .col-card li::before { content: '▸'; position: absolute; left: 0; color: var(--border); }
+  .scrolltop { position: fixed; bottom: 20px; right: 20px; background: var(--a); color: #000; border: none; border-radius: 50%; width: 40px; height: 40px; font-size: 1.2em; cursor: pointer; display: none; align-items: center; justify-content: center; z-index: 100; }
+  @media (max-width: 600px) { .twocol { grid-template-columns: 1fr; } .cmp-row { grid-template-columns: 110px 1fr; } }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>⚖️ Porównanie egzaminów: 2024 vs 2024/2025</h1>
+  <div class="subtitle">Egzamin A (rocznik 2024/2025, I termin) vs Egzamin B (III WL, I termin 03.07.2024, w.2). Oba po 70 pytań z pełnym kluczem — co wspólne, co się zmieniło.</div>
+  <div class="legend">
+    <div class="leg"><span class="dot dot-a"></span> Egzamin A — 2024/2025</div>
+    <div class="leg"><span class="dot dot-b"></span> Egzamin B — 03.07.2024 (w.2)</div>
+  </div>
+</div>
+
+<div class="container">
+
+<div class="toc">
+  <h3>📋 Spis treści</h3>
+  <div class="toc-grid">
+    <a href="#s1">📊 1. Struktura — bok w bok</a>
+    <a href="#s2">🔁 2. Pytania wspólne (powtórki)</a>
+    <a href="#s3">↔️ 3. Te same tematy, inne ujęcie</a>
+    <a href="#s4">🆚 4. Tylko w jednym egzaminie</a>
+    <a href="#s5">📈 5. Rozkład odpowiedzi</a>
+    <a href="#s6">🪤 6. Pułapki — wspólne vs unikalne</a>
+    <a href="#s7">🎯 7. Wnioski i strategia</a>
+  </div>
+</div>
+
+<!-- SECTION 1 -->
+<div class="section" id="s1">
+  <div class="section-header"><div class="section-num">1</div><h2>Struktura — bok w bok</h2></div>
+  <div class="card">
+    <div class="card-title">Udział działów w egzaminie (% z 70 pytań)</div>
+    <div class="cmp-grid">
+      <div class="cmp-row"><div class="cmp-label">OUN (sen/psych./padaczka/znieczul.)</div><div class="cmp-bars">
+        <div class="cmp-bar-wrap"><span class="cmp-tag tag-a">A</span><div class="cmp-bar-track"><div class="cmp-bar bar-a" style="width:95%"></div></div><span class="cmp-val">~19</span></div>
+        <div class="cmp-bar-wrap"><span class="cmp-tag tag-b">B</span><div class="cmp-bar-track"><div class="cmp-bar bar-b" style="width:80%"></div></div><span class="cmp-val">~16</span></div>
+      </div></div>
+      <div class="cmp-row"><div class="cmp-label">Neurologia (Parkinson/SM/Alzh.)</div><div class="cmp-bars">
+        <div class="cmp-bar-wrap"><span class="cmp-tag tag-a">A</span><div class="cmp-bar-track"><div class="cmp-bar bar-a" style="width:30%"></div></div><span class="cmp-val">~6</span></div>
+        <div class="cmp-bar-wrap"><span class="cmp-tag tag-b">B</span><div class="cmp-bar-track"><div class="cmp-bar bar-b" style="width:40%"></div></div><span class="cmp-val">~8</span></div>
+      </div></div>
+      <div class="cmp-row"><div class="cmp-label">Kardiologia + hemostaza</div><div class="cmp-bars">
+        <div class="cmp-bar-wrap"><span class="cmp-tag tag-a">A</span><div class="cmp-bar-track"><div class="cmp-bar bar-a" style="width:50%"></div></div><span class="cmp-val">~10</span></div>
+        <div class="cmp-bar-wrap"><span class="cmp-tag tag-b">B</span><div class="cmp-bar-track"><div class="cmp-bar bar-b" style="width:40%"></div></div><span class="cmp-val">~8</span></div>
+      </div></div>
+      <div class="cmp-row"><div class="cmp-label">Antybiotyki/p.wir./p.grzyb.</div><div class="cmp-bars">
+        <div class="cmp-bar-wrap"><span class="cmp-tag tag-a">A</span><div class="cmp-bar-track"><div class="cmp-bar bar-a" style="width:30%"></div></div><span class="cmp-val">~6</span></div>
+        <div class="cmp-bar-wrap"><span class="cmp-tag tag-b">B</span><div class="cmp-bar-track"><div class="cmp-bar bar-b" style="width:35%"></div></div><span class="cmp-val">~7</span></div>
+      </div></div>
+      <div class="cmp-row"><div class="cmp-label">Leki biologiczne/immunolog.</div><div class="cmp-bars">
+        <div class="cmp-bar-wrap"><span class="cmp-tag tag-a">A</span><div class="cmp-bar-track"><div class="cmp-bar bar-a" style="width:10%"></div></div><span class="cmp-val">~2</span></div>
+        <div class="cmp-bar-wrap"><span class="cmp-tag tag-b">B</span><div class="cmp-bar-track"><div class="cmp-bar bar-b" style="width:30%"></div></div><span class="cmp-val">~6</span></div>
+      </div></div>
+      <div class="cmp-row"><div class="cmp-label">Farmakologia ogólna/kinetyka</div><div class="cmp-bars">
+        <div class="cmp-bar-wrap"><span class="cmp-tag tag-a">A</span><div class="cmp-bar-track"><div class="cmp-bar bar-a" style="width:40%"></div></div><span class="cmp-val">~8</span></div>
+        <div class="cmp-bar-wrap"><span class="cmp-tag tag-b">B</span><div class="cmp-bar-track"><div class="cmp-bar bar-b" style="width:30%"></div></div><span class="cmp-val">~6</span></div>
+      </div></div>
+      <div class="cmp-row"><div class="cmp-label">Hormony/cukrzyca/tarczyca/kości</div><div class="cmp-bars">
+        <div class="cmp-bar-wrap"><span class="cmp-tag tag-a">A</span><div class="cmp-bar-track"><div class="cmp-bar bar-a" style="width:30%"></div></div><span class="cmp-val">~6</span></div>
+        <div class="cmp-bar-wrap"><span class="cmp-tag tag-b">B</span><div class="cmp-bar-track"><div class="cmp-bar bar-b" style="width:30%"></div></div><span class="cmp-val">~6</span></div>
+      </div></div>
+      <div class="cmp-row"><div class="cmp-label">Oddechowy/antyhistaminowe</div><div class="cmp-bars">
+        <div class="cmp-bar-wrap"><span class="cmp-tag tag-a">A</span><div class="cmp-bar-track"><div class="cmp-bar bar-a" style="width:30%"></div></div><span class="cmp-val">~6</span></div>
+        <div class="cmp-bar-wrap"><span class="cmp-tag tag-b">B</span><div class="cmp-bar-track"><div class="cmp-bar bar-b" style="width:25%"></div></div><span class="cmp-val">~5</span></div>
+      </div></div>
+      <div class="cmp-row"><div class="cmp-label">Farmakoekonomia/koncyliacja</div><div class="cmp-bars">
+        <div class="cmp-bar-wrap"><span class="cmp-tag tag-a">A</span><div class="cmp-bar-track"><div class="cmp-bar bar-a" style="width:20%"></div></div><span class="cmp-val">~4</span></div>
+        <div class="cmp-bar-wrap"><span class="cmp-tag tag-b">B</span><div class="cmp-bar-track"><div class="cmp-bar bar-b" style="width:20%"></div></div><span class="cmp-val">~4</span></div>
+      </div></div>
+    </div>
+    <div class="callout">⚡ <strong>Struktura niemal identyczna.</strong> Oba egzaminy stawiają OUN+neurologię na pierwszym miejscu (≈⅓ pytań). Główna różnica: <strong>Egzamin B ma więcej leków biologicznych/immunologicznych</strong> (~6 vs ~2) — całe bloki o przeciwciałach monoklonalnych, immunosupresji i mechanizmach (ADCC).</div>
+  </div>
+</div>
+
+<!-- SECTION 2 -->
+<div class="section" id="s2">
+  <div class="section-header"><div class="section-num">2</div><h2>Pytania wspólne — niemal identyczne 🔁</h2></div>
+  <div class="card">
+    <div class="card-title">Te pytania pojawiły się w OBU egzaminach (z tym samym kluczem)</div>
+    <table>
+      <tr><th>Temat</th><th class="tag-a">Egz. A</th><th class="tag-b">Egz. B</th><th>Wspólny klucz / fakt</th></tr>
+      <tr><td>H1-blokery II gen. — astma/ch. lokomocyjna</td><td>Q1 (E)</td><td>Q41 (A — pokrzywka)</td><td><span class="diff">Różny klucz!</span> A: żadna; B: leczenie/profilaktyka pokrzywki</td></tr>
+      <tr><td>Tolerancja na działanie opioidów</td><td>Q2 (D)</td><td>Q42 (E)</td><td>Tolerancja NIE na zaparcia/miozę</td></tr>
+      <tr><td>Lek p/astmatyczny — mechanizm (montelukast LTD4)</td><td>Q3 (E)</td><td>Q43 (C)</td><td><span class="diff">Różny klucz</span> — inny zestaw dystraktorów</td></tr>
+      <tr><td>Drogi podania leków w astmie (omalizumab, montelukast)</td><td>Q4 (B)</td><td>Q44 (D)</td><td>Montelukast doustnie; omalizumab podskórnie (nie wziewnie)</td></tr>
+      <tr><td>Leki wziewne — działanie nep. / grupa-działanie</td><td>Q5 (B)</td><td>Q45 (D)</td><td>Salbutamol→tachykardia; GKS→kandydoza</td></tr>
+      <tr><td>Kliniczne zastosowanie benzodiazepin</td><td>Q6 (A — drgawki)</td><td>Q46 (C — drgawki+spastyczność)</td><td>NIE bezdech senny</td></tr>
+      <tr><td>Flumazenil</td><td>Q7 (E)</td><td>Q47 (B)</td><td>NIE blokuje barbituranów; ryzyko drgawek/blok zolpidemu</td></tr>
+      <tr><td>Leki nasenne typu „Z"</td><td>Q8 (B)</td><td>Q48 (D)</td><td>Obniżają sprawność psychomotoryczną; POWODUJĄ uzależnienie</td></tr>
+      <tr><td>Buspiron vs BDZ</td><td>Q9 (D)</td><td>Q49 (A)</td><td>Częściowy agonista 5-HT1A, NIE p/drgawkowy</td></tr>
+      <tr><td>Znieczulenie ogólne — droga podania</td><td>Q10 (B — propofol iv)</td><td>Q50 (B — ketamina pozajelitowo)</td><td>Propofol/ketamina/tiopental = pozajelitowo</td></tr>
+      <tr><td>Znieczulenie — wskazania (lidokaina)</td><td>Q11 (D)</td><td>Q51 (D)</td><td><span class="pill pill-same">identyczny klucz D</span> Lidokaina powierzchniowo, bupiwakaina nie</td></tr>
+      <tr><td>Depolaryzujące blokery NMJ</td><td>Q12 (E)</td><td>Q52 (B)</td><td><span class="diff">Różny klucz</span> — w A żadne(wszystkie niedepol.), w B cisatrakurium</td></tr>
+      <tr><td>Choroba afektywna dwubieg. — cecha leku</td><td>Q13 (B — karbamazepina indukcja P450)</td><td>Q53 (C — walproinian trombocytopenia)</td><td>Lit NIE daje sedacji/metabolizmu wątrobowego</td></tr>
+      <tr><td>Neuroleptyk — działanie niepożądane</td><td>Q14 (E)</td><td>Q54 (D)</td><td>Klozapina-agranulocytoza/cukrzyca; olanzapina-WZROST masy</td></tr>
+      <tr><td>Grupa onkologiczna — faza cyklu</td><td>Q15 (D)</td><td>Q55 (E)</td><td><span class="diff">Różny klucz</span> — taksany/alkaloidy faza M; pułapka „faza S/G"</td></tr>
+      <tr><td>Lek p/depresyjny — mechanizm</td><td>Q16 (A — citalopram SSRI)</td><td>Q56 (D — sertralina+wenlafaksyna)</td><td>Trazodon NIE jest SNRI/MAO-I</td></tr>
+      <tr><td>β-laktamy — stwierdzenia</td><td>Q17 (B — aztreonam→PMR)</td><td>Q57 (C — cefoperazon→krzepnięcie)</td><td>NIE wszystkie doustne na czczo</td></tr>
+      <tr><td>Antybiotyk — droga podania</td><td>Q18 (C — chloramfenikol miejscowo)</td><td>Q58 (D)</td><td>Tobramycyna NIE doustnie</td></tr>
+      <tr><td>Antybiotyki hamujące ścianę komórkową</td><td>Q19 (A — wankomycyna)</td><td>Q59 (E — wanko+cefepim+aztreonam)</td><td>Klindamycyna/azytromycyna = rybosom (NIE ściana)</td></tr>
+      <tr><td>P/gruźlicze — działanie niepożądane</td><td>Q20 (E)</td><td>Q60 (E)</td><td><span class="pill pill-same">identyczny klucz E</span> Izoniazyd-hepato/neuro, etambutol-wzrok</td></tr>
+      <tr><td>Inhibitory pompy protonowej</td><td>Q21 (A)</td><td>Q61 (E)</td><td><span class="diff">Różny klucz</span> — A: krótki T½/krótkie po bolusie; B: prolek+interakcje</td></tr>
+      <tr><td>Leki p/wirusowe (oseltamiwir, gancyklowir)</td><td>Q22 (D)</td><td>Q62 (D)</td><td><span class="pill pill-same">identyczny klucz D</span> Gancyklowir w CMV; acyklowir NIE bezpieczny w I trym.</td></tr>
+      <tr><td>Leki p/grzybicze (azole, terbinafina)</td><td>Q23 (B)</td><td>Q63 (A)</td><td>Terbinafina→epoksydaza skwalenu; azole→ergosterol</td></tr>
+      <tr><td>Leki p/wymiotne (setrony)</td><td>Q24 (B)</td><td>Q64 (C)</td><td>Setrony BLOKUJĄ 5-HT3; metoklopramid blokuje D2</td></tr>
+      <tr><td>Opioidy i antagoniści</td><td>Q25 (A — tapentadol µ+NET)</td><td>Q65 (E — żadna)</td><td>Buprenorfina = częściowy agonista µ; nalokson nie „tylko µ"</td></tr>
+      <tr><td>Biorównoważność / biodostępność / T½</td><td>Q26, Q30 (E, D)</td><td>Q66, Q67 (B, D)</td><td>i.v.=100%; T½ stały w kinetyce I rzędu</td></tr>
+      <tr><td>Częściowy agonista</td><td>—</td><td>Q69 (D)</td><td>Słabsza odpowiedź niż pełny agonista</td></tr>
+      <tr><td>Receptory (fenylefryna α1 / receptor-agonista)</td><td>Q28 (C — β2 formoterol)</td><td>Q68 (C — fenylefryna α1)</td><td>GPCR; trastuzumab NIE wewnątrzkomórkowy</td></tr>
+      <tr><td>Hipoalbuminemia / wiązanie z białkami</td><td>Q27 (B)</td><td>—</td><td>Ryzyko dla leków silnie wiążących albuminy >95%</td></tr>
+      <tr><td>Cholinolityki / cholinomimetyki</td><td>Q32 (D)</td><td>Q70 (A)</td><td>Cholinolityki NIE dają bradykardii</td></tr>
+      <tr><td>L-DOPA — działania niepożądane / kazus</td><td>Q59 (D)</td><td>Q21 (B)</td><td>NIE zaćma; L-DOPA+karbidopa optymalnie</td></tr>
+      <tr><td>Agoniści dopaminy / NMDA w Parkinsonie</td><td>Q60 (D)</td><td>Q23 (C)</td><td>Bromokryptyna/ropinirol = agoniści; amantadyna = NMDA</td></tr>
+      <tr><td>Karbamazepina — mechanizm</td><td>Q61 (E)</td><td>Q24 (D)</td><td>Kanały Na; nie GABA/glutaminian</td></tr>
+      <tr><td>Lek p/padaczkowy ↑ stężenie innych leków</td><td>Q62 (C — walproinian)</td><td>(Q53)</td><td>Walproinian = inhibitor; karbamazepina/fenytoina = induktory</td></tr>
+      <tr><td>SM — chodzenie / interferon-β działania nep.</td><td>Q63, Q64 (B, E)</td><td>Q25 (C)</td><td>Dalfamprydyna (chodzenie); interferon→grypopodobny+enzymy</td></tr>
+      <tr><td>Alzheimer — inhibitory AChE / memantyna NMDA</td><td>Q65, Q66 (C, D)</td><td>Q26 (A)</td><td>Memantyna = NMDA; galantamina = AChE+nikotyn.</td></tr>
+      <tr><td>Złośliwy zespół neuroleptyczny / nalokson kazus</td><td>Q69, Q70 (A, D)</td><td>Q38 (B)</td><td>Typowe neuroleptyki; nalokson w zatruciu opioidami</td></tr>
+      <tr><td>Farmakologia geriatryczna (Vd, eGFR)</td><td>Q67, Q68 (B, C)</td><td>—</td><td>Vd lipofilnych ↑; T½ hydrofilnych ↑ przez ↓eGFR</td></tr>
+      <tr><td>Farmakoekonomia + koncyliacja</td><td>Q54-58</td><td>Q32-36</td><td>Analizy kosztów; koncyliacja; nadzór nad bezpieczeństwem</td></tr>
+      <tr><td>Cukrzyca + choroby krążenia (GLP-1/SGLT2)</td><td>Q43 (E)</td><td>Q9, Q15 (E, D)</td><td>GLP-1 + SGLT2i = ochrona sercowo-naczyniowa</td></tr>
+      <tr><td>Bisfosfoniany / osteoporoza</td><td>Q39, Q40 (A, C)</td><td>Q6 (A)</td><td>Hamują osteoklasty; denosumab↔RANKL; prednizon→osteoporoza</td></tr>
+    </table>
+    <div class="callout">🎯 <strong>Pokrycie ~75%.</strong> Większość pytań to ta sama PULA — często z drobnymi modyfikacjami treści/dystraktorów i przetasowaną numeracją. Egzamin A i B to praktycznie dwie wersje tego samego egzaminu z tej samej sesji.</div>
+  </div>
+</div>
+
+<!-- SECTION 3 -->
+<div class="section" id="s3">
+  <div class="section-header"><div class="section-num">3</div><h2>Te same tematy, inne ujęcie ↔️</h2></div>
+  <div class="card">
+    <div class="card-title">⚠️ UWAGA: te same leki, ale RÓŻNY klucz — bo zmieniono opcje</div>
+    <table>
+      <tr><th>Temat</th><th class="tag-a">Egz. A</th><th class="tag-b">Egz. B</th><th>Dlaczego inaczej</th></tr>
+      <tr><td>H1-blokery II generacji</td><td>Q1 → <span class="tag-a">E</span> (żadna)</td><td>Q41 → <span class="tag-b">A</span> (pokrzywka)</td><td>W A opcje to astma/ch.lokomocyjna (fałsz); w B dodano "leczenie i profilaktyka pokrzywki" = prawda</td></tr>
+      <tr><td>Depolaryzujące blokery NMJ</td><td>Q12 → <span class="tag-a">E</span> (żadne)</td><td>Q52 → <span class="tag-b">B</span> (cisatrakurium)</td><td>W A pytano o DEpolaryzujące (rokuronium itd. = niedepol → żadne); w B pytano o NIEdepolaryzujące → cisatrakurium pasuje</td></tr>
+      <tr><td>IPP — inhibitory pompy protonowej</td><td>Q21 → <span class="tag-a">A</span></td><td>Q61 → <span class="tag-b">E</span></td><td>Różne stwierdzenia: A testuje T½/bolus; B testuje "prolek + interakcje + inhibicja CYP2C19"</td></tr>
+      <tr><td>Onkologia — faza cyklu</td><td>Q15 → <span class="tag-a">D</span> (taksany+alkaloidy faza M)</td><td>Q55 → <span class="tag-b">E</span> (żadna)</td><td>W B podano "taksany faza S, antymetabolity faza M, alkaloidy faza S" — wszystko źle → żadna</td></tr>
+      <tr><td>Lek p/astm. — mechanizm</td><td>Q3 → <span class="tag-a">E</span></td><td>Q43 → <span class="tag-b">C</span></td><td>Inne sformułowanie roli salmeterolu/teofiliny w opcjach</td></tr>
+    </table>
+    <div class="callout">🪤 <strong>To najważniejsza lekcja porównania:</strong> ten sam lek może mieć różną poprawną odpowiedź zależnie od tego, jak skonstruowano opcje. NIE ucz się "Q o blokerach NMJ = E" — ucz się MECHANIZMU (sukcynylocholina = jedyny depolaryzujący; reszta niedepolaryzująca). Wtedy odpowiesz poprawnie niezależnie od wersji.</div>
+  </div>
+</div>
+
+<!-- SECTION 4 -->
+<div class="section" id="s4">
+  <div class="section-header"><div class="section-num">4</div><h2>Tematy tylko w jednym egzaminie 🆚</h2></div>
+  <div class="twocol">
+    <div class="col-card a">
+      <h5>🟢 Tylko w Egz. A (2024/2025)</h5>
+      <ul>
+        <li>Kazus: siła vs skuteczność blokera Ca (5 mg vs 500 mg → 100× silniejszy) — Q29</li>
+        <li>Geriatria: Vd leków lipofilnych z wiekiem — Q67</li>
+        <li>Geriatria: T½ aminoglikozydów a eGFR — Q68</li>
+        <li>Hiperkaliemia: inhibitory ACE — Q47</li>
+        <li>Diuretyki a kwas moczowy (tiazydy ↑) — Q48</li>
+        <li>Korzyść hemodynamiczna p/dławicowa (azotany/β-blok/BKW) — Q50</li>
+        <li>Co NIE wpływa na płytki (iwabradyna) — Q51</li>
+        <li>Leki wysokiego ryzyka (wąskie IT) — Q53</li>
+        <li>Galantamina (AChE + modulator nikotynowy) — Q66</li>
+        <li>Cyklosporyna — mechanizm interakcji CYP3A4 — Q56</li>
+      </ul>
+    </div>
+    <div class="col-card b">
+      <h5>🟡 Tylko w Egz. B (03.07.2024)</h5>
+      <ul>
+        <li>Cały blok leków biologicznych: ADCC, p/ciała monoklonalne — Q27, Q28</li>
+        <li>Bewacyzumab w raku jelita grubego (anty-VEGF) — Q29</li>
+        <li>Azatiopryna (prolek immunosupresyjny) — Q30</li>
+        <li>Zestawienie wskazanie–lek immunologiczny (przeszczepy) — Q31</li>
+        <li>Etanercept = białko fuzyjne — Q27</li>
+        <li>EudraVigilance / EMA — nadzór nad bezpieczeństwem — Q36</li>
+        <li>Interakcja dziurawiec + antykoncepcja (induktor CYP3A4) — Q37</li>
+        <li>Karwedilol + nebiwolol (wazodylatacja, NS) — Q18</li>
+        <li>Niedihydropirydynowe BKW (werapamil) — Q17</li>
+        <li>Statyny + ezetymib + siła działania — Q20</li>
+        <li>Kazus Tourette + haloperidol (objawy pozapiramidowe) — Q22</li>
+        <li>Sakubitryl/walsartan bez inotropii (+) — Q16</li>
+      </ul>
+    </div>
+  </div>
+  <div class="callout">📌 <strong>Wniosek:</strong> Egzamin A poszedł bardziej w stronę <strong>geriatrii i farmakologii klinicznej</strong> (kazusy, kinetyka u seniorów). Egzamin B mocniej w stronę <strong>leków biologicznych/immunologicznych i nadzoru nad bezpieczeństwem</strong>. Na obie te grupy warto się przygotować — bo nie wiadomo, która wersja Ci się trafi.</div>
+</div>
+
+<!-- SECTION 5 -->
+<div class="section" id="s5">
+  <div class="section-header"><div class="section-num">5</div><h2>Rozkład odpowiedzi — bok w bok 📈</h2></div>
+  <div class="card">
+    <div class="card-title">Częstość liter w kluczu (% z 70)</div>
+    <div class="cmp-grid">
+      <div class="cmp-row"><div class="cmp-label">A</div><div class="cmp-bars">
+        <div class="cmp-bar-wrap"><span class="cmp-tag tag-a">A</span><div class="cmp-bar-track"><div class="cmp-bar bar-a" style="width:64%"></div></div><span class="cmp-val">16%</span></div>
+        <div class="cmp-bar-wrap"><span class="cmp-tag tag-b">B</span><div class="cmp-bar-track"><div class="cmp-bar bar-b" style="width:28%"></div></div><span class="cmp-val">7%</span></div>
+      </div></div>
+      <div class="cmp-row"><div class="cmp-label">B</div><div class="cmp-bars">
+        <div class="cmp-bar-wrap"><span class="cmp-tag tag-a">A</span><div class="cmp-bar-track"><div class="cmp-bar bar-a" style="width:92%"></div></div><span class="cmp-val">23%</span></div>
+        <div class="cmp-bar-wrap"><span class="cmp-tag tag-b">B</span><div class="cmp-bar-track"><div class="cmp-bar bar-b" style="width:76%"></div></div><span class="cmp-val">19%</span></div>
+      </div></div>
+      <div class="cmp-row"><div class="cmp-label">C</div><div class="cmp-bars">
+        <div class="cmp-bar-wrap"><span class="cmp-tag tag-a">A</span><div class="cmp-bar-track"><div class="cmp-bar bar-a" style="width:64%"></div></div><span class="cmp-val">16%</span></div>
+        <div class="cmp-bar-wrap"><span class="cmp-tag tag-b">B</span><div class="cmp-bar-track"><div class="cmp-bar bar-b" style="width:84%"></div></div><span class="cmp-val">21%</span></div>
+      </div></div>
+      <div class="cmp-row"><div class="cmp-label">D</div><div class="cmp-bars">
+        <div class="cmp-bar-wrap"><span class="cmp-tag tag-a">A</span><div class="cmp-bar-track"><div class="cmp-bar bar-a" style="width:96%"></div></div><span class="cmp-val">24%</span></div>
+        <div class="cmp-bar-wrap"><span class="cmp-tag tag-b">B</span><div class="cmp-bar-track"><div class="cmp-bar bar-b" style="width:100%"></div></div><span class="cmp-val">27%</span></div>
+      </div></div>
+      <div class="cmp-row"><div class="cmp-label">E</div><div class="cmp-bars">
+        <div class="cmp-bar-wrap"><span class="cmp-tag tag-a">A</span><div class="cmp-bar-track"><div class="cmp-bar bar-a" style="width:84%"></div></div><span class="cmp-val">21%</span></div>
+        <div class="cmp-bar-wrap"><span class="cmp-tag tag-b">B</span><div class="cmp-bar-track"><div class="cmp-bar bar-b" style="width:100%"></div></div><span class="cmp-val">26%</span></div>
+      </div></div>
+    </div>
+    <div class="callout">📊 <strong>Wspólny wzorzec:</strong> w obu egzaminach <strong>D i E dominują</strong> (kombinacje "A i C", "A, B i C"). Litera <strong>A jest najrzadsza</strong> w obu (16% i 7%). Praktyka: przy wahaniu A jest statystycznie najmniej prawdopodobna, a D/E (kombinacje) najczęstsze — ale to tylko podpowiedź, NIGDY nie zastępuje wiedzy.</div>
+  </div>
+</div>
+
+<!-- SECTION 6 -->
+<div class="section" id="s6">
+  <div class="section-header"><div class="section-num">6</div><h2>Pułapki — wspólne vs unikalne 🪤</h2></div>
+  <div class="twocol">
+    <div class="col-card a" style="border-top-color:var(--purple)">
+      <h5 style="color:var(--purple)">🔁 Pułapki w OBU egzaminach</h5>
+      <ul>
+        <li>Olanzapina "spadek masy" → FAŁSZ (wzrost!)</li>
+        <li>Memantyna/selegilina jako "inhibitor AChE" → FAŁSZ</li>
+        <li>Amantadyna a NMDA — uwaga na wskazanie (Parkinson)</li>
+        <li>Klindamycyna/azytromycyna jako "inhibitor ściany" → FAŁSZ (rybosom)</li>
+        <li>Montelukast "stymuluje LTD4" → FAŁSZ (blokuje)</li>
+        <li>Cholinolityki "bradykardia" → FAŁSZ (tachykardia)</li>
+        <li>Acyklowir "bezpieczny w I trymestrze" → wątpliwe/FAŁSZ</li>
+        <li>"Żadna prawidłowa" (E) jako realna odpowiedź</li>
+      </ul>
+    </div>
+    <div class="col-card b">
+      <h5 style="color:var(--b)">🆕 Pułapki specyficzne</h5>
+      <ul>
+        <li><span class="tag-a">A:</span> Glikozydy "przedłużają życie w NS" → FAŁSZ</li>
+        <li><span class="tag-a">A:</span> ACEI vs tiazydy — kierunek potasu (hiper vs hipo)</li>
+        <li><span class="tag-a">A:</span> Bisfosfoniany "dobrze wchłaniane" → FAŁSZ</li>
+        <li><span class="tag-a">A:</span> Iwabradyna a płytki (NIE wpływa)</li>
+        <li><span class="tag-b">B:</span> Lit "metabolizm wątrobowy" → FAŁSZ (nerki)</li>
+        <li><span class="tag-b">B:</span> Sakubitryl/walsartan "inotropowy (+)" → FAŁSZ</li>
+        <li><span class="tag-b">B:</span> Dabigatran "pozajelitowo / jak HDCz" → FAŁSZ</li>
+        <li><span class="tag-b">B:</span> Dziurawiec — induktor (↓ antykoncepcja)</li>
+        <li><span class="tag-b">B:</span> T½ "nigdy >24h" → FAŁSZ</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 7 -->
+<div class="section" id="s7">
+  <div class="section-header"><div class="section-num">7</div><h2>Wnioski i strategia 🎯</h2></div>
+
+  <div class="verdict">
+    <h4>🔍 Główny wniosek</h4>
+    <p>Egzamin A (2024/2025) i Egzamin B (03.07.2024 w.2) to <strong>w ~75% ta sama pula pytań</strong> — z przetasowaną numeracją, drobnymi zmianami treści i innym doborem dystraktorów. Struktura działów jest niemal identyczna, z OUN+neurologią jako filarem (≈⅓ pytań w obu).</p>
+  </div>
+
+  <div class="verdict">
+    <h4>⚠️ Najważniejsza lekcja: ucz się mechanizmów, nie kluczy</h4>
+    <p>Kilka pytań o ten sam lek miało RÓŻNY poprawny klucz (H1-blokery: E vs A; blokery NMJ: E vs B; onkologia: D vs E). Powód: zmieniono opcje. Jeśli nauczysz się "litery", przegrasz. Jeśli nauczysz się mechanizmu (sukcynylocholina = jedyny depolaryzujący; setrony BLOKUJĄ 5-HT3; walproinian = inhibitor), odpowiesz poprawnie w każdej wersji.</p>
+  </div>
+
+  <div class="verdict">
+    <h4>📚 Na co położyć nacisk (z obu egzaminów łącznie)</h4>
+    <ul>
+      <li><strong>OUN — absolutny priorytet:</strong> leki Z, buspiron, flumazenil, neuroleptyki (klozapina/olanzapina), padaczka (induktor vs inhibitor), znieczulenie (drogi podania)</li>
+      <li><strong>Neurologia:</strong> Parkinson (L-DOPA+karbidopa, agoniści DA, amantadyna=NMDA), Alzheimer (memantyna=NMDA vs AChE), SM (interferon-β, dalfamprydyna)</li>
+      <li><strong>Kardiologia:</strong> co przedłuża życie w NS (SGLT2i+ACEI, NIE glikozydy), sakubitryl bez inotropii, DOAC, BKW, potas (ACEI↑ vs tiazyd↓)</li>
+      <li><strong>Antybiotyki/p.grzyb/p.wir.:</strong> mechanizm ściany vs rybosom, azole vs terbinafina, setrony, gancyklowir/CMV</li>
+      <li><strong>Leki biologiczne (gł. Egz. B):</strong> trastuzumab/rytuksymab/bewacyzumab/etanercept, ADCC, azatiopryna, cyklosporyna</li>
+      <li><strong>Blok łatwych punktów (oba):</strong> farmakoekonomia, koncyliacja, biodostępność/T½, geriatria, EudraVigilance, interakcje (dziurawiec)</li>
+    </ul>
+  </div>
+
+  <div class="verdict">
+    <h4>🎲 Heurystyki statystyczne (uzupełniająco, nie zamiast wiedzy)</h4>
+    <ul>
+      <li>D i E (kombinacje) dominują w obu egzaminach — jeśli dwie opcje wyglądają prawidłowo, sprawdź czy trzecia też</li>
+      <li>Litera A najrzadsza w obu — przy 50/50 między A a inną, statystycznie A mniej prawdopodobna</li>
+      <li>"Żadna prawidłowa"/E to realna odpowiedź (kilka razy w obu) — nie odrzucaj odruchowo</li>
+      <li>Słowa "wszystkie/każda/zawsze/nigdy/tylko/wyłącznie" = czerwona flaga, zwykle fałsz</li>
+    </ul>
+  </div>
+</div>
+
+</div><!-- /container -->
+
+<button class="scrolltop" id="scrolltop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+<script>
+  const btn = document.getElementById('scrolltop');
+  window.addEventListener('scroll', () => { btn.style.display = window.scrollY > 500 ? 'flex' : 'none'; });
+</script>
+</body>
+</html>

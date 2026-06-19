@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<!--
+  ============================================================
+  STRONA STARTOWA (HUB)  —  index.html
+  ============================================================
+  To jest strona główna. Każdy "kafelek" niżej to zwykły link <a>
+  do osobnego pliku .html leżącego w TYM SAMYM folderze.
+
+  Aby dodać nową stronę:
+    1. Stwórz plik, np.  anatomia.html  (w tym samym folderze).
+    2. Skopiuj jeden blok <a class="tile" ...> ... </a> poniżej.
+    3. Zmień href="..." na nazwę swojego pliku.
+    4. Zmień tytuł i opis.
+  Gotowe — po otwarciu index.html link będzie działał.
+  ============================================================
+-->
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Materiały do nauki — strona główna</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#EBEEE9;--panel:#FBFCFA;--panel-2:#F3F5F1;
+    --ink:#19251F;--muted:#5C6B62;--faint:#8A968D;
+    --line:#D3D9CF;--line-2:#E2E7DD;
+    --accent:#1E6F5C;--accent-soft:#DBEDE5;--accent-ink:#114A3D;
+    --neuro:#5B4A8C;--gold:#9C7416;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--paper);color:var(--ink);
+    font-family:"Space Grotesk",system-ui,sans-serif;-webkit-font-smoothing:antialiased;line-height:1.5}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 22px}
+
+  /* HERO */
+  header.hero{padding:64px 0 34px;border-bottom:1px solid var(--line)}
+  .eyebrow{font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);margin:0 0 16px}
+  h1{font-family:"Newsreader",serif;font-weight:500;font-size:clamp(32px,5.5vw,56px);line-height:1.03;margin:0;letter-spacing:-.015em}
+  h1 em{font-style:italic;color:var(--accent)}
+  .lede{font-family:"Newsreader",serif;font-size:18px;color:var(--muted);max-width:60ch;margin:18px 0 0;line-height:1.45}
+
+  section{padding:42px 0}
+  .sec-head{display:flex;align-items:baseline;gap:13px;margin-bottom:6px}
+  .sec-head .n{font-family:"IBM Plex Mono",monospace;font-size:13px;color:var(--accent);border:1px solid var(--accent);border-radius:50%;width:29px;height:29px;flex:none;display:grid;place-items:center;font-weight:500}
+  .sec-head h2{font-family:"Newsreader",serif;font-weight:500;font-size:clamp(22px,3vw,30px);margin:0;letter-spacing:-.01em}
+  .sec-sub{color:var(--muted);font-size:14.5px;margin:0 0 22px;max-width:66ch}
+
+  /* TILES */
+  .tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px}
+  .tile{position:relative;display:flex;flex-direction:column;gap:9px;text-decoration:none;color:inherit;
+    background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px 22px 20px;
+    transition:transform .16s,box-shadow .16s,border-color .16s;min-height:172px}
+  .tile:hover{transform:translateY(-3px);box-shadow:0 14px 34px -20px rgba(20,40,30,.45);border-color:var(--accent)}
+  .tile-num{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--faint);letter-spacing:.1em}
+  .tile-title{font-family:"Newsreader",serif;font-weight:500;font-size:22px;line-height:1.15;letter-spacing:-.01em}
+  .tile-desc{font-size:14px;color:var(--muted);flex:1}
+  .tile-tag{display:inline-block;font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.04em;
+    color:var(--accent-ink);background:var(--accent-soft);padding:3px 9px;border-radius:6px;width:fit-content}
+  .tile-go{font-family:"IBM Plex Mono",monospace;font-size:12.5px;color:var(--accent);font-weight:500;transition:gap .15s}
+  .tile:hover .tile-go{text-decoration:underline;text-underline-offset:3px}
+
+  /* placeholder tile (puste miejsce) */
+  .tile.empty{border-style:dashed;background:transparent;align-items:center;justify-content:center;text-align:center;color:var(--faint)}
+  .tile.empty:hover{transform:none;box-shadow:none;border-color:var(--faint)}
+  .tile.empty .plus{font-size:30px;line-height:1;color:var(--faint);font-family:"Newsreader",serif}
+  .tile.empty .hint{font-size:13px;margin-top:8px}
+
+  /* HOW-TO */
+  .howto{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:26px 26px 28px;margin-top:8px}
+  ol.steps{margin:0;padding-left:20px;font-size:14.5px;line-height:1.7;color:var(--ink)}
+  ol.steps li{margin-bottom:4px}
+  ol.steps code{font-family:"IBM Plex Mono",monospace;font-size:12.5px;background:var(--panel-2);border:1px solid var(--line-2);padding:1px 6px;border-radius:5px;color:var(--accent-ink)}
+  pre{margin:20px 0 0;background:var(--ink);color:#E5EAE3;border-radius:12px;padding:18px 20px;overflow-x:auto;
+    font-family:"IBM Plex Mono",monospace;font-size:12.5px;line-height:1.6}
+  pre .tag{color:#7FC9B5}.pre .att{color:#E4C36A}
+  pre .att{color:#E4C36A}.pre{}
+  pre .val{color:#D9C58A}
+  pre .txt{color:#A9B8AE}
+  .tip{font-size:13.5px;color:var(--muted);margin-top:18px;line-height:1.55;border-left:3px solid var(--gold);padding-left:14px}
+  .tip b{color:var(--ink)}
+  .copybtn{margin-top:14px;font-family:"Space Grotesk",sans-serif;font-size:13px;font-weight:600;border:1px solid var(--line);background:var(--panel);color:var(--ink);padding:9px 15px;border-radius:9px;cursor:pointer;transition:all .15s}
+  .copybtn:hover{border-color:var(--accent);color:var(--accent-ink)}
+
+  footer{padding:38px 0 60px;border-top:1px solid var(--line);font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--faint);letter-spacing:.03em}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow">Hub · materiały do nauki</p>
+    <h1>Moje materiały<br>do <em>nauki</em></h1>
+    <p class="lede">Jedno miejsce, z którego otwierasz wszystkie swoje strony. Każdy kafelek to osobny plik HTML — dorzucasz kolejne, kiedy chcesz. Instrukcja jest na dole.</p>
+  </div>
+</header>
+
+<main class="wrap">
+  <section>
+    <div class="sec-head"><span class="n">1</span><h2>Twoje strony</h2></div>
+    <p class="sec-sub">Kliknij kafelek, aby otworzyć. Puste kafelki pokazują, gdzie dopiąć kolejne materiały.</p>
+
+    <div class="tiles">
+
+      <!-- ===== KAFELEK 1: gotowy, prawdziwy link ===== -->
+      <a class="tile" href="leki_biologiczne_przeciwciala_lista.html">
+        <span class="tile-num">01</span>
+        <span class="tile-title">Biologiki, immunologia i neurologia</span>
+        <span class="tile-desc">Pełna lista leków według celu molekularnego — z trybem fiszek, filtrami i priorytetem profesora.</span>
+        <span class="tile-tag">76 leków · lista + fiszki</span>
+        <span class="tile-go">otwórz →</span>
+      </a>
+
+      <!-- ===== KAFELEK PUSTY: skopiuj blok wyżej, podmień href/tytuł/opis ===== -->
+      <a class="tile empty" href="#" onclick="return false;">
+        <span class="plus">+</span>
+        <span class="hint">wolne miejsce<br>dopnij kolejną stronę</span>
+      </a>
+
+      <a class="tile empty" href="#" onclick="return false;">
+        <span class="plus">+</span>
+        <span class="hint">wolne miejsce<br>dopnij kolejną stronę</span>
+      </a>
+
+      <a class="tile empty" href="#" onclick="return false;">
+        <span class="plus">+</span>
+        <span class="hint">wolne miejsce<br>dopnij kolejną stronę</span>
+      </a>
+
+    </div>
+  </section>
+
+  <section style="padding-top:6px">
+    <div class="sec-head"><span class="n">2</span><h2>Jak podpiąć kolejną stronę</h2></div>
+    <p class="sec-sub">Strony HTML łączą się zwykłym linkiem <code style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;background:var(--panel-2);padding:1px 6px;border-radius:5px">&lt;a href="…"&gt;</code>. Bez serwera, bez frameworków — wystarczą pliki obok siebie.</p>
+
+    <div class="howto">
+      <ol class="steps">
+        <li>Zapisz nowy plik, np. <code>anatomia.html</code>, w <b>tym samym folderze</b> co <code>index.html</code>.</li>
+        <li>Skopiuj poniższy blok kafelka i wklej go w sekcji <code>&lt;div class="tiles"&gt;</code> (możesz nadpisać pusty kafelek).</li>
+        <li>Zmień <code>href</code> na nazwę swojego pliku oraz podmień tytuł i opis.</li>
+        <li>Otwórz <code>index.html</code> w przeglądarce — link działa od razu.</li>
+      </ol>
+
+      <pre id="snippet"><span class="tag">&lt;a</span> <span class="att">class</span>=<span class="val">"tile"</span> <span class="att">href</span>=<span class="val">"anatomia.html"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;span</span> <span class="att">class</span>=<span class="val">"tile-num"</span><span class="tag">&gt;</span><span class="txt">02</span><span class="tag">&lt;/span&gt;</span>
+  <span class="tag">&lt;span</span> <span class="att">class</span>=<span class="val">"tile-title"</span><span class="tag">&gt;</span><span class="txt">Anatomia</span><span class="tag">&lt;/span&gt;</span>
+  <span class="tag">&lt;span</span> <span class="att">class</span>=<span class="val">"tile-desc"</span><span class="tag">&gt;</span><span class="txt">Krótki opis tej strony.</span><span class="tag">&lt;/span&gt;</span>
+  <span class="tag">&lt;span</span> <span class="att">class</span>=<span class="val">"tile-go"</span><span class="tag">&gt;</span><span class="txt">otwórz →</span><span class="tag">&lt;/span&gt;</span>
+<span class="tag">&lt;/a&gt;</span></pre>
+
+      <button class="copybtn" id="copyBtn">Skopiuj kod kafelka</button>
+
+      <p class="tip"><b>Foldery i ścieżki:</b> jeśli trzymasz strony w podfolderze, użyj ścieżki względnej, np. <code style="font-family:'IBM Plex Mono',monospace;font-size:12px;background:var(--panel-2);padding:1px 5px;border-radius:4px">href="podstrony/anatomia.html"</code>. Z powrotem w górę: <code style="font-family:'IBM Plex Mono',monospace;font-size:12px;background:var(--panel-2);padding:1px 5px;border-radius:4px">href="../index.html"</code>. Najważniejsze: nazwy plików liczą się co do znaku (wielkość liter też), więc trzymaj się małych liter bez spacji.</p>
+    </div>
+  </section>
+
+  <footer>Strona główna · pliki HTML łączone linkami względnymi · trzymaj wszystkie pliki w jednym folderze</footer>
+</main>
+
+<script>
+  // Przycisk "Skopiuj" — kopiuje czysty kod kafelka (bez kolorowania) do schowka.
+  const tpl = `<a class="tile" href="anatomia.html">
+  <span class="tile-num">02</span>
+  <span class="tile-title">Anatomia</span>
+  <span class="tile-desc">Krótki opis tej strony.</span>
+  <span class="tile-go">otwórz →</span>
+</a>`;
+  const btn = document.getElementById('copyBtn');
+  btn.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(tpl);
+      const old = btn.textContent;
+      btn.textContent = 'Skopiowano ✓';
+      setTimeout(() => btn.textContent = old, 1600);
+    } catch (e) {
+      // awaryjnie: zaznacz tekst w <pre>, gdyby schowek był niedostępny
+      const r = document.createRange();
+      r.selectNodeContents(document.getElementById('snippet'));
+      const s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+    }
+  });
+</script>
+</body>
+</html>

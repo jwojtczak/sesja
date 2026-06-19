@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Egzamin 03.07.2024 (wersja 2) — Analiza</title>
+<style>
+  :root {
+    --bg: #0b0d12;
+    --surface: #15181f;
+    --surface2: #1e222c;
+    --border: #2c3340;
+    --accent: #34d399;
+    --accent2: #fb7185;
+    --accent3: #fcd34d;
+    --accent4: #60a5fa;
+    --purple: #c084fc;
+    --text: #eaeef4;
+    --text-muted: #8a94a6;
+    --critical: #f87171;
+    --warning: #fb923c;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.6; }
+  .hero { background: linear-gradient(135deg, #0b0d12 0%, #17202e 50%, #0b0d12 100%); border-bottom: 1px solid var(--border); padding: 38px 24px 30px; text-align: center; position: relative; }
+  .hero::after { content: '03.07.2024 · w.2'; position: absolute; top: 8px; right: 16px; font-size: 0.7em; color: var(--accent); letter-spacing: 2px; font-weight: 700; opacity: 0.6; }
+  .hero h1 { font-size: 1.95em; font-weight: 800; background: linear-gradient(90deg, var(--accent), var(--accent4)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 6px; }
+  .hero .subtitle { color: var(--text-muted); font-size: 0.95em; }
+  .stats-bar { display: flex; gap: 10px; padding: 14px 24px; background: var(--surface); border-bottom: 1px solid var(--border); flex-wrap: wrap; justify-content: center; }
+  .stat-chip { background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 5px 14px; font-size: 0.82em; font-weight: 600; }
+  .stat-chip span { color: var(--accent); }
+  .container { max-width: 1180px; margin: 0 auto; padding: 24px; }
+  .toc { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px; margin-bottom: 26px; }
+  .toc h3 { color: var(--accent4); margin-bottom: 10px; font-size: 0.85em; text-transform: uppercase; letter-spacing: 1px; }
+  .toc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px,1fr)); gap: 5px; }
+  .toc a { color: var(--text-muted); text-decoration: none; font-size: 0.84em; padding: 4px 8px; border-radius: 6px; transition: all 0.15s; }
+  .toc a:hover { color: var(--accent); background: rgba(52,211,153,0.08); }
+  .section { margin-bottom: 30px; scroll-margin-top: 20px; }
+  .section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 2px solid var(--border); }
+  .section-num { background: var(--accent); color: #000; font-weight: 900; font-size: 0.78em; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .section-header h2 { font-size: 1.25em; font-weight: 700; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-bottom: 12px; }
+  .card-title { font-size: 0.78em; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 10px; font-weight: 700; }
+  .freq-grid { display: grid; gap: 7px; }
+  .freq-item { display: grid; grid-template-columns: 230px 1fr 70px; align-items: center; gap: 10px; }
+  .freq-item .label { font-size: 0.85em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .freq-bar-wrap { background: var(--surface2); border-radius: 4px; height: 16px; overflow: hidden; }
+  .freq-bar { height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--accent), var(--accent4)); }
+  .freq-count { font-size: 0.82em; color: var(--accent); font-weight: 700; text-align: right; }
+  .fact { background: var(--surface2); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; padding: 9px 14px; margin-bottom: 7px; font-size: 0.89em; }
+  .fact-critical { border-left-color: var(--critical); }
+  .fact-trap { border-left-color: var(--purple); }
+  .fact-label { display: inline-block; font-size: 0.68em; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; padding: 2px 6px; border-radius: 4px; margin-right: 4px; }
+  .lbl-new { background: rgba(251,113,133,0.2); color: var(--accent2); }
+  .lbl-rec { background: rgba(52,211,153,0.2); color: var(--accent); }
+  .lbl-q { background: rgba(96,165,250,0.2); color: var(--accent4); font-family: monospace; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.84em; }
+  th { background: var(--surface2); color: var(--accent4); padding: 9px 11px; text-align: left; font-size: 0.78em; text-transform: uppercase; letter-spacing: 0.5px; }
+  td { padding: 8px 11px; border-top: 1px solid var(--border); vertical-align: top; line-height: 1.5; }
+  tr:hover td { background: rgba(255,255,255,0.02); }
+  td:first-child { color: var(--accent4); font-weight: 700; font-family: monospace; white-space: nowrap; }
+  .trap-box { background: rgba(192,132,252,0.05); border: 1px solid rgba(192,132,252,0.3); border-radius: 8px; padding: 13px; margin-bottom: 9px; }
+  .trap-title { font-weight: 700; color: var(--purple); margin-bottom: 5px; font-size: 0.92em; }
+  .trap-detail { font-size: 0.86em; color: var(--text-muted); }
+  .trap-key { color: var(--accent3); font-weight: 600; }
+  .qnum { display: inline-block; background: var(--surface2); border: 1px solid var(--border); border-radius: 5px; padding: 1px 6px; font-family: monospace; font-size: 0.78em; color: var(--accent4); font-weight: 700; }
+  .rank-tier { margin-bottom: 14px; border-radius: 10px; overflow: hidden; border: 1px solid var(--border); }
+  .rank-header { padding: 10px 16px; font-weight: 700; font-size: 0.88em; }
+  .rank-t1 .rank-header { background: rgba(248,113,113,0.18); color: var(--critical); }
+  .rank-t2 .rank-header { background: rgba(251,146,60,0.18); color: var(--warning); }
+  .rank-t3 .rank-header { background: rgba(52,211,153,0.15); color: var(--accent); }
+  .rank-items { padding: 12px 16px; display: flex; flex-wrap: wrap; gap: 7px; }
+  .rank-tag { background: var(--surface2); border: 1px solid var(--border); border-radius: 18px; padding: 4px 11px; font-size: 0.8em; font-weight: 600; }
+  .strategy-card { background: linear-gradient(135deg, rgba(52,211,153,0.05), rgba(96,165,250,0.05)); border: 1px solid rgba(52,211,153,0.2); border-radius: 10px; padding: 15px; margin-bottom: 11px; }
+  .strategy-card h4 { color: var(--accent); margin-bottom: 8px; font-size: 0.93em; }
+  .strategy-card p, .strategy-card li { font-size: 0.86em; color: var(--text-muted); margin-bottom: 3px; }
+  .strategy-card li { margin-left: 16px; }
+  .pattern { background: rgba(252,211,77,0.07); border: 1px solid rgba(252,211,77,0.3); border-radius: 8px; padding: 13px; margin-bottom: 9px; }
+  .pattern-title { font-weight: 700; color: var(--accent3); margin-bottom: 5px; }
+  .pattern-text { font-size: 0.86em; color: var(--text); }
+  .ans-grid { display: flex; gap: 7px; flex-wrap: wrap; }
+  .ans-item { background: var(--surface2); border-radius: 8px; padding: 11px 15px; text-align: center; min-width: 80px; }
+  .ans-letter { font-size: 1.8em; font-weight: 900; color: var(--accent); }
+  .ans-count { font-size: 0.8em; color: var(--text-muted); }
+  .ans-pct { font-size: 0.88em; font-weight: 700; color: var(--accent3); }
+  .callout { background: var(--surface2); border-radius: 8px; padding: 11px 14px; font-size: 0.87em; color: var(--text-muted); margin-top: 10px; }
+  .callout strong { color: var(--accent3); }
+  .top-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px,1fr)); gap: 7px; }
+  .top-item { display: flex; align-items: flex-start; gap: 9px; padding: 8px 11px; background: var(--surface2); border-radius: 6px; font-size: 0.84em; }
+  .top-num { color: var(--accent); font-weight: 800; min-width: 24px; }
+  .scrolltop { position: fixed; bottom: 20px; right: 20px; background: var(--accent); color: #000; border: none; border-radius: 50%; width: 40px; height: 40px; font-size: 1.2em; cursor: pointer; display: none; align-items: center; justify-content: center; z-index: 100; }
+  @media (max-width: 600px) { .freq-item { grid-template-columns: 130px 1fr 50px; } .top-grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>📋 Egzamin III WL · I termin 03.07.2024 (wersja 2)</h1>
+  <div class="subtitle">70 pytań z kluczem · Trzecie niezależne źródło · Triangulacja z bazą Żelazo Farma + egz. 2024/2025</div>
+</div>
+
+<div class="stats-bar">
+  <div class="stat-chip">❓ Pytań: <span>70</span></div>
+  <div class="stat-chip">🔁 Pokrycie z drugim egz. I term.: <span>~75%</span></div>
+  <div class="stat-chip">🧠 Dominanta działu: <span>OUN + neurologia</span></div>
+  <div class="stat-chip">🎯 Najczęstsza odpowiedź: <span>D + E (≈53%)</span></div>
+</div>
+
+<div class="container">
+
+<div class="toc">
+  <h3>📋 Spis treści</h3>
+  <div class="toc-grid">
+    <a href="#s1">📊 1. Struktura i klucz odpowiedzi</a>
+    <a href="#s2">🔗 2. Triangulacja 3 źródeł</a>
+    <a href="#s3">💡 3. High-yield facts</a>
+    <a href="#s4">⚖️ 4. Reguły vs wyjątki</a>
+    <a href="#s5">🪤 5. Pułapki egzaminacyjne</a>
+    <a href="#s6">🆕 6. Nowe / rzadkie tematy</a>
+    <a href="#s7">🏅 7. TOP fakty z tego egzaminu</a>
+    <a href="#s8">🏆 8. Ranking nauki — PEWNIAKI</a>
+    <a href="#s9">🎯 9. Strategia</a>
+    <a href="#patterns">👉 Wzorce konstrukcji</a>
+  </div>
+</div>
+
+<!-- SECTION 1 -->
+<div class="section" id="s1">
+  <div class="section-header"><div class="section-num">1</div><h2>Struktura egzaminu i klucz odpowiedzi</h2></div>
+
+  <div class="card">
+    <div class="card-title">📈 Rozkład pytań wg działu (70 pytań)</div>
+    <div class="freq-grid">
+      <div class="freq-item"><div class="label">🔴 OUN (sen/psych./padaczka/znieczul.)</div><div class="freq-bar-wrap"><div class="freq-bar" style="width:100%"></div></div><div class="freq-count">16 pyt.</div></div>
+      <div class="freq-item"><div class="label">🔴 Neurologia (Parkinson/SM/Alzheimer)</div><div class="freq-bar-wrap"><div class="freq-bar" style="width:50%"></div></div><div class="freq-count">8 pyt.</div></div>
+      <div class="freq-item"><div class="label">🔴 Kardiologia + hemostaza</div><div class="freq-bar-wrap"><div class="freq-bar" style="width:50%"></div></div><div class="freq-count">8 pyt.</div></div>
+      <div class="freq-item"><div class="label">🟠 Antybiotyki/p.wir./p.grzyb.</div><div class="freq-bar-wrap"><div class="freq-bar" style="width:44%"></div></div><div class="freq-count">7 pyt.</div></div>
+      <div class="freq-item"><div class="label">🟠 Leki biologiczne/immunologiczne</div><div class="freq-bar-wrap"><div class="freq-bar" style="width:38%"></div></div><div class="freq-count">6 pyt.</div></div>
+      <div class="freq-item"><div class="label">🟠 Farmakologia ogólna/kinetyka</div><div class="freq-bar-wrap"><div class="freq-bar" style="width:38%"></div></div><div class="freq-count">6 pyt.</div></div>
+      <div class="freq-item"><div class="label">🟡 Hormony/cukrzyca/tarczyca/kości</div><div class="freq-bar-wrap"><div class="freq-bar" style="width:38%"></div></div><div class="freq-count">6 pyt.</div></div>
+      <div class="freq-item"><div class="label">🟡 Układ oddechowy/antyhistaminowe</div><div class="freq-bar-wrap"><div class="freq-bar" style="width:31%"></div></div><div class="freq-count">5 pyt.</div></div>
+      <div class="freq-item"><div class="label">🟡 Farmakoekonomia/koncyliacja (NOWE)</div><div class="freq-bar-wrap"><div class="freq-bar" style="width:25%"></div></div><div class="freq-count">4 pyt.</div></div>
+      <div class="freq-item"><div class="label">🟢 NLPZ/opioidy + autonomiczny</div><div class="freq-bar-wrap"><div class="freq-bar" style="width:25%"></div></div><div class="freq-count">4 pyt.</div></div>
+    </div>
+    <div class="callout">⚡ <strong>Identyczny ciężar jak w drugim zestawie I terminu:</strong> OUN + neurologia ≈ 35% egzaminu. To potwierdza — neurologia i psychiatria są filarem tegorocznego egzaminu, niezależnie od wersji.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🔑 Pełny klucz odpowiedzi (czerwone oznaczenia z dokumentu)</div>
+    <table>
+      <tr><th>Q</th><th>Odp</th><th>Q</th><th>Odp</th><th>Q</th><th>Odp</th><th>Q</th><th>Odp</th><th>Q</th><th>Odp</th></tr>
+      <tr><td>1</td><td>E</td><td>15</td><td>D</td><td>29</td><td>E</td><td>43</td><td>C</td><td>57</td><td>B</td></tr>
+      <tr><td>2</td><td>C</td><td>16</td><td>B</td><td>30</td><td>C</td><td>44</td><td>D</td><td>58</td><td>D</td></tr>
+      <tr><td>3</td><td>E</td><td>17</td><td>C</td><td>31</td><td>E</td><td>45</td><td>D</td><td>59</td><td>E</td></tr>
+      <tr><td>4</td><td>D</td><td>18</td><td>D</td><td>32</td><td>E</td><td>46</td><td>C</td><td>60</td><td>E</td></tr>
+      <tr><td>5</td><td>B</td><td>19</td><td>B</td><td>33</td><td>D</td><td>47</td><td>B</td><td>61</td><td>E</td></tr>
+      <tr><td>6</td><td>A</td><td>20</td><td>E</td><td>34</td><td>E</td><td>48</td><td>D</td><td>62</td><td>D</td></tr>
+      <tr><td>7</td><td>B</td><td>21</td><td>B</td><td>35</td><td>D</td><td>49</td><td>A</td><td>63</td><td>A</td></tr>
+      <tr><td>8</td><td>E</td><td>22</td><td>C</td><td>36</td><td>C</td><td>50</td><td>B</td><td>64</td><td>C</td></tr>
+      <tr><td>9</td><td>E</td><td>23</td><td>C</td><td>37</td><td>C</td><td>51</td><td>D</td><td>65</td><td>E</td></tr>
+      <tr><td>10</td><td>D</td><td>24</td><td>D</td><td>38</td><td>B</td><td>52</td><td>B</td><td>66</td><td>B</td></tr>
+      <tr><td>11</td><td>D</td><td>25</td><td>C</td><td>39</td><td>E</td><td>53</td><td>C</td><td>67</td><td>D</td></tr>
+      <tr><td>12</td><td>B</td><td>26</td><td>A</td><td>40</td><td>D</td><td>54</td><td>D</td><td>68</td><td>C</td></tr>
+      <tr><td>13</td><td>C</td><td>27</td><td>D</td><td>41</td><td>A</td><td>55</td><td>E</td><td>69</td><td>D</td></tr>
+      <tr><td>14</td><td>E</td><td>28</td><td>C</td><td>42</td><td>E</td><td>56</td><td>B</td><td>70</td><td>A</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📊 Rozkład poprawnych odpowiedzi (litera)</div>
+    <div class="ans-grid">
+      <div class="ans-item"><div class="ans-letter">D</div><div class="ans-pct">27%</div><div class="ans-count">19 pyt.</div></div>
+      <div class="ans-item"><div class="ans-letter">E</div><div class="ans-pct">26%</div><div class="ans-count">18 pyt.</div></div>
+      <div class="ans-item"><div class="ans-letter">C</div><div class="ans-pct">21%</div><div class="ans-count">15 pyt.</div></div>
+      <div class="ans-item"><div class="ans-letter">B</div><div class="ans-pct">19%</div><div class="ans-count">13 pyt.</div></div>
+      <div class="ans-item"><div class="ans-letter">A</div><div class="ans-pct">7%</div><div class="ans-count">5 pyt.</div></div>
+    </div>
+    <div class="callout">D i E razem = <strong>53%</strong> — wracają kombinacje ("A i C", "A, B i C"). Litera A jest najrzadsza (7%) — jeśli wahasz się między A a czymś innym, statystycznie A jest mniej prawdopodobne. To odwrotność niektórych pojedynczych zestawów.</div>
+  </div>
+</div>
+
+<!-- SECTION 2 -->
+<div class="section" id="s2">
+  <div class="section-header"><div class="section-num">2</div><h2>Triangulacja 3 źródeł — co jest PEWNE 🔗</h2></div>
+  <div class="card">
+    <div class="card-title">Tematy pojawiające się w obu zestawach I terminu 2024 (najsilniejsze pewniaki)</div>
+    <table>
+      <tr><th>Temat</th><th>Tu</th><th>Drugi egz.</th><th>Klucz wspólny</th></tr>
+      <tr><td>Klozapina – agranulocytoza/indukcja cukrzycy</td><td>Q54</td><td>Q14</td><td>Zestaw lek–działanie nep., odp. kombinacja</td></tr>
+      <tr><td>Agoniści dopaminy (bromokryptyna, ropinirol)</td><td>Q23, Q60</td><td>Q60</td><td>Amantadyna = blokada NMDA (NIE agonista DA)</td></tr>
+      <tr><td>L-DOPA w Parkinsonie + kazus pacjenta 72 l.</td><td>Q21</td><td>Q59</td><td>L-DOPA + karbidopa = optymalnie (B)</td></tr>
+      <tr><td>Memantyna = antagonista NMDA (Alzheimer)</td><td>Q26</td><td>Q65</td><td>NIE inhibitor AChE; galantamina = AChE + nikotyn.</td></tr>
+      <tr><td>Karbamazepina mechanizm + induktor/inhibitor</td><td>Q24, Q53</td><td>Q61, Q62</td><td>Kanały Na/Kv7; kwas walproinowy = inhibitor</td></tr>
+      <tr><td>Leki w NS — co przedłuża życie / inotropia</td><td>Q15, Q16</td><td>Q49</td><td>SGLT2i + ACEI; glikozydy/sakubitryl bez inotropii(+)</td></tr>
+      <tr><td>Niedihydropirydynowe BKW + karwedilol</td><td>Q17, Q18</td><td>—</td><td>Karwedilol = nieselektywny α+β, NS</td></tr>
+      <tr><td>Bisfosfoniany / denosumab / osteoporoza</td><td>Q6</td><td>Q39, Q40</td><td>Hamują osteoklasty; denosumab ↔ RANKL</td></tr>
+      <tr><td>Paracetamol – zatrucie + N-acetylocysteina</td><td>Q39, Q40</td><td>Q45</td><td>Odtrutka NAC; wątroba narząd krytyczny</td></tr>
+      <tr><td>Flumazenil / leki "Z" / buspiron</td><td>Q47, Q48, Q49</td><td>Q7, Q8, Q9</td><td>Niemal identyczne pytania!</td></tr>
+      <tr><td>Farmakoekonomia + koncyliacja</td><td>Q32-36</td><td>Q54, Q55, Q57, Q58</td><td>Blok definicyjny — łatwe punkty</td></tr>
+      <tr><td>Setrony (5-HT3) / metoklopramid</td><td>Q64</td><td>Q24</td><td>Setrony BLOKUJĄ 5-HT3</td></tr>
+      <tr><td>DOAC / dabigatran / leki p/płytkowe</td><td>Q19</td><td>Q51, Q52</td><td>Dabigatran = inh. trombiny, pozajelitowo? NIE</td></tr>
+    </table>
+    <div class="callout">🎯 <strong>To są Twoje absolutne pewniaki egzaminacyjne.</strong> Temat obecny w 3 niezależnych źródłach (baza + 2 wersje I terminu) ma najwyższe prawdopodobieństwo powtórzenia. Naucz się ich na 100%.</div>
+  </div>
+</div>
+
+<!-- SECTION 3 -->
+<div class="section" id="s3">
+  <div class="section-header"><div class="section-num">3</div><h2>High-Yield Facts z tego egzaminu</h2></div>
+
+  <div class="card">
+    <div class="card-title">🧠 OUN — sen, psychiatria, padaczka, znieczulenie</div>
+    <div class="fact"><span class="fact-label lbl-q">Q46</span> Benzodiazepiny — zastosowanie kliniczne: drgawki + spastyczność mięśni (C: A i B). NIE bezdech senny!</div>
+    <div class="fact"><span class="fact-label lbl-q">Q47</span> Flumazenil: blokuje działanie zolpidemu + antagonizuje opioidy? → B (A i B); jest "agonistą" GABAA = FAŁSZ (to antagonista)</div>
+    <div class="fact"><span class="fact-label lbl-q">Q48</span> Leki "Z": senność dnia następnego + obniżają sprawność psychomotoryczną (D). POWODUJĄ uzależnienie</div>
+    <div class="fact"><span class="fact-label lbl-q">Q49</span> Buspiron = częściowy agonista 5-HT (A). NIE przeciwwskazany w ciąży kategorycznie; NIE addytywny depresyjny z lekami usp.</div>
+    <div class="fact"><span class="fact-label lbl-q">Q50</span> Ketamina = pozajelitowo (B). Tiopental NIE wziewnie; etomidat NIE doustnie</div>
+    <div class="fact"><span class="fact-label lbl-q">Q51</span> Lidokaina = znieczulenie powierzchniowe + nasiękowe (D: A i C). Bupiwakaina NIE powierzchniowe</div>
+    <div class="fact"><span class="fact-label lbl-q">Q52</span> Cisatrakurium = niedepolaryzujący (B). Sukcynylocholina = depolaryzujący; diazepam to nie zwiotczający</div>
+    <div class="fact"><span class="fact-label lbl-q">Q53</span> Kwas walproinowy → trombocytopenia (C). Lit NIE ma "intensywnego metabolizmu wątrobowego" (wydalany nerkowo!)</div>
+    <div class="fact"><span class="fact-label lbl-q">Q54</span> Klozapina → indukcja cukrzycy; Olanzapina → spadek masy (FAŁSZ — daje wzrost!); Haloperidol → zespół pozapiramidowy (D)</div>
+    <div class="fact"><span class="fact-label lbl-q">Q56</span> Sertralina = SSRI; Wenlafaksyna = SNRI (D: A i B). Trazodon NIE jest MAO-I</div>
+    <div class="fact"><span class="fact-label lbl-q">Q24</span> Diazepam = receptor GABAA; karbamazepina = kanały Kv7? FAŁSZ → odp. D (A i B): diazepam-GABAA + etosuksymid-kanały Ca typu T</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🧬 Neurologia — Parkinson, SM, Alzheimer, biologiczne</div>
+    <div class="fact"><span class="fact-label lbl-q">Q21</span> Parkinson, pacjent 72 l. → L-DOPA + karbidopa (B). Monoterapia L-DOPA gorsza; gabapentyna nie na Parkinsona</div>
+    <div class="fact"><span class="fact-label lbl-q">Q22</span> Tourette + haloperidol z objawami niepokoju/niestabilności (objawy pozapiramidowe) → zmniejszenie dawki lub odstawienie haloperidolu (C)</div>
+    <div class="fact"><span class="fact-label lbl-q">Q23</span> Blokada receptorów NMDA w Parkinsonie = Amantadyna (C). Rasagilina = MAO-B; ropinirol = agonista DA</div>
+    <div class="fact"><span class="fact-label lbl-q">Q25</span> Interferon-β w SM → zespół grypopodobny + ↑ enzymów wątrobowych + zmęczenie (C). Fingolimod, natalizumab, teriflunomid działają inaczej</div>
+    <div class="fact"><span class="fact-label lbl-q">Q26</span> Antagonista NMDA w Alzheimerze = Memantyna (A). Riwastygmina/donepezil/galantamina = inhibitory AChE</div>
+    <div class="fact"><span class="fact-label lbl-q">Q27</span> Nowoczesne leki biologiczne: trastuzumab + etanercept (D). Imatynib = drobnocząsteczkowy TKI (nie biologiczny w tym sensie)</div>
+    <div class="fact"><span class="fact-label lbl-q">Q28</span> ADCC (cytotoksyczność zależna od p/ciał): rytuksymab → odp. C (rytuksymab + B i C). Omalizumab/infliksymab działają inaczej</div>
+    <div class="fact"><span class="fact-label lbl-q">Q29</span> Bewacyzumab w raku jelita grubego: ↓ unaczynienie guza + neutralizuje VEGF + hamuje wzrost (E: A,B,C)</div>
+    <div class="fact"><span class="fact-label lbl-q">Q30</span> Prolek immunosupresyjny hamujący proliferację limfocytów T i B + leukopenia/biegunka + ryzyko CMV = Azatiopryna (C)</div>
+    <div class="fact"><span class="fact-label lbl-q">Q12</span> DMARD biologiczny: Abatacept (blokuje aktywację limfocytów T) — uwaga, NIE blokuje TNF-α; mechanizmy w opcjach mylone</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">💙 Kardiologia + hemostaza</div>
+    <div class="fact"><span class="fact-label lbl-q">Q13</span> FAŁSZ: "Furosemid w łagodnym NT" — diuretyki tiazydopodobne należą do leków I wyboru w NT, NIE pętlowe; eplerenon ↑ potas (C)</div>
+    <div class="fact"><span class="fact-label lbl-q">Q14</span> Odruchowa tachykardia: dihydropirydyny (nifedypina) + nitrogliceryna + ... (E: B i C/A,B,C). Werapamil NIE (zwalnia HR)</div>
+    <div class="fact"><span class="fact-label lbl-q">Q15</span> Cukrzyca typ 2 + NS → inhibitory SGLT2 (D)</div>
+    <div class="fact"><span class="fact-label lbl-q">Q16</span> BEZ dodatniego działania inotropowego: Sakubitryl/walsartan (B). Digoksyna, dobutamina, lewosimendan = inotropowe (+)</div>
+    <div class="fact"><span class="fact-label lbl-q">Q17</span> Niedihydropirydynowe BKW (werapamil/diltiazem): zwalniają przewodzenie AV + NIE łączyć z β-blokerami + można w dławicy (C: A,B,C)</div>
+    <div class="fact"><span class="fact-label lbl-q">Q18</span> Karwedilol i nebiwolol: wazodylatacja + stosowane w NS (D: A i B). NIE są "nieselektywne β" w klasycznym sensie</div>
+    <div class="fact"><span class="fact-label lbl-q">Q19</span> Dabigatran = ten sam mechanizm co HDCz? FAŁSZ. Może powodować krwawienia (B). NIE pozajelitowo (doustny!)</div>
+    <div class="fact"><span class="fact-label lbl-q">Q20</span> Statyny: można z ezetymibem + ↓ ryzyko sercowo-naczyniowe (E: A i C). NIE wszystkie mają tę samą siłę!</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🦠 Antybiotyki / p.wirusowe / p.grzybicze</div>
+    <div class="fact"><span class="fact-label lbl-q">Q57</span> β-laktamy: niektóre cefalosporyny (cefoperazon) → zaburzenia krzepnięcia (C: A i C). NIE wszystkie doustne na czczo; monobaktamy NIE tylko G+</div>
+    <div class="fact"><span class="fact-label lbl-q">Q58</span> Drogi podania: ciprofloksacyna do worka spojówkowego + azytromycyna naskórnie (D: B i C). Tobramycyna NIE wziewnie (uwaga — w mukowiscydozie tak, ale tu klucz D)</div>
+    <div class="fact"><span class="fact-label lbl-q">Q59</span> Hamują syntezę ściany: Wankomycyna + Cefepim + Aztreonam (E: A,B,C). Wszystkie to β-laktamy/glikopeptyd</div>
+    <div class="fact"><span class="fact-label lbl-q">Q60</span> P/gruźlicze działania nep.: Izoniazyd-neuropatia + Pyrazynamid-hiperurykemia + Ryfampicyna-(zabarwienie) (E)</div>
+    <div class="fact"><span class="fact-label lbl-q">Q62</span> Oseltamiwir+zanamiwir = nieodwracalnie hamują neuraminidazę + gancyklowir w CMV (D: B i C). Acyklowir NIE bezpieczny w I trym.</div>
+    <div class="fact"><span class="fact-label lbl-q">Q63</span> Azole zaburzają syntezę ergosterolu (A). Terbinafina = epoksydaza skwalenu (NIE "aktywuje"); amfoterycyna NIE blokuje β-glukanu</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🩺 Hormony / kości / opioidy / kinetyka</div>
+    <div class="fact"><span class="fact-label lbl-q">Q4</span> Glikokortykoidy: przy długim stosowaniu → zespół depresyjny + ↓ objawy stanu zapalnego (D: A i B). Pobudzają? — uwaga na opcję C</div>
+    <div class="fact"><span class="fact-label lbl-q">Q5</span> Lewotyroksyna = lek z wyboru w niedoczynności tarczycy (B). NIE przeciwwskazana w ciąży; długi T½ (nie krótki)</div>
+    <div class="fact"><span class="fact-label lbl-q">Q6</span> Osteoporoza: denosumab ↑ ryzyko infekcji + raloksyfen ↑ ryzyko zakrzepowo-zatorowe (A). Cholekalcyferol NIE daje hiperkalcemii w dawkach standard.</div>
+    <div class="fact"><span class="fact-label lbl-q">Q7</span> Estrogeny w HTZ: ↑ LDL i TG? FAŁSZ (↓ LDL, ↑ TG) + zmniejszają szybkość resorpcji kości (A)</div>
+    <div class="fact"><span class="fact-label lbl-q">Q8</span> Szybko działające analogi insuliny: ta sama budowa co insulina ludzka? FAŁSZ; mogą powodować zaburzenia żołądkowo-jelitowe? → B</div>
+    <div class="fact"><span class="fact-label lbl-q">Q9</span> Analogi GLP-1: można z metforminą/sulfonylomocznikiem + ↓ masa ciała + podskórnie (E: A,B,C)</div>
+    <div class="fact"><span class="fact-label lbl-q">Q65</span> Opioidy: dekstrometorfan w monoterapii skuteczny p/bólowo? FAŁSZ; fentanyl ulega efektowi I przejścia? buprenorfina częściowy agonista κ? → E (żadna)</div>
+    <div class="fact"><span class="fact-label lbl-q">Q66</span> T½: parametr stały niezależnie od stężenia w kinetyce I rzędu (B). NIE "nigdy dłuższy niż 24h"</div>
+    <div class="fact"><span class="fact-label lbl-q">Q67</span> Biodostępność: i.v. = 100% + efekt I przejścia może ją obniżyć (D: A i B). NIE "dawki doustne = pozajelitowym"</div>
+    <div class="fact"><span class="fact-label lbl-q">Q68</span> Fenylefryna = receptor sprzężony z białkiem G – α1 (C). Propranolol NIE jonotropowy; nikotyna NIE M; oksybutynina NIE H2</div>
+    <div class="fact"><span class="fact-label lbl-q">Q70</span> Cholinolityki NIE powodują bradykardii (A) — dają tachykardię, suchość, zaparcia, ↑ ciśnienie wewnątrzgałkowe, niewyraźne widzenie</div>
+  </div>
+</div>
+
+<!-- SECTION 4 -->
+<div class="section" id="s4">
+  <div class="section-header"><div class="section-num">4</div><h2>Reguły vs Wyjątki</h2></div>
+  <div class="card">
+    <table>
+      <tr><th>Pyt.</th><th>REGUŁA</th><th>WYJĄTEK / PUŁAPKA</th></tr>
+      <tr><td>Q16</td><td>Leki w NS często mają działanie inotropowe (+)</td><td>Sakubitryl/walsartan NIE ma inotropii dodatniej (działa neurohormonalnie)</td></tr>
+      <tr><td>Q14</td><td>Leki rozszerzające naczynia → odruchowa tachykardia</td><td>Werapamil (niedihydropirydyna) zwalnia HR — wyjątek</td></tr>
+      <tr><td>Q53</td><td>Wiele leków metabolizowanych w wątrobie</td><td>Lit wydalany NERKOWO (nie ma "intensywnego metabolizmu wątrobowego")</td></tr>
+      <tr><td>Q23/26</td><td>Leki Parkinsona = agoniści dopaminy / MAO-B</td><td>Amantadyna = blokada NMDA; Memantyna (Alzheimer) = też NMDA</td></tr>
+      <tr><td>Q52</td><td>Środki zwiotczające: depol. + niedepol.</td><td>Cisatrakurium = niedepolaryzujące; tylko sukcynylocholina depolaryzuje</td></tr>
+      <tr><td>Q19</td><td>Heparyna = pozajelitowo</td><td>Dabigatran (DOAC) = DOUSTNIE, inny mechanizm niż HDCz</td></tr>
+      <tr><td>Q63</td><td>Azole → ergosterol; echinokandyny → β-glukan</td><td>Terbinafina = epoksydaza skwalenu (3 różne mechanizmy)</td></tr>
+      <tr><td>Q57</td><td>β-laktamy bezpieczne</td><td>Cefalosporyny z grupą NMTT (cefoperazon) → zaburzenia krzepnięcia</td></tr>
+      <tr><td>Q49</td><td>Anksjolityki działają szybko (BDZ)</td><td>Buspiron = częściowy agonista 5-HT1A, powolny początek</td></tr>
+      <tr><td>Q70</td><td>Cholinolityki → suchość, tachykardia, zaparcia</td><td>NIE powodują bradykardii (to efekt cholinomimetyków)</td></tr>
+      <tr><td>Q5</td><td>Leki tarczycy ostrożnie w ciąży</td><td>Lewotyroksyna BEZPIECZNA i wskazana w ciąży</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- SECTION 5 -->
+<div class="section" id="s5">
+  <div class="section-header"><div class="section-num">5</div><h2>Pułapki egzaminacyjne 🪤</h2></div>
+
+  <div class="trap-box">
+    <div class="trap-title">🪤 Q16 — sakubitryl/walsartan jako lek inotropowy</div>
+    <div class="trap-detail">Pytanie o lek BEZ dodatniego działania inotropowego → <span class="trap-key">B (sakubitryl/walsartan)</span>. Digoksyna, dobutamina, lewosimendan mają inotropię (+). Sakubitryl działa neurohormonalnie.</div>
+  </div>
+
+  <div class="trap-box">
+    <div class="trap-title">🪤 Q19 — dabigatran "pozajelitowo" i "jak HDCz"</div>
+    <div class="trap-detail">Dabigatran = DOAC <span class="trap-key">DOUSTNY</span>, bezpośredni inhibitor trombiny — NIE ten sam mechanizm co heparyna drobnocząsteczkowa, NIE pozajelitowo. Prawda: może powodować krwawienia (B).</div>
+  </div>
+
+  <div class="trap-box">
+    <div class="trap-title">🪤 Q23 + Q26 — Amantadyna i Memantyna jako "NMDA"</div>
+    <div class="trap-detail">Oba blokują NMDA, ale w różnych chorobach: <span class="trap-key">Amantadyna → Parkinson</span> (Q23, C), <span class="trap-key">Memantyna → Alzheimer</span> (Q26, A). Egzaminator testuje czy nie pomylisz wskazań.</div>
+  </div>
+
+  <div class="trap-box">
+    <div class="trap-title">🪤 Q53 — Lit "metabolizm wątrobowy"</div>
+    <div class="trap-detail">FAŁSZ — lit jest <span class="trap-key">wydalany przez nerki</span>, nie metabolizowany w wątrobie. Poprawna: kwas walproinowy → trombocytopenia (C).</div>
+  </div>
+
+  <div class="trap-box">
+    <div class="trap-title">🪤 Q54 — Olanzapina "spadek masy ciała"</div>
+    <div class="trap-detail">FAŁSZ — olanzapina powoduje <span class="trap-key">WZROST masy ciała</span> i zaburzenia metaboliczne. Poprawny zestaw: klozapina-cukrzyca + haloperidol-pozapiramidowy (D).</div>
+  </div>
+
+  <div class="trap-box">
+    <div class="trap-title">🪤 Q65 — opioidy (potrójna pułapka)</div>
+    <div class="trap-detail">Odp. <span class="trap-key">E (żadna)</span>. Dekstrometorfan NIE jest skuteczny p/bólowo w monoterapii; fentanyl ulega efektowi I przejścia (dlatego TTS/przezśluzówkowo); buprenorfina to częściowy agonista µ (nie κ).</div>
+  </div>
+
+  <div class="trap-box">
+    <div class="trap-title">🪤 Q70 — cholinolityki i bradykardia</div>
+    <div class="trap-detail">Cholinolityki NIE powodują <span class="trap-key">bradykardii</span> (A) — dają tachykardię. Reszta opcji (kserostomia, zaparcie, ↑ ciśnienie wewnątrzgałkowe, niewyraźne widzenie) to ICH efekty.</div>
+  </div>
+
+  <div class="trap-box">
+    <div class="trap-title">🪤 Q13 — furosemid w łagodnym nadciśnieniu</div>
+    <div class="trap-detail">FAŁSZ — w łagodnym NT stosuje się <span class="trap-key">tiazydy/tiazydopodobne</span>, NIE furosemid (pętlowy). Poprawna: eplerenon należy do leków moczopędnych mogących ↑ potas (C).</div>
+  </div>
+
+  <div class="trap-box">
+    <div class="trap-title">🪤 Q66 — T½ "nigdy nie dłuższy niż 24h"</div>
+    <div class="trap-detail">FAŁSZ — wiele leków ma T½ >24h (amiodaron tygodnie!). Prawda: w kinetyce I rzędu T½ jest <span class="trap-key">stały niezależnie od stężenia</span> (B).</div>
+  </div>
+
+  <div class="trap-box">
+    <div class="trap-title">🪤 Q1 / Q3 — "żadna prawidłowa" jako odpowiedź</div>
+    <div class="trap-detail">Q1: pilokarpina-jaskra (nie "jaskra"? tu E); Q3: teofilina-α1, montelukast-stymulacja LTD4 — wszystko fałszywe → <span class="trap-key">E</span>. Montelukast BLOKUJE, nie stymuluje LTD4.</div>
+  </div>
+</div>
+
+<!-- SECTION 6 -->
+<div class="section" id="s6">
+  <div class="section-header"><div class="section-num">6</div><h2>Nowe / rzadkie tematy 🆕</h2></div>
+  <div class="fact fact-critical"><span class="fact-label lbl-new">NOWE</span> <span class="qnum">Q31</span> Zestawienie wskazanie–lek immunologiczny: niedokrwistość autoimmunologiczna → prednizon; przeszczep szpiku → cyklosporyna; przeszczep serca → takrolimus (E: A,B,C)</div>
+  <div class="fact fact-critical"><span class="fact-label lbl-new">NOWE</span> <span class="qnum">Q32-34</span> Farmakoekonomia: analizy (struktura kosztów, minimalizacja, użyteczność) (E); jednostki naturalne w analizie efektywności = śmiertelność, chorobowość (D); koszty bezpośrednie = związane z leczeniem (E)</div>
+  <div class="fact fact-critical"><span class="fact-label lbl-new">NOWE</span> <span class="qnum">Q35</span> Koncyliacja lekowa = uzgadnianie list leków + dialog z pacjentem + przekazanie pełnej informacji przy zmianie opieki (D: A,B,C)</div>
+  <div class="fact fact-critical"><span class="fact-label lbl-new">NOWE</span> <span class="qnum">Q36</span> Europejska baza zgłaszania działań niepożądanych = EudraVigilance, koordynowana przez EMA (C). NIE WHO, NIE FAERS (to USA)</div>
+  <div class="fact fact-critical"><span class="fact-label lbl-new">NOWE</span> <span class="qnum">Q37</span> Interakcja antykoncepcja + wyciąg z dziurawca = indukcja CYP3A4 i P-gp → ↓ skuteczność antykoncepcji (C). Dziurawiec = induktor!</div>
+  <div class="fact fact-critical"><span class="fact-label lbl-new">NOWE</span> <span class="qnum">Q38</span> Kazus: zatrucie opioidami (szpilkowate źrenice, senność, płytki oddech) → nalokson (B)</div>
+  <div class="fact fact-critical"><span class="fact-label lbl-new">NOWE</span> <span class="qnum">Q67-68</span> Biodostępność (i.v.=100%, efekt I przejścia) + receptory (fenylefryna α1-GPCR)</div>
+  <div class="fact fact-critical"><span class="fact-label lbl-new">NOWE</span> <span class="qnum">Q27</span> Etanercept = białko fuzyjne (receptor TNF); zaliczany do nowoczesnych leków biologicznych obok trastuzumabu</div>
+  <div class="fact fact-critical"><span class="fact-label lbl-new">NOWE</span> <span class="qnum">Q28</span> ADCC (cytotoksyczność komórkowa zależna od przeciwciał) jako mechanizm p/ciał monoklonalnych — rytuksymab</div>
+</div>
+
+<!-- SECTION 7 -->
+<div class="section" id="s7">
+  <div class="section-header"><div class="section-num">7</div><h2>TOP fakty do zapamiętania z tego egzaminu 🏅</h2></div>
+  <div class="top-grid">
+    <div class="top-item"><div class="top-num">1</div><div>Amantadyna = blokada NMDA w Parkinsonie (Q23, C)</div></div>
+    <div class="top-item"><div class="top-num">2</div><div>Memantyna = antagonista NMDA w Alzheimerze (Q26, A)</div></div>
+    <div class="top-item"><div class="top-num">3</div><div>Galantamina = inhibitor AChE + modulator nikotynowy (kontekst Q26)</div></div>
+    <div class="top-item"><div class="top-num">4</div><div>L-DOPA + karbidopa = optymalna terapia Parkinsona (Q21, B)</div></div>
+    <div class="top-item"><div class="top-num">5</div><div>Tourette + haloperidol z obj. pozapiramidowymi → ↓ dawki/odstawienie (Q22, C)</div></div>
+    <div class="top-item"><div class="top-num">6</div><div>Klozapina → cukrzyca/agranulocytoza; Olanzapina → WZROST masy (Q54, D)</div></div>
+    <div class="top-item"><div class="top-num">7</div><div>Kwas walproinowy → trombocytopenia + INHIBITOR enzymów (Q53)</div></div>
+    <div class="top-item"><div class="top-num">8</div><div>Lit wydalany NERKOWO (nie wątrobowo) (Q53)</div></div>
+    <div class="top-item"><div class="top-num">9</div><div>Sakubitryl/walsartan = BEZ inotropii dodatniej (Q16, B)</div></div>
+    <div class="top-item"><div class="top-num">10</div><div>SGLT2i = cukrzyca typ 2 + niewydolność serca (Q15, D)</div></div>
+    <div class="top-item"><div class="top-num">11</div><div>Niedihydropirydynowe BKW: ↓ przewodzenie AV, NIE z β-blok. (Q17, C)</div></div>
+    <div class="top-item"><div class="top-num">12</div><div>Karwedilol + nebiwolol = wazodylatacja + NS (Q18, D)</div></div>
+    <div class="top-item"><div class="top-num">13</div><div>Dabigatran = DOAC doustny, NIE jak HDCz (Q19, B)</div></div>
+    <div class="top-item"><div class="top-num">14</div><div>Statyny: można z ezetymibem; różna siła; ↓ ryzyko CV (Q20, E)</div></div>
+    <div class="top-item"><div class="top-num">15</div><div>Werapamil NIE daje odruchowej tachykardii (Q14)</div></div>
+    <div class="top-item"><div class="top-num">16</div><div>Furosemid NIE w łagodnym NT (tiazydy I wyboru) (Q13, C)</div></div>
+    <div class="top-item"><div class="top-num">17</div><div>Bewacyzumab = anty-VEGF, rak jelita grubego (Q29, E)</div></div>
+    <div class="top-item"><div class="top-num">18</div><div>Azatiopryna = prolek, hamuje limfocyty T/B, leukopenia, ryzyko CMV (Q30, C)</div></div>
+    <div class="top-item"><div class="top-num">19</div><div>Etanercept = białko fuzyjne (receptor TNF) (Q27)</div></div>
+    <div class="top-item"><div class="top-num">20</div><div>Interferon-β w SM → zespół grypopodobny + ↑ enzymy wątr. (Q25, C)</div></div>
+    <div class="top-item"><div class="top-num">21</div><div>Wankomycyna + cefepim + aztreonam = synteza ściany (Q59, E)</div></div>
+    <div class="top-item"><div class="top-num">22</div><div>Cefalosporyny (cefoperazon) → zaburzenia krzepnięcia (Q57, C)</div></div>
+    <div class="top-item"><div class="top-num">23</div><div>Oseltamiwir+zanamiwir = nieodwracalny inhibitor neuraminidazy (Q62, D)</div></div>
+    <div class="top-item"><div class="top-num">24</div><div>Gancyklowir = CMV; acyklowir NIE bezpieczny w I trymestrze (Q62)</div></div>
+    <div class="top-item"><div class="top-num">25</div><div>Azole = ergosterol; terbinafina = epoksydaza skwalenu (Q63, A)</div></div>
+    <div class="top-item"><div class="top-num">26</div><div>P/gruźlicze: izoniazyd-neuropatia, pyrazynamid-hiperurykemia (Q60, E)</div></div>
+    <div class="top-item"><div class="top-num">27</div><div>Setrony BLOKUJĄ 5-HT3; aprepitant = antagonista NK1 (Q64, C)</div></div>
+    <div class="top-item"><div class="top-num">28</div><div>Lewotyroksyna = wskazana w ciąży, długi T½ (Q5, B)</div></div>
+    <div class="top-item"><div class="top-num">29</div><div>Denosumab ↑ ryzyko infekcji; raloksyfen ↑ zakrzepica (Q6, A)</div></div>
+    <div class="top-item"><div class="top-num">30</div><div>Analogi GLP-1: z metforminą + ↓ masa + podskórnie (Q9, E)</div></div>
+    <div class="top-item"><div class="top-num">31</div><div>Szybkie analogi insuliny: zaburzenia GI; inna budowa niż ludzka (Q8, B)</div></div>
+    <div class="top-item"><div class="top-num">32</div><div>Estrogeny HTZ: ↓ LDL, ↑ TG; ↓ resorpcja kości (Q7, A)</div></div>
+    <div class="top-item"><div class="top-num">33</div><div>Paracetamol: NAC odtrutka, wątroba narząd krytyczny (Q39, E)</div></div>
+    <div class="top-item"><div class="top-num">34</div><div>Antidota: warfaryna→wit.K, morfina→nalokson, fosforoorg.→atropina+pralidoksym (Q40, D)</div></div>
+    <div class="top-item"><div class="top-num">35</div><div>Tolerancja na opioidy: NIE na zaparcia i miozę (Q42, E)</div></div>
+    <div class="top-item"><div class="top-num">36</div><div>Lidokaina = znieczulenie powierzchniowe; bupiwakaina NIE (Q51, D)</div></div>
+    <div class="top-item"><div class="top-num">37</div><div>Ketamina = pozajelitowo (Q50, B)</div></div>
+    <div class="top-item"><div class="top-num">38</div><div>Cisatrakurium = niedepolaryzujący (Q52, B)</div></div>
+    <div class="top-item"><div class="top-num">39</div><div>Buspiron = częściowy agonista 5-HT1A, powolny (Q49, A)</div></div>
+    <div class="top-item"><div class="top-num">40</div><div>Leki "Z": senność dnia następnego, ↓ sprawność psychomotoryczna (Q48, D)</div></div>
+    <div class="top-item"><div class="top-num">41</div><div>BDZ kliniczne: drgawki + spastyczność (Q46, C)</div></div>
+    <div class="top-item"><div class="top-num">42</div><div>Sertralina = SSRI; Wenlafaksyna = SNRI (Q56, D)</div></div>
+    <div class="top-item"><div class="top-num">43</div><div>Cholinolityki NIE dają bradykardii (Q70, A)</div></div>
+    <div class="top-item"><div class="top-num">44</div><div>Fenylefryna = α1 sprzężony z białkiem G (Q68, C)</div></div>
+    <div class="top-item"><div class="top-num">45</div><div>Biodostępność: i.v.=100%, ↓ przez I przejście (Q67, D)</div></div>
+    <div class="top-item"><div class="top-num">46</div><div>T½ stały w kinetyce I rzędu; może być >24h (Q66, B)</div></div>
+    <div class="top-item"><div class="top-num">47</div><div>Częściowy agonista = słabsza odpowiedź niż pełny (Q69, D)</div></div>
+    <div class="top-item"><div class="top-num">48</div><div>Dziurawiec = induktor CYP3A4/P-gp → ↓ skuteczność antykoncepcji (Q37, C)</div></div>
+    <div class="top-item"><div class="top-num">49</div><div>EudraVigilance koordynowana przez EMA (Q36, C)</div></div>
+    <div class="top-item"><div class="top-num">50</div><div>Zatrucie opioidami (szpilkowate źrenice) → nalokson (Q38, B)</div></div>
+  </div>
+</div>
+
+<!-- SECTION 8 -->
+<div class="section" id="s8">
+  <div class="section-header"><div class="section-num">8</div><h2>Ranking nauki — PEWNIAKI (3 źródła) 🏆</h2></div>
+
+  <div class="rank-tier rank-t1">
+    <div class="rank-header">🔴 ŻELAZNE PEWNIAKI — w bazie + obu egzaminach 2024</div>
+    <div class="rank-items">
+      <div class="rank-tag">Parkinson: L-DOPA+karbidopa, agoniści DA, amantadyna=NMDA</div>
+      <div class="rank-tag">Alzheimer: memantyna=NMDA vs AChE-inhibitory</div>
+      <div class="rank-tag">Neuroleptyki: klozapina-agranulocytoza/cukrzyca, olanzapina-masa</div>
+      <div class="rank-tag">Padaczka: walproinian=inhibitor, karbamazepina=induktor+kanały Na</div>
+      <div class="rank-tag">Sen/lęk: leki Z, buspiron, flumazenil</div>
+      <div class="rank-tag">NS: SGLT2i+ACEI; glikozydy/sakubitryl bez inotropii(+)</div>
+      <div class="rank-tag">Opioidy: nalokson, tolerancja, antidota</div>
+      <div class="rank-tag">Paracetamol: NAC, brak działania p/zapalnego</div>
+    </div>
+  </div>
+
+  <div class="rank-tier rank-t2">
+    <div class="rank-header">🟠 BARDZO WAŻNE — w 2 z 3 źródeł</div>
+    <div class="rank-items">
+      <div class="rank-tag">DOAC/dabigatran (doustny, inh. trombiny)</div>
+      <div class="rank-tag">Karwedilol/nebiwolol w NS</div>
+      <div class="rank-tag">Niedihydropirydynowe BKW (werapamil/diltiazem)</div>
+      <div class="rank-tag">ACEI vs sartany, hiper/hipokaliemia</div>
+      <div class="rank-tag">Bisfosfoniany/denosumab/osteoporoza</div>
+      <div class="rank-tag">SM: interferon-β, dalfamprydyna, natalizumab</div>
+      <div class="rank-tag">Antybiotyki: mechanizm ściany vs rybosom</div>
+      <div class="rank-tag">P/grzybicze: azole vs terbinafina vs echinokandyny</div>
+      <div class="rank-tag">Setrony/metoklopramid/aprepitant</div>
+      <div class="rank-tag">Leki biologiczne: trastuzumab, rytuksymab, bewacyzumab, etanercept</div>
+    </div>
+  </div>
+
+  <div class="rank-tier rank-t3">
+    <div class="rank-header">🟡 ŁATWE PUNKTY — blok definicyjny (oba egz. 2024)</div>
+    <div class="rank-items">
+      <div class="rank-tag">Farmakoekonomia (rodzaje analiz, koszty)</div>
+      <div class="rank-tag">Koncyliacja lekowa</div>
+      <div class="rank-tag">Biodostępność / biorównoważność / T½</div>
+      <div class="rank-tag">Farmakologia geriatryczna (Vd, eGFR, albuminy)</div>
+      <div class="rank-tag">EudraVigilance / nadzór nad bezpieczeństwem</div>
+      <div class="rank-tag">Interakcje (dziurawiec=induktor, CYP3A4)</div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 9 -->
+<div class="section" id="s9">
+  <div class="section-header"><div class="section-num">9</div><h2>Strategia egzaminacyjna 🎯</h2></div>
+
+  <div class="strategy-card">
+    <h4>⚡ Co potwierdza zestawienie 3 źródeł</h4>
+    <ul>
+      <li>OUN + neurologia = ⅓ egzaminu w KAŻDEJ wersji — to absolutny priorytet nauki</li>
+      <li>Egzaminator 2024 mocno testuje MECHANIZMY i KIERUNKI (induktor/inhibitor, NMDA, kanały jonowe), nie tylko wskazania</li>
+      <li>Pojawił się stały blok "miękki" (ekonomia, koncyliacja, nadzór, kinetyka) = ~6-10 łatwych punktów w każdej wersji</li>
+      <li>Kazusy kliniczne ("pacjent lat X") są nową normą — ćwicz rozumowanie, nie tylko pamięć</li>
+    </ul>
+  </div>
+
+  <div class="strategy-card">
+    <h4>🔑 Słowa-klucze (potwierdzone w wielu źródłach)</h4>
+    <ul>
+      <li><strong>"blokada NMDA"</strong> → amantadyna (Parkinson) LUB memantyna (Alzheimer) — sprawdź chorobę!</li>
+      <li><strong>"zwiększa stężenie innych leków"</strong> → kwas walproinowy (inhibitor)</li>
+      <li><strong>"bez działania inotropowego dodatniego"</strong> → sakubitryl/walsartan</li>
+      <li><strong>"przedłuża życie w NS"</strong> → SGLT2i, ACEI/ARB (NIGDY glikozydy)</li>
+      <li><strong>"wydalany przez nerki, wąskie okno"</strong> → lit</li>
+      <li><strong>"induktor CYP3A4"</strong> → dziurawiec, karbamazepina, ryfampicyna</li>
+      <li><strong>"częściowy agonista 5-HT1A"</strong> → buspiron</li>
+      <li><strong>"białko fuzyjne"</strong> → etanercept; <strong>"anty-VEGF"</strong> → bewacyzumab</li>
+    </ul>
+  </div>
+
+  <div class="strategy-card">
+    <h4>🪤 Najczęstsze pułapki (wszystkie 3 źródła)</h4>
+    <ul>
+      <li><strong>Odwrócony kierunek:</strong> induktor↔inhibitor, hiper↔hipokaliemia, depol↔niedepol</li>
+      <li><strong>Złe wskazanie tego samego mechanizmu:</strong> amantadyna vs memantyna (oba NMDA)</li>
+      <li><strong>Fałszywa cecha leku:</strong> olanzapina "↓ masa", bisfosfoniany "dobrze wchłaniane", lit "metabolizm wątrobowy"</li>
+      <li><strong>"Wyłącznie/każda/wszystkie/nigdy":</strong> czerwona flaga (Q66 "nigdy >24h", Q19 "tylko pozajelitowo")</li>
+      <li><strong>Zbyt wąska definicja → "żadna prawidłowa":</strong> opioidy (Q65), receptory</li>
+    </ul>
+  </div>
+
+  <div class="strategy-card">
+    <h4>📊 Statystyka odpowiedzi (oba egzaminy 2024)</h4>
+    <p>D + E dominują (≈50-53%). Litera A jest najrzadsza w tej wersji (7%).</p>
+    <p>→ Przy wahaniu między A a inną opcją — statystycznie A mniej prawdopodobna (ale ZAWSZE weryfikuj merytorycznie!).</p>
+    <p>→ "Żadna prawidłowa"/"E" jest realną odpowiedzią — wystąpiła ≥6 razy. Nie odrzucaj jej odruchowo.</p>
+  </div>
+</div>
+
+<!-- PATTERNS -->
+<div class="section" id="patterns">
+  <div class="section-header"><div class="section-num">👉</div><h2>Egzaminacyjne wzorce konstrukcji pytań</h2></div>
+
+  <div class="pattern">
+    <div class="pattern-title">WZORZEC 1 — "Wskaż prawidłowe zestawienie: lek – mechanizm/wskazanie/droga"</div>
+    <div class="pattern-text">Najczęstszy format (Q3, Q43, Q50, Q51, Q56, Q57, Q58, Q68). Triplet z jednym fałszywym elementem. Zidentyfikuj lek → mechanizm → wskazanie. W tej wersji często odpowiedź = kombinacja (D/E).</div>
+  </div>
+
+  <div class="pattern">
+    <div class="pattern-title">WZORZEC 2 — "Wskaż BŁĘDNE / które NIE jest / Nieprawdą jest"</div>
+    <div class="pattern-text">Odwrócona logika (Q2, Q13, Q70). Szukasz jedynego fałszywego/wykluczonego elementu. Czytaj polecenie podwójnie. Q70: cholinolityki NIE dają bradykardii.</div>
+  </div>
+
+  <div class="pattern">
+    <div class="pattern-title">WZORZEC 3 — Kazus kliniczny ("pacjent lat X / z rozpoznaniem...")</div>
+    <div class="pattern-text">Q21 (Parkinson 72 l.), Q22 (Tourette+haloperidol), Q25 (SM), Q30 (immunosupresja), Q37 (antykoncepcja+dziurawiec), Q38 (zatrucie opioidami). Wyłap kluczowy szczegół i wnioskuj.</div>
+  </div>
+
+  <div class="pattern">
+    <div class="pattern-title">WZORZEC 4 — "Żadna prawidłowa" jako prawidłowa</div>
+    <div class="pattern-text">Q1, Q3, Q65 — gdy każda pojedyncza opcja zawiera błąd. NIE odrzucaj E odruchowo. Sprawdź każdą opcję osobno.</div>
+  </div>
+
+  <div class="pattern">
+    <div class="pattern-title">WZORZEC 5 — Induktor vs inhibitor / kierunek efektu</div>
+    <div class="pattern-text">Q37 (dziurawiec=induktor), Q53 (walproinian=inhibitor). Zapamiętaj pary: induktory (karbamazepina, fenytoina, ryfampicyna, dziurawiec) vs inhibitory (walproinian, makrolidy, azole).</div>
+  </div>
+
+  <div class="pattern">
+    <div class="pattern-title">WZORZEC 6 — Fałszywa przynależność / złe wskazanie</div>
+    <div class="pattern-text">Q23/Q26 (NMDA w Parkinson vs Alzheimer), Q27 (imatynib jako "biologiczny"), Q59 (klindamycyna nie hamuje ściany). Znaj KLASĘ i WSKAZANIE każdego leku.</div>
+  </div>
+
+  <div class="pattern">
+    <div class="pattern-title">WZORZEC 7 — Blok "miękki" (ekonomia/nadzór/kinetyka)</div>
+    <div class="pattern-text">Q32-36, Q66-69. Pytania definicyjne — najtańsze punkty. Naucz się: rodzaje analiz farmakoekonomicznych, koncyliacja, EudraVigilance/EMA, biodostępność, T½, biorównoważność.</div>
+  </div>
+</div>
+
+</div><!-- /container -->
+
+<button class="scrolltop" id="scrolltop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+<script>
+  const btn = document.getElementById('scrolltop');
+  window.addEventListener('scroll', () => { btn.style.display = window.scrollY > 500 ? 'flex' : 'none'; });
+</script>
+</body>
+</html>

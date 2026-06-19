@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diagnostyka laboratoryjna — analiza priorytetów i wyjątków</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0d1117; --bg2:#11161d; --surface:#161c24; --surface2:#1c2530;
+    --line:#26303c; --line2:#33404f;
+    --text:#e6edf3; --muted:#8d9bab; --dim:#647082;
+    --t1:#ff6b5d;      /* tier 1 / critical flag */
+    --t2:#f5b841;      /* tier 2 */
+    --t3c:#56c5d8;     /* tier 3 */
+    --ok:#46d18a;      /* confirmed */
+    --warn:#f5b841;    /* flagged */
+    --info:#56c5d8;
+    --accent:#ff6b5d;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;background:var(--bg);color:var(--text);
+    font-family:'IBM Plex Sans',system-ui,sans-serif;
+    font-size:16px;line-height:1.62;-webkit-font-smoothing:antialiased;
+  }
+  .mono{font-family:'IBM Plex Mono',monospace}
+  a{color:var(--info);text-decoration:none}
+
+  /* ---------- layout ---------- */
+  header.top{
+    position:sticky;top:0;z-index:40;background:rgba(13,17,23,.86);
+    backdrop-filter:blur(10px);border-bottom:1px solid var(--line);
+  }
+  nav{max-width:1080px;margin:0 auto;padding:11px 22px;display:flex;
+    align-items:center;gap:18px;flex-wrap:wrap}
+  nav .brand{font-weight:700;font-size:14px;letter-spacing:.02em;margin-right:auto}
+  nav .brand .dot{color:var(--accent)}
+  nav a{font-size:13px;color:var(--muted);font-weight:500;padding:4px 2px;border-bottom:2px solid transparent}
+  nav a:hover{color:var(--text);border-color:var(--line2)}
+
+  .wrap{max-width:1080px;margin:0 auto;padding:0 22px}
+  section{padding:56px 0 12px;border-top:1px solid transparent}
+
+  /* ---------- hero ---------- */
+  .hero{padding:64px 0 34px}
+  .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.22em;
+    text-transform:uppercase;color:var(--accent);font-weight:600}
+  h1{font-size:clamp(30px,5vw,46px);line-height:1.08;font-weight:700;margin:14px 0 8px;letter-spacing:-.02em}
+  h1 .sub{display:block;color:var(--muted);font-weight:500;font-size:clamp(16px,2.4vw,20px);margin-top:10px;letter-spacing:0}
+  .lede{color:var(--muted);max-width:64ch;margin:18px 0 0}
+
+  .stripe{display:flex;gap:10px;flex-wrap:wrap;margin:30px 0 4px}
+  .stat{flex:1 1 150px;background:var(--surface);border:1px solid var(--line);
+    border-radius:12px;padding:15px 17px}
+  .stat .n{font-family:'IBM Plex Mono',monospace;font-size:26px;font-weight:600;line-height:1}
+  .stat .l{color:var(--dim);font-size:12.5px;margin-top:7px}
+  .stat.a .n{color:var(--accent)} .stat.b .n{color:var(--t2)}
+  .stat.c .n{color:var(--ok)} .stat.d .n{color:var(--info)}
+
+  /* ---------- section headings ---------- */
+  h2{font-size:clamp(22px,3.4vw,30px);font-weight:700;letter-spacing:-.01em;margin:0 0 6px;display:flex;align-items:baseline;gap:14px}
+  h2 .idx{font-family:'IBM Plex Mono',monospace;font-size:15px;color:var(--accent);font-weight:600}
+  .sec-lede{color:var(--muted);max-width:72ch;margin:0 0 26px}
+  h3{font-size:18px;font-weight:600;margin:34px 0 12px}
+
+  /* ---------- tier cards ---------- */
+  .tier{border:1px solid var(--line);border-radius:14px;background:var(--surface);
+    margin:0 0 16px;overflow:hidden}
+  .tier-head{display:flex;align-items:center;gap:14px;padding:16px 20px;cursor:pointer;user-select:none}
+  .tier-head:hover{background:var(--surface2)}
+  .badge{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:12px;
+    padding:4px 9px;border-radius:6px;white-space:nowrap;letter-spacing:.04em}
+  .b1{background:rgba(255,107,93,.14);color:var(--t1);border:1px solid rgba(255,107,93,.35)}
+  .b2{background:rgba(245,184,65,.13);color:var(--t2);border:1px solid rgba(245,184,65,.32)}
+  .b3{background:rgba(86,197,216,.12);color:var(--t3c);border:1px solid rgba(86,197,216,.3)}
+  .tier-head .tt{font-weight:600;font-size:17px;flex:1}
+  .tier-head .meta{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--dim)}
+  .tier-head .chev{color:var(--dim);transition:transform .2s;font-size:13px}
+  .tier.open .chev{transform:rotate(90deg)}
+  .tier-body{display:none;padding:2px 20px 18px;border-top:1px solid var(--line)}
+  .tier.open .tier-body{display:block}
+
+  .chap{padding:14px 0;border-bottom:1px dashed var(--line)}
+  .chap:last-child{border-bottom:none}
+  .chap .cn{display:flex;justify-content:space-between;gap:12px;align-items:baseline;flex-wrap:wrap}
+  .chap .cn b{font-size:15.5px;font-weight:600}
+  .chap .pg{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--t3c);
+    background:var(--bg2);border:1px solid var(--line);border-radius:5px;padding:2px 8px;white-space:nowrap}
+  .chap .why{color:var(--muted);font-size:14px;margin:6px 0 0}
+  .chap .why em{color:var(--text);font-style:normal;font-weight:500}
+
+  /* ---------- verify ---------- */
+  .vrow{display:flex;gap:14px;padding:16px 18px;border:1px solid var(--line);
+    border-radius:12px;background:var(--surface);margin:0 0 12px}
+  .vrow .flag{flex:none;width:84px}
+  .ftag{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;
+    padding:3px 7px;border-radius:5px;letter-spacing:.03em;display:inline-block}
+  .f-ok{background:rgba(70,209,138,.13);color:var(--ok);border:1px solid rgba(70,209,138,.32)}
+  .f-warn{background:rgba(245,184,65,.13);color:var(--warn);border:1px solid rgba(245,184,65,.32)}
+  .f-calc{background:rgba(86,197,216,.12);color:var(--info);border:1px solid rgba(86,197,216,.3)}
+  .vrow .body{flex:1}
+  .vrow .q{font-weight:600;font-size:14.5px;margin:0 0 4px}
+  .vrow .src{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--dim);margin-bottom:7px}
+  .vrow .ans{color:var(--muted);font-size:14px}
+  .vrow .ans .k{font-family:'IBM Plex Mono',monospace;color:var(--text);font-weight:600}
+  .vrow .ans .right{color:var(--ok);font-weight:600}
+
+  /* ---------- fact / cheat blocks ---------- */
+  .fgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+  .fcard{border:1px solid var(--line);border-radius:13px;background:var(--surface);padding:18px 19px}
+  .fcard h4{margin:0 0 12px;font-size:15px;font-weight:600;display:flex;align-items:center;gap:9px}
+  .fcard h4 .dotc{width:8px;height:8px;border-radius:50%;background:var(--accent);flex:none}
+  .fcard ul{margin:0;padding:0;list-style:none}
+  .fcard li{padding:8px 0;border-bottom:1px dashed var(--line);font-size:14px;color:var(--muted)}
+  .fcard li:last-child{border-bottom:none}
+  .fcard li b{color:var(--text);font-weight:600}
+  .fcard li .hl{color:var(--ok);font-weight:600}
+  .fcard li .x{color:var(--t1);font-weight:600}
+
+  .formula{font-family:'IBM Plex Mono',monospace;background:var(--bg2);
+    border:1px solid var(--line2);border-left:3px solid var(--info);
+    border-radius:8px;padding:12px 14px;margin:10px 0;font-size:13.5px;color:var(--text);overflow-x:auto}
+  .formula .c{color:var(--info)}
+  .formula small{display:block;color:var(--dim);margin-top:6px;font-size:12px}
+
+  .trap{border:1px solid rgba(255,107,93,.3);background:rgba(255,107,93,.06);
+    border-radius:11px;padding:14px 16px;margin:14px 0}
+  .trap .lab{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;
+    color:var(--t1);letter-spacing:.12em;text-transform:uppercase}
+  .trap p{margin:6px 0 0;font-size:14px;color:var(--muted)}
+  .trap p b{color:var(--text)}
+
+  /* ---------- pewniaki ---------- */
+  .lock{display:flex;gap:14px;align-items:flex-start;padding:15px 17px;border:1px solid var(--line);
+    border-radius:12px;background:var(--surface);margin:0 0 11px;position:relative}
+  .lock .rank{font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;color:var(--dim);
+    flex:none;width:26px;text-align:right;padding-top:1px}
+  .lock .core{flex:1}
+  .lock .core .t{font-weight:600;font-size:15px;margin:0 0 4px}
+  .lock .core .d{color:var(--muted);font-size:14px}
+  .lock .core .d b{color:var(--text);font-weight:600}
+  .lock .core .d .hl{color:var(--ok);font-weight:600}
+  .lock .src-ct{flex:none;display:flex;flex-direction:column;align-items:center;gap:3px;
+    padding:5px 10px;border-radius:9px;white-space:nowrap}
+  .lock .src-ct .x{font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:17px;line-height:1}
+  .lock .src-ct .lb{font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim)}
+  .c4{background:rgba(255,107,93,.1);border:1px solid rgba(255,107,93,.34)} .c4 .x{color:var(--t1)}
+  .c3{background:rgba(245,184,65,.1);border:1px solid rgba(245,184,65,.3)} .c3 .x{color:var(--t2)}
+  .c2{background:rgba(86,197,216,.1);border:1px solid rgba(86,197,216,.28)} .c2 .x{color:var(--t3c)}
+
+  /* ---------- plan 5 dni ---------- */
+  .day{border:1px solid var(--line);border-radius:14px;background:var(--surface);margin:0 0 14px;overflow:hidden}
+  .day-head{display:flex;align-items:center;gap:14px;padding:15px 19px;border-bottom:1px solid var(--line);background:var(--surface2)}
+  .day-head .dn{font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:13px;
+    background:var(--bg);border:1px solid var(--line2);border-radius:8px;padding:6px 11px;color:var(--accent)}
+  .day-head .dt{font-weight:600;font-size:16px;flex:1}
+  .day-head .dtag{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--dim)}
+  .day-body{padding:6px 19px 16px}
+  .blk{display:flex;gap:14px;padding:13px 0;border-bottom:1px dashed var(--line)}
+  .blk:last-child{border-bottom:none}
+  .blk .when{flex:none;width:96px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--info);padding-top:2px}
+  .blk .what{flex:1}
+  .blk .what b{font-weight:600}
+  .blk .what .s{color:var(--muted);font-size:14px;display:block;margin-top:2px}
+  .blk .what .s .pg{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--t3c)}
+  .blk.test .when{color:var(--ok)}
+  .blk.test .what b{color:var(--ok)}
+  .plan-note{border:1px solid var(--line2);border-left:3px solid var(--ok);background:var(--bg2);
+    border-radius:9px;padding:13px 16px;margin:18px 0 0;font-size:14px;color:var(--muted)}
+  .plan-note b{color:var(--text)}
+
+  footer{margin-top:54px;border-top:1px solid var(--line);padding:26px 0 50px}
+  footer p{color:var(--dim);font-size:13px;max-width:74ch}
+
+  @media (max-width:560px){
+    .vrow{flex-direction:column;gap:8px}
+    .vrow .flag{width:auto}
+    nav .brand{margin-right:0;width:100%}
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <nav>
+    <span class="brand">DIAG·LAB <span class="dot">/</span> analiza egzaminacyjna</span>
+    <a href="#priorytety">Priorytety</a>
+    <a href="#weryfikacja">Weryfikacja</a>
+    <a href="#wyjatki">Wyjątki &amp; fakty</a>
+    <a href="#pewniaki">Pewniaki</a>
+    <a href="#plan">Plan 5 dni</a>
+  </nav>
+</header>
+
+<div class="wrap">
+
+  <!-- HERO -->
+  <div class="hero">
+    <span class="eyebrow">4 zbiory pytań × skrypt GUMed 2017 (540 s.)</span>
+    <h1>Diagnostyka laboratoryjna
+      <span class="sub">Mapa priorytetów, weryfikacja kluczy odpowiedzi i wyciąg wyjątków pod egzamin</span>
+    </h1>
+    <p class="lede">Pytania z 4 źródeł (Diagno 2020, Egzamin 2022/23, „elbląg", Katedra GUMed 27.06.2025 v2)
+      skonfrontowane z zakresem skryptu. Tematy uszeregowane wg częstości pojawiania się; klucze
+      sprawdzone, błędy/wątpliwości oznaczone, a powtarzalne pułapki zebrane na końcu.</p>
+
+    <div class="stripe">
+      <div class="stat a"><div class="n">5</div><div class="l">obszarów TIER 1 (must-master)</div></div>
+      <div class="stat c"><div class="n">~30</div><div class="l">odpowiedzi punktowo potwierdzonych</div></div>
+      <div class="stat b"><div class="n">4</div><div class="l">pozycje wymagające czujności</div></div>
+      <div class="stat d"><div class="n">12</div><div class="l">pewniaków powtarzających się między wersjami</div></div>
+    </div>
+  </div>
+
+  <!-- ============ PRIORYTETY ============ -->
+  <section id="priorytety">
+    <h2><span class="idx">01</span>Priorytety nauki</h2>
+    <p class="sec-lede">Ranking obszarów skryptu wg tego, jak gęsto są punktowane w czterech zbiorach pytań.
+      Numery stron odsyłają do skryptu GUMed 2017. Kliknij kafelek, aby rozwinąć rozdziały.
+      <b style="color:var(--text)">TIER 1 to ~60% pytań i wszystkie pułapki obliczeniowe — zacznij tu.</b></p>
+
+    <!-- TIER 1 -->
+    <div class="tier open">
+      <div class="tier-head"><span class="badge b1">TIER 1</span>
+        <span class="tt">Rdzeń egzaminu — opanować w pierwszej kolejności</span>
+        <span class="meta">5 obszarów</span><span class="chev">▶</span></div>
+      <div class="tier-body">
+
+        <div class="chap"><div class="cn"><b>Gospodarka wodno-elektrolitowa + osmolalność</b><span class="pg">skrypt 338–366</span></div>
+          <p class="why">Odwodnienia/przewodnienia (hipo/izo/hiper-toniczne), Na⁺, <em>osmolarność efektywna vs całkowita</em>,
+            luka osmotyczna, hiponatremia, SIADH, ADH vs aldosteron, % wody w organizmie.
+            Najczęstszy blok — sam Diagno 2020 ma 6 pytań pod rząd, plus liczne w pozostałych.</p></div>
+
+        <div class="chap"><div class="cn"><b>Równowaga kwasowo-zasadowa (RKZ)</b><span class="pg">skrypt 309–337</span></div>
+          <p class="why">Bufor wodorowęglanowy, 3-etapowa interpretacja gazometrii, <em>luka anionowa (8–16 mEq/L)</em>,
+            zaburzenia mieszane. Łączy się z zatruciami (salicylany, glikol, metanol) i cukrzycą (DKA).
+            Dziesiątki pytań typu „rozpoznaj zaburzenie z pH/pCO₂/HCO₃/BE".</p></div>
+
+        <div class="chap"><div class="cn"><b>Gospodarka wapniowo-fosforanowa + PTH / wit. D</b><span class="pg">skrypt 367–389</span></div>
+          <p class="why">Hiper/hipokalcemia, <em>PNP (Ca↑ PO₄↓ PTH↑) vs wtórna nadczynność przytarczyc w PChN (Ca↓ PO₄↑ PTH↑)</em>,
+            wapń skorygowany, formy witaminy D (1,25(OH)₂D₃ = nerkowa), mutacja receptora wapniowego.</p></div>
+
+        <div class="chap"><div class="cn"><b>Zaburzenia krzepnięcia / hemostaza</b><span class="pg">skrypt 446–481</span></div>
+          <p class="why"><em>PT vs APTT (która droga)</em>, choroba von Willebranda i jej typy (tabela!), hemofilia nabyta,
+            czynnik XII (APTT↑ bez krwawień), trombofilia (Leiden, G20210A, białko C/S), D-dimer, czas ekarynowy,
+            agregacja po ADP (P2Y₁₂). Bardzo gęsto punktowane we wszystkich źródłach.</p></div>
+
+        <div class="chap"><div class="cn"><b>Gospodarka lipidowa i ryzyko sercowo-naczyniowe</b><span class="pg">skrypt 161–189</span></div>
+          <p class="why"><em>Górna granica LDL zależy od ryzyka CV (SCORE) — pojawia się we wszystkich 4 zbiorach</em>,
+            nie-HDL-CH, SCORE2, transportery (cholesterol → LDL, TG pokarmowe → chylomikrony),
+            zespół metaboliczny, abetalipoproteinemia (TG↓).</p></div>
+      </div>
+    </div>
+
+    <!-- TIER 2 -->
+    <div class="tier">
+      <div class="tier-head"><span class="badge b2">TIER 2</span>
+        <span class="tt">Wysoka rentowność — solidnie przerobić</span>
+        <span class="meta">6 obszarów</span><span class="chev">▶</span></div>
+      <div class="tier-body">
+
+        <div class="chap"><div class="cn"><b>Transfuzjologia / immunohematologia</b><span class="pg">skrypt 213–252</span></div>
+          <p class="why">Oznaczanie grupy z reakcji (odczynniki + krwinki wzorcowe), próba zgodności (ważność, terminy),
+            powikłania: <em>TRALI (&lt;6 h, płuca), ostra hemoliza, GvHD → napromienianie</em>, RhD słaby, dobór K (Kell)
+            u kobiet, masywna transfuzja (hipokalcemia z cytrynianu).</p></div>
+
+        <div class="chap"><div class="cn"><b>Zawał serca + choroby wątroby</b><span class="pg">skrypt 190–212</span></div>
+          <p class="why">Troponiny T/I + CK-MB<sub>mass</sub> do potwierdzenia zawału, hs-cTn = najszybsze, BNP/NT-proBNP = niewydolność serca,
+            <em>zespół Gilberta (bilirubina niesprzężona↑)</em>, cholestaza, wskaźnik de Ritisa (AST/ALT), LDH/AST w żółtaczce.</p></div>
+
+        <div class="chap"><div class="cn"><b>Diagnostyka hematologiczna</b><span class="pg">skrypt 390–445</span></div>
+          <p class="why"><em>Liczby względne vs bezwzględne (neutropenia vs limfocytoza)</em>, niedokrwistość z niedoboru żelaza
+            (CHr, sTfR↑, ferrytyna + CRP), rozmaz (przesunięcie w lewo/prawo, przerwa białaczkowa), AML (CD13/33/MPO),
+            B-CLL (CD5/19/23, cienie Gumprechta), szpiczak (IgG), czerwienica prawdziwa (JAK2 V617F, EPO↓).</p></div>
+
+        <div class="chap"><div class="cn"><b>Białka osocza</b><span class="pg">skrypt 60–74</span></div>
+          <p class="why">Albumina (wzrost tylko przy odwodnieniu), białka ostrej fazy (β2-mikroglobulina NIE jest), OB,
+            <em>niedobór białek w zespole nerczycowym — wzór (60−X)×9</em>, elektroforeza/gammapatia monoklonalna,
+            mikroproteinuria kanalikowa = β2-mikroglobulina, prokalcytonina.</p></div>
+
+        <div class="chap"><div class="cn"><b>Podstawy: błędy, probówki, wartości referencyjne</b><span class="pg">skrypt 15–34</span></div>
+          <p class="why">Łatwe, powtarzalne punkty: <em>surowica = żel separacyjny; glukoza = fluorek+szczawian; krzepnięcie = cytrynian</em>;
+            błąd przedanalityczny vs analityczny (kalibracja = analityczny), hemoliza (LDH/AST/ALT/K↑), czynniki przedanalityczne.</p></div>
+
+        <div class="chap"><div class="cn"><b>Diagnostyka molekularna i onkologiczna</b><span class="pg">skrypt 511–540</span></div>
+          <p class="why">PCR / real-time PCR (definicja), <em>KRAS: brak mutacji → anty-EGFR; mutacja → wyklucza anty-EGFR</em>,
+            BRCA1 (ekson 11), BCR-ABL T315I (oporność na nilotynib i dazatynib), ColoPrint, fragile X (FMR1),
+            Becker (gen DMD), SMA (delecja eksonu 7 SMN1), HER2, NIPT od 10. tyg., płynna biopsja (ctDNA, CTC, egzosomy, TEP).</p></div>
+      </div>
+    </div>
+
+    <!-- TIER 3 -->
+    <div class="tier">
+      <div class="tier-head"><span class="badge b3">TIER 3</span>
+        <span class="tt">Pokrycie wymagane — domknąć po TIER 1–2</span>
+        <span class="meta">6 obszarów</span><span class="chev">▶</span></div>
+      <div class="tier-body">
+        <div class="chap"><div class="cn"><b>Mocz, funkcja nerek, POCT</b><span class="pg">skrypt 35–59</span></div>
+          <p class="why">Badanie ogólne moczu (kryształy, białkomocz), wzory GFR (<em>w ONN żaden wzór — bierze się kreatyninę w surowicy</em>),
+            białkomocz fizjologiczny &lt;150 mg/24h, POCT (cechy i ograniczenia).</p></div>
+        <div class="chap"><div class="cn"><b>Endokrynologia</b><span class="pg">skrypt 253–278</span></div>
+          <p class="why">Testy stymulacji (GH: klonidyna/insulina/arginina; prolaktyna: metoklopramid) i hamowania (deksametazon w Cushingu),
+            TSH/TRH (paradoksalny wzrost = pierwotna niedoczynność tarczycy), TBG (estrogeny↑/androgeny↓).</p></div>
+        <div class="chap"><div class="cn"><b>Cukrzyca i hipoglikemia</b><span class="pg">skrypt 279–308</span></div>
+          <p class="why">Kryteria rozpoznania, OGTT, HbA1c (analizator certyfikowany), DKA, cukrzyca typu 1 (przeciwciała anty-β),
+            hiperglikemia w ciąży (glukoza na czczo ≥92 → OGTT).</p></div>
+        <div class="chap"><div class="cn"><b>Zatrucia ostre</b><span class="pg">skrypt 482–510</span></div>
+          <p class="why">Paracetamol (↓glutationu, ↑PT, oznaczyć paracetamol+AST+PT), salicylany (zasadowica oddechowa + kwasica metaboliczna),
+            <em>glikol etylenowy → kwas szczawiowy</em> (kryształy szczawianu), metanol → kwas mrówkowy, luka osmotyczna/anionowa.</p></div>
+        <div class="chap"><div class="cn"><b>Trzustka i enzymy</b><span class="pg">w „zawale/wątrobie" i ost. stanach</span></div>
+          <p class="why">Lipaza (czułość/swoistość) &gt; amylaza w OZT, elastaza-1 w kale = funkcja zewnątrzwydzielnicza,
+            kryteria rozpoznania OZT (lipaza/amylaza &gt;3× ggn + ból + obraz).</p></div>
+        <div class="chap"><div class="cn"><b>Markery nowotworowe i guzy endokrynne</b><span class="pg">skrypt 129–160</span></div>
+          <p class="why">hCG, TPS (proliferacja), gastryna (zespół Zollingera-Ellisona), kalcytonina (rak rdzeniasty),
+            zasady stosowania markerów (monitorowanie, nie przesiew).</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ WERYFIKACJA ============ -->
+  <section id="weryfikacja">
+    <h2><span class="idx">02</span>Weryfikacja odpowiedzi</h2>
+    <p class="sec-lede">Klucz Katedry GUMed 2025 (v2) jest spójny — punktowo sprawdziłem ~30 pytań,
+      których treść była czytelna, i wszystkie zgadzają się merytorycznie. Poniżej: pozycje policzone tam,
+      gdzie źródło nie podało odpowiedzi, oraz pozycje wymagające czujności.</p>
+
+    <h3>Policzone / uzupełnione (źródło nie podawało klucza)</h3>
+
+    <div class="vrow">
+      <div class="flag"><span class="ftag f-calc">POLICZONE</span></div>
+      <div class="body">
+        <p class="q">Niedobór białka — zespół nerczycowy, białko 40 g/L</p>
+        <p class="src">Egzamin 2022/23 · str. 1</p>
+        <p class="ans">Wzór skryptu: (60−40)×9 = <span class="k">180 g</span> → odpowiedź <span class="right">D (180 g)</span>.
+          Ta sama mechanika co w „elbląg" Q3 (43 g/L → 153 g, klucz E). Pewny pkt, jeśli znasz wzór.</p>
+      </div>
+    </div>
+
+    <div class="vrow">
+      <div class="flag"><span class="ftag f-calc">POLICZONE</span></div>
+      <div class="body">
+        <p class="q">Osmolarność efektywna — Na 160, K 5, glukoza 6, mocznik 12</p>
+        <p class="src">elbląg · Q23</p>
+        <p class="ans">Efektywna = 2×Na + glukoza = 2×160+6 = <span class="k">326</span> → <span class="right">A (326 mOsm/L)</span>.
+          Uwaga: <b style="color:var(--text)">całkowita</b> = +mocznik = 338 (opcja C) to klasyczna pułapka rozpraszacza.</p>
+      </div>
+    </div>
+
+    <div class="vrow">
+      <div class="flag"><span class="ftag f-calc">POLICZONE</span></div>
+      <div class="body">
+        <p class="q">Morfologia: WBC 2,0 G/L, segmenty 50%, limfocyty 45%</p>
+        <p class="src">Diagno 2020 · Q69 (klucz: D)</p>
+        <p class="ans">Neutrofile bezwzględnie = 0,50×2,0 = <span class="k">1,0 G/L → neutropenia</span> (<span class="right">D</span>).
+          Limfocyty 0,9 G/L to NIE bezwzględna limfocytoza — odpowiedź mylącą jest „limfocytoza". Liczby względne vs bezwzględne.</p>
+      </div>
+    </div>
+
+    <h3>Wymagają czujności</h3>
+
+    <div class="vrow">
+      <div class="flag"><span class="ftag f-warn">SPORNE</span></div>
+      <div class="body">
+        <p class="q">„Wskaż fałszywe twierdzenie dot. nie-HDL-cholesterolu" — klucz: C</p>
+        <p class="src">Katedra GUMed 2025 v2 · Q25</p>
+        <p class="ans">Wszystkie warianty A–E wyglądają na prawdziwe (nie-HDL jest wyliczany, element SCORE2, niższy = niższe ryzyko,
+          istotny przy ↑TG). Klucz wskazuje C, ale uzasadnienie nie jest oczywiste —
+          <b style="color:var(--text)">warto potwierdzić u prowadzącego</b>. Najpewniej intencją jest niuans w sformułowaniu C.</p>
+      </div>
+    </div>
+
+    <div class="vrow">
+      <div class="flag"><span class="ftag f-warn">LUKA</span></div>
+      <div class="body">
+        <p class="q">Pytanie 12 — brak odpowiedzi w kluczu</p>
+        <p class="src">Katedra GUMed 2025 v2 · klucz str. 15 („12 brak")</p>
+        <p class="ans">W oficjalnym kluczu pozycja 12 jest pusta. Treści tego pytania nie ma w skanie, więc nie da się go odtworzyć —
+          po prostu miej świadomość, że tej jednej odpowiedzi brakuje.</p>
+      </div>
+    </div>
+
+    <div class="vrow">
+      <div class="flag"><span class="ftag f-warn">NIEJASNE</span></div>
+      <div class="body">
+        <p class="q">Parametr wspólny dla SCORE2 ORAZ kryterium zespołu metabolicznego</p>
+        <p class="src">elbląg · Q60</p>
+        <p class="ans">Pytanie jest źle skonstruowane: SCORE2 używa <b style="color:var(--text)">nie-HDL</b>, a zespół metaboliczny opiera się na
+          <b style="color:var(--text)">TG i HDL</b> — żaden parametr nie spełnia obu warunków idealnie. Gdy pytanie dotyczy
+          <span class="right">samego SCORE2 → nie-HDL</span> (por. Katedra Q20). Nie ucz się tego pytania „na pamięć", ucz się rozróżnienia.</p>
+      </div>
+    </div>
+
+    <div class="vrow">
+      <div class="flag"><span class="ftag f-warn">NIEPEWNOŚĆ ZDAJĄCEGO</span></div>
+      <div class="body">
+        <p class="q">Wahanie INR na warfarynie (4,8 / 5,3 / 4,9), błąd labu wykluczony</p>
+        <p class="src">Diagno 2020 · Q85 (na skanie podwójne zaznaczenia)</p>
+        <p class="ans">Przyczyny <b style="color:var(--text)">wzrostu</b> INR: leki p/depresyjne (CYP), NLPZ, polimorfizm CYP2C9*2/*3 →
+          <span class="right">D (2,3,4)</span>. Pokarmy bogate w wit. K (pkt 1) <span class="x">obniżają</span> INR,
+          więc każda opcja z „1" odpada. Zaparcia (pkt 5) nie są standardową przyczyną.</p>
+      </div>
+    </div>
+
+    <h3>Potwierdzone „pewniaki" (próbka)</h3>
+    <div class="fgrid">
+      <div class="fcard"><h4><span class="dotc"></span>Hemostaza</h4><ul>
+        <li>Niski czynnik XII → <span class="hl">APTT↑ bez skłonności do krwawień</span> <span class="mono">(Diagno Q87 · elbląg Q90 · Katedra Q90 = D)</span></li>
+        <li>PT↑ przy prawidłowym APTT → droga zewnątrzpochodna / cz. VII / VKA <span class="mono">(Katedra Q89 = C: 4,5)</span></li>
+        <li>Hemofilia nabyta A: decyduje <span class="hl">miano inhibitora anty-FVIII</span>; próba korekcji ujemna <span class="mono">(Diagno Q88 · Katedra Q91 = E)</span></li>
+        <li>Czas ekarynowy = monitorowanie <span class="hl">dabigatranu</span> <span class="mono">(Diagno Q90 = C)</span></li>
+      </ul></div>
+      <div class="fcard"><h4><span class="dotc"></span>Wapń-fosfor</h4><ul>
+        <li>PChN → <span class="hl">hipokalcemia + hiperfosfatemia + wtórna nadczynność przytarczyc</span> <span class="mono">(Diagno Q81-83,88-90)</span></li>
+        <li>PNP: <span class="hl">Ca↑, PO₄↓, PTH↑, ALP↑</span> <span class="mono">(Katedra Q81 = A)</span></li>
+        <li>Wapń skorygowany 1,8 + 0,02×(40−20) = <span class="hl">2,2 → hipokalcemia</span> <span class="mono">(Katedra Q82 = B)</span></li>
+        <li>Do oceny produkcji nerkowej wit. D → <span class="hl">1,25(OH)₂D₃</span> <span class="mono">(Diagno Q78)</span></li>
+      </ul></div>
+      <div class="fcard"><h4><span class="dotc"></span>Onkologia molekularna</h4><ul>
+        <li>KRAS bez mutacji → <span class="hl">kwalifikacja do anty-EGFR</span>; mutacja → <span class="x">wyklucza</span> <span class="mono">(Diagno Q96 · elbląg Q19 = D)</span></li>
+        <li>T315I (BCR-ABL) → oporność na <span class="hl">nilotynib i dazatynib</span> <span class="mono">(Katedra Q3 = C)</span></li>
+        <li>FMR1 245 powtórzeń CGG → pełna mutacja, zespół łamliwego chromosomu X <span class="mono">(Diagno Q91)</span></li>
+        <li>NIPT z krwi matki możliwe od <span class="hl">10. tygodnia</span> <span class="mono">(Katedra Q2 = B)</span></li>
+      </ul></div>
+    </div>
+  </section>
+
+  <!-- ============ WYJATKI ============ -->
+  <section id="wyjatki">
+    <h2><span class="idx">03</span>Wyjątki i kluczowe fakty</h2>
+    <p class="sec-lede">Wyciąg rzeczy, które najczęściej rozstrzygają pytania: trzy wzory do nauczenia na pamięć,
+      „wyjątki" (jedna opcja inna niż reszta) i powtarzalne rozróżnienia. To jest sekcja do powtórki na ostatni dzień.</p>
+
+    <h3>Trzy wzory, których pomyłka = stracony punkt</h3>
+
+    <div class="formula">Niedobór białka (g) = <span class="c">(60 − białko aktualne [g/L]) × 9</span>
+      <small>60 g/L = dolna granica normy białka całkowitego; 9 L = objętość dystrybucji albuminy. Przykł.: 43 g/L → 153 g; 40 g/L → 180 g.</small></div>
+
+    <div class="formula">Osmolarność <span class="c">EFEKTYWNA = 2×Na + glukoza</span> &nbsp;|&nbsp; <span class="c">CAŁKOWITA = 2×Na + glukoza + mocznik</span>
+      <small>Norma całkowitej ≈ 289 (±8). Luka osmotyczna = zmierzona − obliczona = 0–10; rośnie w zatruciach (etanol, metanol, glikol, mannitol).</small></div>
+
+    <div class="formula">Wapń skorygowany [mmol/L] = <span class="c">Ca całkowity + 0,02 × (40 − albumina [g/L])</span>
+      <small>Norma Ca całk. 2,25–2,75. Korekcja istotna przy hipoalbuminemii (inaczej fałszywa „hipokalcemia").</small></div>
+
+    <div class="trap"><span class="lab">⚑ Pułapka: liczby względne vs bezwzględne</span>
+      <p>W rozmazie procenty mylą. Zawsze przeliczaj: <b>bezwzględna liczba = % × WBC</b>.
+        WBC 2,0 G/L i 45% limfocytów to NIE limfocytoza (0,9 G/L), a 50% segmentów to neutropenia (1,0 G/L).</p></div>
+
+    <h3>„Jeden inny niż reszta" (pytania typu z wyjątkiem)</h3>
+    <div class="fgrid">
+      <div class="fcard"><h4><span class="dotc"></span>Lipidy</h4><ul>
+        <li>TG rośnie u: alkohol, ciąża, zespół nerczycowy, chylomikronemia — <b>WYJĄTEK:</b> <span class="x">abetalipoproteinemia (TG↓, brak apoB)</span></li>
+        <li>Główny transporter <b>cholesterolu</b> = <span class="hl">LDL</span>; TG <b>pokarmowych</b> = <span class="hl">chylomikrony</span>; TG <b>endogennych</b> = VLDL</li>
+        <li>Górna granica LDL <span class="hl">zależy od ryzyka CV (SCORE2)</span> — nie jest stała (pojawia się we wszystkich 4 zbiorach)</li>
+        <li>SCORE2 → nie-HDL-CH; zespół metaboliczny → TG↑ i HDL↓ (to różne parametry!)</li>
+      </ul></div>
+      <div class="fcard"><h4><span class="dotc"></span>Białka osocza</h4><ul>
+        <li>Białka ostrej fazy: CRP, fibrynogen, haptoglobina, α1-antytrypsyna — <b>NIE jest nim:</b> <span class="x">β2-mikroglobulina</span></li>
+        <li>Albumina rośnie <span class="hl">tylko przy odwodnieniu</span> (zagęszczenie) — nie w stanie zapalnym (to białko ujemnej ostrej fazy)</li>
+        <li>Mikroproteinuria <b>kanalikowa</b> = <span class="hl">β2-mikroglobulina↑</span>; <b>kłębuszkowa</b> = albumina</li>
+        <li>Gammapatia monoklonalna = wąski prążek w gamma w elektroforezie</li>
+      </ul></div>
+      <div class="fcard"><h4><span class="dotc"></span>Przedanalityka / probówki</h4><ul>
+        <li>Surowica → <span class="hl">żel separacyjny</span> (na skrzep)</li>
+        <li>Glukoza → <span class="hl">fluorek + szczawian</span> (hamuje glikolizę)</li>
+        <li>Krzepnięcie → <span class="hl">cytrynian sodu 3,8%</span></li>
+        <li>Błąd przedanalityczny: hemoliza, transport, antykoagulant, skierowanie. <b>WYJĄTEK</b> (to analityczny): <span class="x">zła kalibracja analizatora</span></li>
+        <li>Hemoliza zawyża: <span class="hl">K⁺, LDH, AST, ALT</span></li>
+      </ul></div>
+      <div class="fcard"><h4><span class="dotc"></span>Transfuzjologia</h4><ul>
+        <li>TRALI: &lt;6 h, obraz <span class="hl">płucny</span>, brak przeciwciał nie wyklucza — NIE jest to niewydolność serca</li>
+        <li>Napromienianie składników → profilaktyka <span class="hl">GvHD</span> (nie sterylizacja, nie przedłużenie przechowywania)</li>
+        <li>Masywna transfuzja → <span class="hl">hipokalcemia</span> (cytrynian wiąże Ca) — NIE hiperkalcemia</li>
+        <li>Grupa O biorca + krwinki B/A/AB → <span class="x">ostra hemoliza</span> (anty-A i anty-B)</li>
+      </ul></div>
+      <div class="fcard"><h4><span class="dotc"></span>Zawał / wątroba</h4><ul>
+        <li>Potwierdzenie zawału: <span class="hl">troponina T/I + CK-MBmass</span>; najszybszy marker = hs-cTn (mioglobina = wczesna, mało swoista)</li>
+        <li>Niewydolność serca → <span class="hl">NT-proBNP / BNP</span></li>
+        <li>Zespół Gilberta → <span class="hl">bilirubina niesprzężona (pośrednia)↑</span>, AST/ALT prawidłowe</li>
+        <li>Cholestaza → bilirubina <span class="hl">sprzężona↑</span>, urobilinogen w moczu↓, ALP/GGT↑</li>
+      </ul></div>
+      <div class="fcard"><h4><span class="dotc"></span>RKZ / zatrucia</h4><ul>
+        <li>Luka anionowa norma <span class="hl">8–16 mEq/L</span>; biegunka = kwasica metaboliczna z <b>prawidłową</b> luką (hiperchloremiczna)</li>
+        <li>DKA, mleczanowa, metanol/glikol = kwasica metaboliczna ze <b>zwiększoną</b> luką</li>
+        <li>Salicylany → <span class="hl">zasadowica oddechowa + kwasica metaboliczna</span> (zaburzenie mieszane)</li>
+        <li>Glikol etylenowy → <span class="hl">kwas szczawiowy</span> (kryształy Ca-szczawianu); metanol → kwas mrówkowy</li>
+        <li>Paracetamol → ↓glutationu; oznaczyć <span class="hl">paracetamol + AST + PT</span></li>
+      </ul></div>
+      <div class="fcard"><h4><span class="dotc"></span>Woda-elektrolity</h4><ul>
+        <li>Woda całkowita: dorosły ~60%, <b>PWK 40% / PPK 20%</b>; noworodek <span class="hl">75–80%</span></li>
+        <li>Odwodnienie hipertoniczne → <span class="hl">hematokryt↑</span> (zagęszczenie)</li>
+        <li>ADH → resorpcja <span class="hl">tylko wody</span>; aldosteron → Na (i wtórnie woda)</li>
+        <li>Ciężka przewlekła hiponatremia może wynikać z <span class="hl">ektopowego ADH (SIADH)</span></li>
+        <li>W ciężkiej hiponatremii Na uzupełniać <span class="hl">powoli</span> (ryzyko osmotycznej demielinizacji)</li>
+      </ul></div>
+      <div class="fcard"><h4><span class="dotc"></span>Hematologia / nerki</h4><ul>
+        <li>Niedobór żelaza: ferrytyna↓ (ale to białko ostrej fazy → oznaczać z <span class="hl">CRP</span>), sTfR↑, CHr↓</li>
+        <li>Czerwienica prawdziwa: <span class="hl">JAK2 V617F (+), EPO↓</span></li>
+        <li>B-CLL: CD5+CD19+CD23, cienie Gumprechta; AML: CD13/CD33/MPO</li>
+        <li>W <b>ONN</b> wzory eGFR (MDRD/CKD-EPI) <span class="x">nie obowiązują</span> — liczy się kreatynina w surowicy</li>
+        <li>Białkomocz fizjologiczny &lt; <span class="hl">150 mg/24h</span></li>
+      </ul></div>
+    </div>
+  </section>
+
+  <!-- ============ PEWNIAKI ============ -->
+  <section id="pewniaki">
+    <h2><span class="idx">04</span>Pewniaki egzaminacyjne</h2>
+    <p class="sec-lede">Zagadnienia, które <b style="color:var(--text)">powtórzyły się między różnymi wersjami egzaminu</b> —
+      statystycznie najbezpieczniejsze do nauczenia. Liczba po prawej = w ilu z 4 zbiorów dany temat wystąpił.
+      Jeśli masz mało czasu, te 12 pozycji opanuj bezbłędnie w pierwszej kolejności.</p>
+
+    <div class="lock">
+      <span class="rank">01</span>
+      <div class="core"><p class="t">Górna granica LDL-cholesterolu</p>
+        <p class="d"><span class="hl">Zależy od ryzyka sercowo-naczyniowego (karty SCORE/SCORE2)</span> — nie jest stała dla wszystkich.
+          Najsilniejszy pewniak całego zestawu.</p></div>
+      <div class="src-ct c4"><span class="x">×4</span><span class="lb">źródła</span></div>
+    </div>
+
+    <div class="lock">
+      <span class="rank">02</span>
+      <div class="core"><p class="t">Potwierdzenie zawału mięśnia sercowego</p>
+        <p class="d">Parametry rekomendowane: <span class="hl">troponina T lub I + CK-MBmass</span>.
+          Pokrewne: najszybszy = hs-cTn, niewydolność serca = NT-proBNP/BNP.</p></div>
+      <div class="src-ct c4"><span class="x">×4</span><span class="lb">źródła</span></div>
+    </div>
+
+    <div class="lock">
+      <span class="rank">03</span>
+      <div class="core"><p class="t">Niedobór białka w zespole nerczycowym</p>
+        <p class="d">Wzór <b>(60 − białko aktualne) × 9</b>. 43 g/L → 153 g; 40 g/L → 180 g. Czysty punkt, jeśli pamiętasz wzór.</p></div>
+      <div class="src-ct c3"><span class="x">×3</span><span class="lb">źródła</span></div>
+    </div>
+
+    <div class="lock">
+      <span class="rank">04</span>
+      <div class="core"><p class="t">Zespół Gilberta</p>
+        <p class="d">Okresowy wzrost <span class="hl">bilirubiny niesprzężonej (pośredniej)</span>, AST/ALT prawidłowe, brak hemolizy.</p></div>
+      <div class="src-ct c3"><span class="x">×3</span><span class="lb">źródła</span></div>
+    </div>
+
+    <div class="lock">
+      <span class="rank">05</span>
+      <div class="core"><p class="t">PT przedłużony przy prawidłowym APTT</p>
+        <p class="d">Wskazuje na drogę <span class="hl">zewnątrzpochodną / czynnik VII / wczesne działanie VKA</span>.
+          Hipofibrynogenemia, heparyna i DIC wydłużają OBA czasy — odpadają.</p></div>
+      <div class="src-ct c3"><span class="x">×3</span><span class="lb">źródła</span></div>
+    </div>
+
+    <div class="lock">
+      <span class="rank">06</span>
+      <div class="core"><p class="t">Niski czynnik XII</p>
+        <p class="d"><span class="hl">Wydłużenie APTT bez skłonności do krwawień</span> (czynnik kontaktu — in vitro tak, in vivo brak krwawień).</p></div>
+      <div class="src-ct c3"><span class="x">×3</span><span class="lb">źródła</span></div>
+    </div>
+
+    <div class="lock">
+      <span class="rank">07</span>
+      <div class="core"><p class="t">Osmolarność efektywna vs całkowita</p>
+        <p class="d">Efektywna = <span class="hl">2×Na + glukoza</span>; całkowita = +mocznik. Pytanie zwykle daje wszystkie 4 parametry, by wciągnąć w pułapkę.</p></div>
+      <div class="src-ct c3"><span class="x">×3</span><span class="lb">źródła</span></div>
+    </div>
+
+    <div class="lock">
+      <span class="rank">08</span>
+      <div class="core"><p class="t">Woda jako % masy ciała</p>
+        <p class="d">Dorosły: całkowita ~60%, <span class="hl">PWK 40% / PPK 20%</span>; noworodek <span class="hl">75–80%</span>. Pytane w różnych ujęciach.</p></div>
+      <div class="src-ct c3"><span class="x">×3</span><span class="lb">źródła</span></div>
+    </div>
+
+    <div class="lock">
+      <span class="rank">09</span>
+      <div class="core"><p class="t">Główny transporter lipidów</p>
+        <p class="d">Cholesterolu → <span class="hl">LDL</span>; trójglicerydów pokarmowych → <span class="hl">chylomikrony</span>; endogennych → VLDL.</p></div>
+      <div class="src-ct c2"><span class="x">×2</span><span class="lb">źródła</span></div>
+    </div>
+
+    <div class="lock">
+      <span class="rank">10</span>
+      <div class="core"><p class="t">Probówki / antykoagulanty</p>
+        <p class="d">Surowica → <span class="hl">żel separacyjny</span>; glukoza → <span class="hl">fluorek + szczawian</span>; krzepnięcie → cytrynian.
+          Plus: na wyniki wpływają „wszystkie" czynniki (wysiłek, pozycja, stres).</p></div>
+      <div class="src-ct c2"><span class="x">×2</span><span class="lb">źródła</span></div>
+    </div>
+
+    <div class="lock">
+      <span class="rank">11</span>
+      <div class="core"><p class="t">Status genu KRAS (rak jelita grubego)</p>
+        <p class="d">Brak mutacji → <span class="hl">kwalifikacja do anty-EGFR</span>; obecna mutacja → <span class="x">wyklucza</span> tę terapię.</p></div>
+      <div class="src-ct c2"><span class="x">×2</span><span class="lb">źródła</span></div>
+    </div>
+
+    <div class="lock">
+      <span class="rank">12</span>
+      <div class="core"><p class="t">Mikroproteinuria kanalikowa</p>
+        <p class="d">Charakteryzuje się wzrostem <span class="hl">β2-mikroglobuliny</span> (kłębuszkowa → albumina). β2-mikroglobulina to też NIE białko ostrej fazy.</p></div>
+      <div class="src-ct c2"><span class="x">×2</span><span class="lb">źródła</span></div>
+    </div>
+
+    <p class="sec-lede" style="margin:22px 0 0">Tuż za nimi (też powtarzalne, warto dograć): <b style="color:var(--text)">PChN → wtórna nadczynność przytarczyc</b> (Ca↓/PO₄↑/PTH↑),
+      <b style="color:var(--text)">wapń skorygowany</b>, <b style="color:var(--text)">hemofilia nabyta A</b> (miano inhibitora), <b style="color:var(--text)">real-time PCR</b> (definicja),
+      <b style="color:var(--text)">w ONN żaden wzór eGFR</b> (kreatynina w surowicy), <b style="color:var(--text)">salicylany</b> (zasadowica oddechowa + kwasica metaboliczna).</p>
+  </section>
+
+  <!-- ============ PLAN 5 DNI ============ -->
+  <section id="plan">
+    <h2><span class="idx">05</span>Plan nauki — 5 dni do egzaminu</h2>
+    <p class="sec-lede">Ciężar przeniesiony na początek (TIER 1 z pułapkami obliczeniowymi), ostatni dzień to powtórka i domknięcie luk.
+      Bloki są orientacyjne — ważniejsza od godzin jest kolejność i to, że <b style="color:var(--text)">każdy dzień kończysz testem na sobie</b>
+      (zakryj odpowiedzi, rozwiąż pytania z danego obszaru z 4 zbiorów). Aktywne przypominanie &gt; bierne czytanie.</p>
+
+    <div class="day">
+      <div class="day-head"><span class="dn">DZIEŃ 1</span><span class="dt">Płyny, elektrolity i RKZ — najgęściej punktowany blok</span><span class="dtag">TIER 1</span></div>
+      <div class="day-body">
+        <div class="blk"><span class="when">Rano</span><div class="what"><b>Gospodarka wodno-elektrolitowa</b>
+          <span class="s">Odwodnienia/przewodnienia (6 wariantów), Na⁺, ADH vs aldosteron, SIADH, hiponatremia, % wody w organizmie. <span class="pg">skrypt 338–366</span></span></div></div>
+        <div class="blk"><span class="when">Popołudnie</span><div class="what"><b>Osmolalność + RKZ</b>
+          <span class="s">Wzory osmolarności (efektywna/całkowita), luka osmotyczna i anionowa (8–16), bufor wodorowęglanowy, 3-etapowa interpretacja gazometrii. <span class="pg">skrypt 309–337</span></span></div></div>
+        <div class="blk test"><span class="when">Wieczór</span><div class="what"><b>Test: wszystkie pytania RKZ + Na z 4 zbiorów</b>
+          <span class="s">Przećwicz „rozpoznaj zaburzenie z pH/pCO₂/HCO₃/BE" do automatyzmu. Wzory osmolarności przepisz z pamięci.</span></div></div>
+      </div>
+    </div>
+
+    <div class="day">
+      <div class="day-head"><span class="dn">DZIEŃ 2</span><span class="dt">Wapń-fosfor-PTH oraz hemostaza</span><span class="dtag">TIER 1</span></div>
+      <div class="day-body">
+        <div class="blk"><span class="when">Rano</span><div class="what"><b>Gospodarka wapniowo-fosforanowa</b>
+          <span class="s">PNP (Ca↑/PO₄↓/PTH↑) vs wtórna nadczynność w PChN (Ca↓/PO₄↑/PTH↑), wapń skorygowany, formy wit. D, mutacja receptora wapniowego, hiperkalcemia nowotworowa. <span class="pg">skrypt 367–389</span></span></div></div>
+        <div class="blk"><span class="when">Popołudnie</span><div class="what"><b>Zaburzenia krzepnięcia</b>
+          <span class="s">PT vs APTT (która droga), czynnik XII, hemofilia nabyta, choroba von Willebranda + typy (przerób tabelę!), trombofilia, D-dimer, czas ekarynowy, agregacja po ADP. <span class="pg">skrypt 446–481</span></span></div></div>
+        <div class="blk test"><span class="when">Wieczór</span><div class="what"><b>Test: Ca-fosfor + krzepnięcie</b>
+          <span class="s">Zrób schemat decyzyjny PT/APTT (krótka/długa droga + co wydłuża co). Tabela vWD na pamięć typu 1/2/3.</span></div></div>
+      </div>
+    </div>
+
+    <div class="day">
+      <div class="day-head"><span class="dn">DZIEŃ 3</span><span class="dt">Lipidy/CV, zawał+wątroba, białka, przedanalityka</span><span class="dtag">TIER 1 → 2</span></div>
+      <div class="day-body">
+        <div class="blk"><span class="when">Rano</span><div class="what"><b>Lipidy i ryzyko sercowo-naczyniowe</b>
+          <span class="s">LDL zależy od SCORE, nie-HDL, SCORE2 vs zespół metaboliczny, transportery, abetalipoproteinemia (wyjątek TG↓). <span class="pg">skrypt 161–189</span></span></div></div>
+        <div class="blk"><span class="when">Południe</span><div class="what"><b>Zawał + choroby wątroby</b>
+          <span class="s">Troponiny + CK-MBmass, hs-cTn, BNP, zespół Gilberta, cholestaza, de Ritis. <span class="pg">skrypt 190–212</span></span></div></div>
+        <div class="blk"><span class="when">Popołudnie</span><div class="what"><b>Białka osocza + przedanalityka</b>
+          <span class="s">Wzór niedoboru białka, białka ostrej fazy (β2-mikroglobulina NIE), albumina, OB, probówki/antykoagulanty, błąd przed- vs analityczny, hemoliza. <span class="pg">skrypt 60–74 + 15–34</span></span></div></div>
+        <div class="blk test"><span class="when">Wieczór</span><div class="what"><b>Test: pełny profil lipidowy + przedanalityka (łatwe punkty)</b>
+          <span class="s">Tu są tanie punkty (probówki, czynniki wpływające na wyniki) — utrwal je tak, żeby nie tracić ani jednego.</span></div></div>
+      </div>
+    </div>
+
+    <div class="day">
+      <div class="day-head"><span class="dn">DZIEŃ 4</span><span class="dt">Transfuzjologia, hematologia, diagnostyka molekularna</span><span class="dtag">TIER 2</span></div>
+      <div class="day-body">
+        <div class="blk"><span class="when">Rano</span><div class="what"><b>Transfuzjologia</b>
+          <span class="s">Oznaczanie grupy z reakcji, próba zgodności (terminy), TRALI, ostra hemoliza, GvHD/napromienianie, RhD słaby, masywna transfuzja (hipokalcemia). <span class="pg">skrypt 213–252</span></span></div></div>
+        <div class="blk"><span class="when">Popołudnie</span><div class="what"><b>Hematologia</b>
+          <span class="s">Liczby względne vs bezwzględne, niedobór żelaza (CHr/sTfR/ferrytyna+CRP), rozmaz, AML/CLL/szpiczak, czerwienica (JAK2). <span class="pg">skrypt 390–445</span></span></div></div>
+        <div class="blk"><span class="when">Wieczór</span><div class="what"><b>Diagnostyka molekularna i onkologiczna</b>
+          <span class="s">PCR/real-time PCR, KRAS, BRCA1, T315I, ColoPrint, fragile X, Becker, SMA, NIPT, płynna biopsja. <span class="pg">skrypt 511–540</span></span></div></div>
+        <div class="blk test"><span class="when">Późny wieczór</span><div class="what"><b>Test: transfuzjologia + hematologia</b>
+          <span class="s">Transfuzjologia to detale — przerób WSZYSTKIE pytania z tego obszaru, bo łatwo o pomyłkę.</span></div></div>
+      </div>
+    </div>
+
+    <div class="day">
+      <div class="day-head"><span class="dn">DZIEŃ 5</span><span class="dt">TIER 3, pewniaki i domknięcie luk</span><span class="dtag">POWTÓRKA</span></div>
+      <div class="day-body">
+        <div class="blk"><span class="when">Rano</span><div class="what"><b>TIER 3 — szybkie przejście</b>
+          <span class="s">Mocz/nerki/POCT (ONN → kreatynina), endokrynologia (testy stymulacji/hamowania, TBG), cukrzyca (kryteria, OGTT), zatrucia (paracetamol/salicylany/glikol), trzustka, markery nowotworowe.</span></div></div>
+        <div class="blk"><span class="when">Południe</span><div class="what"><b>Sekcja „Pewniaki" + 3 wzory na pamięć</b>
+          <span class="s">Przejdź 12 pewniaków i przepisz z pamięci: niedobór białka, osmolarność efektywna/całkowita, wapń skorygowany. To musi być odruch.</span></div></div>
+        <div class="blk test"><span class="when">Popołudnie</span><div class="what"><b>Symulacja: wymieszane pytania ze wszystkich 4 zbiorów na czas</b>
+          <span class="s">Zaznacz wszystkie, w których się wahałeś — to twoja lista luk.</span></div></div>
+        <div class="blk"><span class="when">Wieczór</span><div class="what"><b>Tylko luki + lekkie powtórzenie</b>
+          <span class="s">Wracasz wyłącznie do błędnych/niepewnych. Bez nowego materiału. Wcześnie kończ — sen konsoliduje pamięć lepiej niż kolejna godzina kucia.</span></div></div>
+      </div>
+    </div>
+
+    <div class="plan-note"><b>Jak się uczyć, żeby to działało:</b> po każdym bloku zamknij notatki i odtwórz schemat z głowy
+      (aktywne przypominanie). Pułapki obliczeniowe (3 wzory, liczby względne vs bezwzględne) ćwicz na liczbach, nie tylko czytaj.
+      Jeśli któryś dzień się rozjedzie — trzymaj kolejność, a nie godziny: lepiej solidnie zrobić TIER 1 niż pobieżnie wszystko.
+      I realnie: 5 dni wystarczy na opanowanie TIER 1+2 i pewniaków — to jest większość punktów.</div>
+  </section>
+
+  <footer>
+    <p>Materiał roboczy do nauki — zestawienie własne na podstawie 4 zbiorów pytań i skryptu „Diagnostyka laboratoryjna",
+      GUMed 2017 (red. Bielarczyk, Szutowicz, Raszeja-Specht). Numery stron i wzory pochodzą ze skryptu.
+      Pozycje oznaczone jako sporne/niejasne warto zweryfikować u prowadzącego — klucze egzaminacyjne bywają redakcyjnie niedoskonałe.</p>
+  </footer>
+</div>
+
+<script>
+  document.querySelectorAll('.tier-head').forEach(h=>{
+    h.addEventListener('click',()=>h.parentElement.classList.toggle('open'));
+  });
+</script>
+</body>
+</html>

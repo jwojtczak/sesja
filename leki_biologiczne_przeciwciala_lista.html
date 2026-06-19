@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Farmakologia — biologiki i neurologia · lista do nauki</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#EBEEE9;--panel:#FBFCFA;--panel-2:#F3F5F1;
+    --ink:#19251F;--muted:#5C6B62;--faint:#8A968D;
+    --line:#D3D9CF;--line-2:#E2E7DD;
+    --accent:#1E6F5C;--accent-soft:#DBEDE5;--accent-ink:#114A3D;
+    --warn:#A63A2C;--gold:#9C7416;--gold-soft:#F0E6CC;
+    --neuro:#5B4A8C;--neuro-soft:#E5DEF2;--neuro-ink:#3C2E66;
+    --t-chim:#9C7416;--t-chim-bg:#F0E6CC;
+    --t-hum:#1E6F5C;--t-hum-bg:#DBEDE5;
+    --t-ludz:#2E5A8A;--t-ludz-bg:#DCE6F1;
+    --t-fuz:#6B4E8C;--t-fuz-bg:#E7DEF1;
+    --t-rek:#3F6F4E;--t-rek-bg:#DDEBDF;
+    --t-imm:#7A6A4F;--t-imm-bg:#EAE4D6;
+    --t-inne:#4A5A6A;--t-inne-bg:#DEE5EB;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--paper);color:var(--ink);
+    font-family:"Space Grotesk",system-ui,sans-serif;-webkit-font-smoothing:antialiased;line-height:1.5}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 22px}
+
+  /* HERO */
+  header.hero{padding:48px 0 26px;border-bottom:1px solid var(--line)}
+  .eyebrow{font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.22em;
+    text-transform:uppercase;color:var(--accent);margin:0 0 14px}
+  h1{font-family:"Newsreader",serif;font-weight:500;font-size:clamp(28px,4.8vw,48px);
+    line-height:1.05;margin:0;letter-spacing:-.015em}
+  h1 em{font-style:italic;color:var(--accent)}
+  .lede{font-family:"Newsreader",serif;font-size:17.5px;color:var(--muted);max-width:64ch;margin:16px 0 0;line-height:1.45}
+  .source-tag{font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--faint);margin-top:12px;letter-spacing:.04em}
+
+  /* MODULE TOGGLE */
+  .modbar{position:sticky;top:0;z-index:40;background:rgba(235,238,233,.94);
+    backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+  .modbar-inner{display:flex;gap:8px;padding:12px 22px}
+  .modbtn{flex:1;font-family:"Space Grotesk",sans-serif;font-size:15px;font-weight:600;
+    border:1px solid var(--line);background:var(--panel);color:var(--muted);
+    padding:13px 18px;border-radius:12px;cursor:pointer;transition:all .16s;
+    display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left}
+  .modbtn .sub{font-family:"IBM Plex Mono",monospace;font-size:11px;font-weight:400;letter-spacing:.04em}
+  .modbtn.on[data-mod="bio"]{background:var(--accent);border-color:var(--accent);color:#fff}
+  .modbtn.on[data-mod="neuro"]{background:var(--neuro);border-color:var(--neuro);color:#fff}
+  .modbtn.on .sub{color:rgba(255,255,255,.8)}
+  .modbtn:not(.on):hover{border-color:var(--accent)}
+
+  /* LEGEND */
+  .legend{display:flex;flex-wrap:wrap;gap:16px;align-items:center;padding:16px 0 0;font-size:12.5px;color:var(--muted)}
+  .legend .it{display:flex;align-items:center;gap:6px}
+  .prof-dot{font-size:13px;color:var(--gold)}
+  .ext-pill{font-family:"IBM Plex Mono",monospace;font-size:10px;border:1px dashed var(--faint);
+    color:var(--faint);padding:1px 6px;border-radius:5px}
+
+  /* SECTION HEADS */
+  section{padding:34px 0}
+  .sec-head{display:flex;align-items:baseline;gap:13px;margin-bottom:18px}
+  .sec-head .n{font-family:"IBM Plex Mono",monospace;font-size:13px;color:var(--accent);
+    border:1px solid var(--accent);border-radius:50%;width:29px;height:29px;flex:none;display:grid;place-items:center;font-weight:500}
+  .neuro-mode .sec-head .n{color:var(--neuro);border-color:var(--neuro)}
+  .sec-head h2{font-family:"Newsreader",serif;font-weight:500;font-size:clamp(21px,3vw,28px);margin:0;letter-spacing:-.01em}
+  .sec-head p{margin:4px 0 0;color:var(--muted);font-size:14px;max-width:66ch}
+
+  /* DECODER (bio only) */
+  .decoder{background:var(--ink);color:#EBEEE9;border-radius:18px;overflow:hidden}
+  .decoder-inner{padding:28px 28px 30px}
+  .decoder .kic{font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#7FC9B5}
+  .decoder h3{font-family:"Newsreader",serif;font-weight:500;font-size:23px;margin:8px 0 6px}
+  .decoder .sub{color:#A9B8AE;font-size:13.5px;margin:0 0 22px;max-width:62ch}
+  .word{font-family:"IBM Plex Mono",monospace;font-size:clamp(24px,5.5vw,42px);font-weight:500;display:flex;flex-wrap:wrap;gap:2px;margin-bottom:24px;user-select:none}
+  .seg{padding:2px 4px;border-radius:6px}.seg.dim{color:#5E6E64}
+  .keyrow{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  @media(max-width:640px){.keyrow{grid-template-columns:1fr}.decoder-inner{padding:22px 18px 24px}}
+  .keycard{border:1px solid #34453B;border-radius:12px;padding:14px 15px;cursor:pointer;background:#1F2C25;transition:all .18s}
+  .keycard:hover,.keycard.on{border-color:#7FC9B5;background:#243429;transform:translateY(-2px)}
+  .keycard .suf{font-family:"IBM Plex Mono",monospace;font-size:18px;font-weight:600}
+  .keycard .meta{font-size:13px;color:#C7D4CB;margin-top:5px;line-height:1.45}
+  .keycard .ex{font-family:"IBM Plex Mono",monospace;font-size:11px;color:#7FC9B5;margin-top:8px}
+  .c-chim .suf{color:#E4C36A}.c-hum .suf{color:#7FC9B5}.c-ludz .suf{color:#9FC0E6}
+  .decoder .foot{font-size:12.5px;color:#8A968D;margin-top:18px;line-height:1.5}
+
+  /* CORE TARGETS */
+  .core{display:grid;grid-template-columns:repeat(4,1fr);gap:13px}
+  @media(max-width:720px){.core{grid-template-columns:repeat(2,1fr)}}
+  .corecard{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px}
+  .corecard .tg{font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:15px;color:var(--accent)}
+  .corecard .dr{font-size:13.5px;margin-top:7px}.corecard .dr b{font-weight:600}
+
+  /* CONTROLS */
+  .controls{position:sticky;top:var(--modbar-h,64px);z-index:30;background:rgba(235,238,233,.93);backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);border-top:1px solid var(--line);padding:13px 0}
+  .controls-inner{display:flex;flex-wrap:wrap;gap:11px;align-items:center}
+  .search{flex:1 1 220px;display:flex;align-items:center;gap:9px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:9px 13px}
+  .search input{border:none;background:none;outline:none;font:inherit;font-size:14px;width:100%;color:var(--ink)}
+  .search svg{flex:none;stroke:var(--faint)}
+  .chips{display:flex;flex-wrap:wrap;gap:7px}
+  .chip{font-family:"Space Grotesk",sans-serif;font-size:12.5px;font-weight:500;border:1px solid var(--line);
+    background:var(--panel);color:var(--muted);padding:6px 12px;border-radius:999px;cursor:pointer;transition:all .15s;white-space:nowrap}
+  .chip:hover{border-color:var(--accent);color:var(--accent-ink)}
+  .chip.on{background:var(--ink);border-color:var(--ink);color:#EBEEE9}
+  .proftoggle{font-family:"Space Grotesk",sans-serif;font-size:12.5px;font-weight:600;border:1px solid var(--gold);
+    background:var(--panel);color:var(--gold);padding:6px 12px;border-radius:999px;cursor:pointer;transition:all .15s;white-space:nowrap}
+  .proftoggle.on{background:var(--gold);color:#fff}
+  .count-note{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--faint);margin-left:auto;white-space:nowrap}
+
+  /* CARDS */
+  .grp-label{font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.13em;text-transform:uppercase;
+    color:var(--accent);margin:30px 0 13px;padding-bottom:7px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:end}
+  .neuro-mode .grp-label{color:var(--neuro)}
+  .grp-label span.c{color:var(--faint);letter-spacing:.04em}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:15px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:17px 17px 15px;
+    display:flex;flex-direction:column;transition:box-shadow .18s,transform .18s,border-color .18s;position:relative}
+  .card:hover{box-shadow:0 8px 26px -16px rgba(20,40,30,.4);transform:translateY(-2px)}
+  .card.prof{border-left:3px solid var(--gold)}
+  .card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:3px}
+  .drug{font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:17px;letter-spacing:-.01em;line-height:1.15}
+  .badges{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex:none}
+  .typebadge{font-family:"IBM Plex Mono",monospace;font-size:10px;font-weight:600;padding:4px 8px;border-radius:6px;white-space:nowrap}
+  .b-chim{color:var(--t-chim);background:var(--t-chim-bg)}.b-hum{color:var(--t-hum);background:var(--t-hum-bg)}
+  .b-ludz{color:var(--t-ludz);background:var(--t-ludz-bg)}.b-fuz{color:var(--t-fuz);background:var(--t-fuz-bg)}
+  .b-rek{color:var(--t-rek);background:var(--t-rek-bg)}.b-imm{color:var(--t-imm);background:var(--t-imm-bg)}
+  .b-inne{color:var(--t-inne);background:var(--t-inne-bg)}
+  .meta-row{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin:7px 0 10px}
+  .target-line{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--accent-ink);background:var(--accent-soft);display:inline-block;padding:3px 9px;border-radius:6px}
+  .neuro-mode .target-line{color:var(--neuro-ink);background:var(--neuro-soft)}
+  .prof-flag{font-size:11px;color:var(--gold);font-weight:600;font-family:"IBM Plex Mono",monospace}
+  .ext-flag{font-family:"IBM Plex Mono",monospace;font-size:9.5px;border:1px dashed var(--faint);color:var(--faint);padding:1px 6px;border-radius:5px}
+  .row{display:flex;gap:9px;font-size:13px;margin:6px 0;line-height:1.44}
+  .row .ic{flex:none;width:14px;text-align:center;color:var(--faint);font-family:"IBM Plex Mono",monospace;margin-top:1px}
+  .row.use .ic{color:var(--accent)}.neuro-mode .row.use .ic{color:var(--neuro)}
+  .row.ae .ic{color:var(--warn)}.row.ae .tx{color:#7d4036}
+  .exam{margin-top:auto;padding-top:11px}
+  .exam-box{background:var(--gold-soft);border-left:3px solid var(--gold);border-radius:0 8px 8px 0;padding:9px 12px;font-size:12.5px;color:#6b5114;line-height:1.45}
+  .exam-box b.h{color:var(--gold);font-weight:600;font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:3px}
+  .route{font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--faint);margin-top:9px;letter-spacing:.03em}
+  .empty{text-align:center;color:var(--faint);padding:46px 0;font-size:15px;display:none}
+
+  .note{background:var(--panel-2);border:1px solid var(--line);border-radius:14px;padding:18px 20px;font-size:13.5px;color:var(--muted);line-height:1.55}
+  .note b{color:var(--ink);font-weight:600}
+  footer{padding:36px 0 56px;border-top:1px solid var(--line);margin-top:18px;font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--faint);letter-spacing:.03em}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+  .hidden{display:none!important}
+
+  /* VIEW TOGGLE */
+  .viewseg{display:inline-flex;background:var(--panel-2);border:1px solid var(--line);border-radius:10px;padding:3px;gap:3px;flex:none}
+  .viewseg button{font-family:"Space Grotesk",sans-serif;font-size:12.5px;font-weight:600;border:none;background:none;color:var(--muted);padding:7px 14px;border-radius:7px;cursor:pointer;transition:all .15s}
+  .viewseg button.on{background:var(--ink);color:#EBEEE9}
+  .neuro-mode .viewseg button.on{background:var(--neuro)}
+
+  /* FLASHCARDS */
+  #flashview{padding:8px 0 0}
+  .flashstage{max-width:560px;margin:18px auto 0;display:flex;flex-direction:column;align-items:center;gap:18px}
+  .flashcard{width:100%;height:min(64vh,500px);perspective:1600px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+  .flip-inner{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .5s cubic-bezier(.4,.1,.2,1)}
+  .flashcard.flipped .flip-inner{transform:rotateY(180deg)}
+  .flip-face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;
+    border:1px solid var(--line);border-radius:18px;background:var(--panel);padding:26px;display:flex;flex-direction:column;
+    box-shadow:0 10px 30px -20px rgba(20,40,30,.5)}
+  .flip-front{align-items:center;justify-content:center;text-align:center;gap:14px}
+  .flashcard.prof .flip-face{border-top:4px solid var(--gold)}
+  .fc-kicker{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--faint)}
+  .fc-name{font-family:"Newsreader",serif;font-weight:500;font-size:clamp(26px,6vw,40px);line-height:1.1;letter-spacing:-.01em}
+  .fc-flags{display:flex;gap:8px;align-items:center}
+  .fc-hint{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--faint);margin-top:6px}
+  .flip-back{transform:rotateY(180deg);overflow-y:auto;gap:2px}
+  .flip-back .bk-name{font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:18px;display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:4px}
+  .flashnav{display:flex;gap:9px;width:100%;justify-content:center;align-items:center;flex-wrap:wrap}
+  .flashnav button{font-family:"Space Grotesk",sans-serif;font-size:13.5px;font-weight:600;border:1px solid var(--line);background:var(--panel);color:var(--ink);padding:10px 16px;border-radius:10px;cursor:pointer;transition:all .15s}
+  .flashnav button:hover{border-color:var(--accent)}
+  .flashnav .flip-btn{background:var(--ink);color:#EBEEE9;border-color:var(--ink);flex:1;max-width:200px}
+  .neuro-mode .flashnav .flip-btn{background:var(--neuro);border-color:var(--neuro)}
+  .flashmeta{display:flex;gap:14px;align-items:center;font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--muted)}
+  .flashmeta button{font:inherit;border:none;background:none;color:var(--accent);cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+  .neuro-mode .flashmeta button{color:var(--neuro)}
+  .flash-empty{text-align:center;color:var(--faint);padding:50px 0;font-size:15px}
+  .cards-view .intro-sec,.cards-view #bioNote{display:none}
+  .cards-view .chips{flex:1 1 100%;flex-wrap:nowrap;overflow-x:auto;padding-bottom:3px;scrollbar-width:thin}
+  .cards-view .chips::-webkit-scrollbar{height:5px}
+  .cards-view .chips::-webkit-scrollbar-thumb{background:var(--line);border-radius:3px}
+
+  /* zwijane filtry (działa w obu widokach) */
+  .filterbtn{font-family:"Space Grotesk",sans-serif;font-size:12.5px;font-weight:600;border:1px solid var(--line);background:var(--panel);color:var(--muted);padding:7px 13px;border-radius:999px;cursor:pointer;display:inline-flex;align-items:center;gap:7px;white-space:nowrap}
+  .filterbtn:hover{border-color:var(--accent);color:var(--accent-ink)}
+  .filterbtn .caret{display:inline-block;transition:transform .15s;font-size:11px}
+  .filterbtn.collapsed .caret{transform:rotate(-90deg)}
+  .filtercluster{display:flex;flex-wrap:wrap;gap:11px;align-items:center;flex:1 1 100%}
+  .filtercluster.hidden{display:none}
+  /* slim chrome w trybie fiszek */
+  .cards-view .modbtn{flex-direction:row;align-items:center;gap:7px;padding:8px 14px;font-size:13.5px}
+  .cards-view .modbtn .sub{display:none}
+  .cards-view .modbar-inner{padding:8px 22px}
+  .cards-view .legend{display:none}
+  /* link powrotu do huba */
+  .backlink{display:inline-block;font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--muted);text-decoration:none;margin-bottom:14px;letter-spacing:.03em;transition:color .15s}
+  .backlink:hover{color:var(--accent)}
+  @media(prefers-reduced-motion:reduce){.flip-inner{transition:none}}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <a href="index.html" class="backlink">← Strona główna</a>
+    <p class="eyebrow">Farmakologia · zakres profesora</p>
+    <h1>Biologiki, immunologia<br>i <em>neurologia</em> — do nauki</h1>
+    <p class="lede">Dwa działy, o które profesor pyta najczęściej, w jednym miejscu. Leki z jego listy są oznaczone gwiazdką, a te dopisane spoza Twojego PDF‑u — etykietą „spoza PDF”. Przełączaj moduły, filtruj i powtarzaj.</p>
+    <p class="source-tag">źródło bazowe: LEKOTABELKI.pdf · uzupełnienia wg listy powtórkowej profesora</p>
+  </div>
+</header>
+
+<div class="modbar">
+  <div class="wrap modbar-inner">
+    <button class="modbtn on" data-mod="bio">Biologiki i immunologia<span class="sub" id="bioCount">— leków</span></button>
+    <button class="modbtn" data-mod="neuro">Neurologia<span class="sub" id="neuroCount">— leków</span></button>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="legend">
+    <div class="it"><span class="prof-dot">★</span> z listy profesora (priorytet)</div>
+    <div class="it"><span class="ext-pill">spoza PDF</span> dopisane z wiedzy zewnętrznej</div>
+  </div>
+</div>
+
+<!-- ============ BIO MODULE ============ -->
+<div id="mod-bio">
+<main class="wrap">
+  <section class="intro-sec">
+    <div class="sec-head"><span class="n">1</span>
+      <div><h2>Dekoder nazwy — końcówka zdradza pochodzenie</h2>
+      <p>Reguła sprawdza się na każdym przeciwciele z listy: ostatnie sylaby mówią, czy jest mysio‑ludzkie, częściowo czy w pełni ludzkie.</p></div>
+    </div>
+    <div class="decoder"><div class="decoder-inner">
+      <p class="kic">interaktywnie — kliknij końcówkę</p>
+      <h3>tras·tu·<span style="color:#7FC9B5">zumab</span></h3>
+      <p class="sub">Rdzeń środkowy wskazuje układ docelowy, ale do egzaminu liczy się przede wszystkim końcówka pochodzenia.</p>
+      <div class="word" id="decoderWord"></div>
+      <div class="keyrow">
+        <div class="keycard c-chim" data-suf="chim" tabindex="0" role="button"><div class="suf">‑ksymab</div><div class="meta">chimeryczne (mysio‑ludzkie) — większa immunogenność</div><div class="ex">infliksymab · rytuksymab · cetuksymab</div></div>
+        <div class="keycard c-hum on" data-suf="hum" tabindex="0" role="button"><div class="suf">‑zumab</div><div class="meta">humanizowane — mysie tylko regiony wiążące</div><div class="ex">trastuzumab · bewacyzumab · omalizumab</div></div>
+        <div class="keycard c-ludz" data-suf="ludz" tabindex="0" role="button"><div class="suf">‑umab</div><div class="meta">w pełni ludzkie — najmniejsza immunogenność</div><div class="ex">adalimumab · niwolumab · denosumab</div></div>
+      </div>
+      <p class="foot"><b style="color:#C7D4CB">Pamiętaj:</b> końcówka <b style="color:#C7D4CB">‑cept</b> = białko fuzyjne, nie przeciwciało (etanercept, abatacept).</p>
+    </div></div>
+  </section>
+
+  <section class="intro-sec" style="padding-top:4px">
+    <div class="sec-head"><span class="n">2</span>
+      <div><h2>Rdzeń egzaminacyjny — 4 cele „must‑know”</h2>
+      <p>Te pary cel → lek tabele oznaczają jako najważniejsze do zapamiętania.</p></div>
+    </div>
+    <div class="core">
+      <div class="corecard"><div class="tg">TNF‑α</div><div class="dr"><b>infliksymab</b>, <b>adalimumab</b></div></div>
+      <div class="corecard"><div class="tg">VEGF</div><div class="dr"><b>bewacyzumab</b></div></div>
+      <div class="corecard"><div class="tg">HER2</div><div class="dr"><b>trastuzumab</b></div></div>
+      <div class="corecard"><div class="tg">CD20</div><div class="dr"><b>rytuksymab</b></div></div>
+    </div>
+  </section>
+</main>
+</div>
+
+<!-- ============ NEURO MODULE ============ -->
+<div id="mod-neuro" class="hidden neuro-mode">
+<main class="wrap">
+  <section class="intro-sec">
+    <div class="sec-head"><span class="n" style="color:var(--neuro);border-color:var(--neuro)">N</span>
+      <div><h2>Neurologia — Parkinson, padaczka i pokrewne</h2>
+      <p>Cała lista neurologiczna profesora. Leki stwardnienia rozsianego (natalizumab, okrelizumab, ofatumumab, interferon β, glatiramer) znajdziesz w module <b>Biologiki</b>, bo to leki biologiczne.</p></div>
+    </div>
+    <div class="note" style="margin-bottom:4px">
+      <b>Schemat Parkinsona:</b> niedobór dopaminy w istocie czarnej → zaburzona równowaga dopamina/acetylocholina. Leczenie albo <b>uzupełnia dopaminę</b> (lewodopa, agoniści D2, inhibitory MAO‑B/COMT, amantadyna), albo <b>blokuje acetylocholinę</b> (antycholinergiki). Padaczka: przywrócenie równowagi pobudzenie/hamowanie (↓ Na⁺/Ca²⁺, ↑ GABA, ↓ glutaminian).
+    </div>
+  </section>
+</main>
+</div>
+
+<!-- CONTROLS (shared) -->
+<div class="controls">
+  <div class="wrap controls-inner">
+    <div class="viewseg" id="viewseg">
+      <button data-view="list" class="on">Lista</button>
+      <button data-view="cards">Fiszki</button>
+    </div>
+    <button class="filterbtn" id="filterToggle" aria-expanded="true"><span class="caret">▾</span>Filtry</button>
+    <span class="count-note" id="countNote"></span>
+    <div class="filtercluster" id="filterCluster">
+      <label class="search">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input id="search" type="search" placeholder="Szukaj: nazwa, cel, zastosowanie…" aria-label="Szukaj leku">
+      </label>
+      <div class="chips" id="chips"></div>
+      <button class="proftoggle" id="profToggle">★ tylko lista profesora</button>
+    </div>
+  </div>
+</div>
+
+<main class="wrap">
+  <div id="list"></div>
+  <div class="empty" id="empty">Brak leków pasujących do filtra. Wyczyść wyszukiwarkę albo wybierz „Wszystkie”.</div>
+  <div id="flashview"></div>
+
+  <section id="bioNote">
+    <div class="note"><b>Uwaga o klasyfikacji.</b> Cyklosporyna i azatiopryna to <b>małe cząsteczki</b> immunomodulujące (nie biologiki), ale profesor zalicza je do tej grupy — dlatego są tu z etykietą „małocząsteczkowy”. Alteplaza, insulina i EPO to prawdziwe biologiki rekombinowane. Heparyna jest pochodzenia biologicznego, lecz nie rekombinowana.</div>
+  </section>
+
+  <footer id="footerNote">Lista do nauki · baza: LEKOTABELKI.pdf · ★ = zakres profesora · „spoza PDF” = uzupełnienie zewnętrzne</footer>
+</main>
+
+<script>
+const T={chim:["b-chim","chimeryczne"],hum:["b-hum","humanizowane"],ludz:["b-ludz","ludzkie"],
+  fuz:["b-fuz","białko fuzyjne"],rek:["b-rek","rekombinowane"],imm:["b-imm","małocząsteczkowy"],inne:["b-inne","biologiczny"]};
+
+const DRUGS=[
+/* ===== BIO: ANTY-TNF ===== */
+{n:"Infliksymab",mod:"bio",grp:"tnf",g:"Anty-TNF-α",type:"chim",target:"TNF-α",route:"i.v.",prof:true,ext:false,
+ mech:"Neutralizuje TNF-α krążący i związany z błoną; ↓ aktywacji makrofagów i neutrofili; ↓ IL-1, IL-6, GM-CSF.",
+ use:["RZS, ŁZS, ZZSK","choroba Crohna i WZJG","sarkoidoza, ziarniniakowatość, MIZS"],
+ ae:["zakażenia — gruźlica!","reakcje poinfuzyjne","niewydolność serca, demielinizacja"],
+ exam:"Spośród anty-TNF <b>największe ryzyko reakcji alergicznych i immunogenności</b>. Przed leczeniem: IGRA + RTG klatki."},
+{n:"Adalimumab",mod:"bio",grp:"tnf",g:"Anty-TNF-α",type:"ludz",target:"TNF-α",route:"s.c.",prof:true,ext:false,
+ mech:"W pełni ludzkie przeciwciało neutralizujące TNF-α.",
+ use:["RZS, ŁZS, ZZSK","choroba Crohna i WZJG"],
+ ae:["zakażenia oportunistyczne","↑ ryzyko chłoniaków","reakcje skórne"],
+ exam:"<b>Mniejsza immunogenność niż infliksymab</b> (w pełni ludzkie)."},
+{n:"Golimumab",mod:"bio",grp:"tnf",g:"Anty-TNF-α",type:"ludz",target:"TNF-α",route:"s.c. 1×/mies.",prof:false,ext:false,
+ mech:"Ludzkie przeciwciało przeciw TNF-α.",use:["RZS, ŁZS, ZZSK"],ae:["jak inne anty-TNF (zakażenia)"],
+ exam:"Wygodne <b>dawkowanie 1× w miesiącu</b>."},
+{n:"Certolizumab pegol",mod:"bio",grp:"tnf",g:"Anty-TNF-α",type:"hum",target:"TNF-α",route:"s.c.",prof:false,ext:false,
+ mech:"Fragment Fab IgG sprzężony z PEG; brak Fc → brak aktywacji dopełniacza.",use:["RZS, ŁZS","choroba Crohna"],ae:["infekcje"],
+ exam:"<b>Najbezpieczniejszy w ciąży</b> — brak Fc, nie przechodzi aktywnie przez łożysko."},
+{n:"Etanercept",mod:"bio",grp:"tnf",g:"Anty-TNF-α",type:"fuz",target:"TNF-α",route:"s.c. 25 mg 2×/tydz.",prof:false,ext:false,
+ mech:"Białko fuzyjne (receptor TNF-α + Fc IgG) — „pułapka” na TNF-α.",use:["RZS, ŁZS, ZZSK","MIZS"],ae:["infekcje","odczyn w miejscu wkłucia"],
+ exam:"<b>NIE działa w chorobie Crohna.</b> To białko fuzyjne, nie przeciwciało; krótszy T½."},
+
+/* ===== BIO: ANTY-CD20 ===== */
+{n:"Rytuksymab",mod:"bio",grp:"cd20",g:"Anty-CD20",type:"chim",target:"CD20 (limfocyty B)",route:"i.v.",prof:true,ext:false,
+ mech:"Deplecja limfocytów B; aktywacja CDC i ADCC; ↓ autoprzeciwciał (RF, anty-CCP).",
+ use:["chłoniaki nieziarnicze, CLL","RZS oporne na anty-TNF, SLE","zapalenia naczyń, pęcherzyca"],
+ ae:["reakcje poinfuzyjne","ciężkie infekcje, PML (wirus JC)","zespół rozpadu guza, cytopenie"],
+ exam:"<b>NIE działa na plazmocyty</b> (brak CD20). Długotrwała immunosupresja."},
+{n:"Okrelizumab",mod:"bio",grp:"cd20",g:"Anty-CD20",type:"hum",target:"CD20 (limfocyty B)",route:"i.v. 600 mg",prof:true,ext:false,
+ mech:"Humanizowane anty-CD20 — deplecja limfocytów B.",use:["RRMS","PPMS (postać pierwotnie postępująca)"],ae:["infekcje","immunosupresja"],
+ exam:"W SM jedyny zarejestrowany także w postaci <b>pierwotnie postępującej (PPMS)</b>."},
+{n:"Ofatumumab",mod:"bio",grp:"cd20",g:"Anty-CD20",type:"ludz",target:"CD20 (limfocyty B)",route:"s.c.",prof:true,ext:true,
+ mech:"W pełni ludzkie anty-CD20 → deplecja limfocytów B (silna aktywacja dopełniacza/CDC).",use:["RRMS","przewlekła białaczka limfocytowa (CLL)"],ae:["zakażenia","reakcje związane z iniekcją"],
+ exam:"Trzeci anty-CD20 obok rytuksymabu i okrelizumabu — w SM <b>samodzielna iniekcja s.c.</b> co miesiąc."},
+
+/* ===== BIO: ANTY-CD25 ===== */
+{n:"Basiliksymab",mod:"bio",grp:"cd25",g:"Anty-CD25 (transplantologia)",type:"chim",target:"CD25 (IL-2R α)",route:"i.v.",prof:true,ext:true,
+ mech:"Chimeryczne anty-CD25 (łańcuch α receptora IL-2) → blokada aktywacji limfocytów T.",use:["profilaktyka odrzucania przeszczepu (indukcja)"],ae:["zwykle dobrze tolerowany","reakcje nadwrażliwości"],
+ exam:"Stosowany w <b>indukcji</b> immunosupresji po przeszczepie nerki — blokuje receptor IL-2."},
+{n:"Daklizumab",mod:"bio",grp:"cd25",g:"Anty-CD25 (transplantologia)",type:"hum",target:"CD25 (IL-2R α)",route:"s.c.",prof:true,ext:true,
+ mech:"Humanizowane anty-CD25 → modulacja aktywacji limfocytów T.",use:["dawniej: SM rzutowo-remisyjne","dawniej: profilaktyka odrzucania przeszczepu"],ae:["ciężkie reakcje autoimmunologiczne (wątroba, mózg)"],
+ exam:"<b>Wycofany</b> z powodu hepatotoksyczności i zapaleń mózgu. Cel = CD25."},
+
+/* ===== BIO: IL / KOSTYMULACJA ===== */
+{n:"Tocilizumab",mod:"bio",grp:"il",g:"IL / kostymulacja (RZS)",type:"hum",target:"IL-6R",route:"i.v.",prof:false,ext:false,
+ mech:"Blokuje receptor IL-6; ↓ CRP, ↓ gorączki.",use:["RZS, MIZS","burza cytokinowa"],ae:["neutropenia","↑ ALT/AST","hiperlipidemia"],
+ exam:"<b>CRP fałszywie niskie w zakażeniu</b> — blokada IL-6 maskuje infekcję."},
+{n:"Abatacept",mod:"bio",grp:"il",g:"IL / kostymulacja (RZS)",type:"fuz",target:"CD80/86 (CTLA-4-Ig)",route:"i.v.",prof:false,ext:false,
+ mech:"Białko fuzyjne CTLA-4-Ig; blokada kostymulacji (CD28) → ↓ aktywacji limfocytów T.",use:["RZS, ŁZS"],ae:["infekcje","bóle głowy"],
+ exam:"Białko fuzyjne (nie przeciwciało). Działa „wcześnie” w kaskadzie zapalenia."},
+{n:"Anakinra",mod:"bio",grp:"il",g:"IL / kostymulacja (RZS)",type:"rek",target:"IL-1R",route:"s.c. 100 mg",prof:false,ext:false,
+ mech:"Rekombinowany antagonista receptora IL-1.",use:["RZS","choroby autozapalne"],ae:["infekcje","neutropenia"],
+ exam:"Białko rekombinowane — <b>antagonista receptora IL-1</b>, nie przeciwciało."},
+
+/* ===== BIO: PUNKTY KONTROLNE ===== */
+{n:"Niwolumab",mod:"bio",grp:"check",g:"Inhibitory punktów kontrolnych",type:"ludz",target:"PD-1",route:"i.v.",prof:false,ext:false,
+ mech:"Inhibitor PD-1 → odblokowanie limfocytów T przeciw nowotworowi.",use:["czerniak, NDRP","rak nerki, chłoniak Hodgkina"],ae:["choroby autoimmunologiczne"],
+ exam:"Dopuszczony <b>od 12 r.ż.</b> Mechanizm = odhamowanie PD-1."},
+{n:"Pembrolizumab",mod:"bio",grp:"check",g:"Inhibitory punktów kontrolnych",type:"hum",target:"PD-1",route:"i.v.",prof:false,ext:false,
+ mech:"Inhibitor PD-1 (humanizowane).",use:["czerniak, NDRP","chłoniak Hodgkina"],ae:["zapalenia autoimmunologiczne","zaburzenia hematologiczne","zaburzenia hormonalne (tarczyca)"],
+ exam:"Klasyczne: <b>autoimmunologiczne działania niepożądane</b> w wielu narządach."},
+{n:"Ipilimumab",mod:"bio",grp:"check",g:"Inhibitory punktów kontrolnych",type:"ludz",target:"CTLA-4",route:"i.v.",prof:false,ext:false,
+ mech:"Inhibitor CTLA-4 → aktywacja limfocytów T.",use:["czerniak, rak nerkowokomórkowy","NDRP, międzybłoniak"],ae:["ciężkie reakcje autoimmunologiczne","zaburzenia GI, arytmie","niedoczynność tarczycy"],
+ exam:"Inny punkt kontrolny niż niwolumab — <b>CTLA-4</b>, nie PD-1."},
+
+/* ===== BIO: ONKOLOGIA CELOWANA ===== */
+{n:"Trastuzumab",mod:"bio",grp:"onko",g:"Onkologia celowana",type:"hum",target:"HER2",route:"i.v. / s.c.",prof:true,ext:false,
+ mech:"Przeciw HER2; hamowanie proliferacji komórek nowotworowych.",use:["rak piersi HER2+","rak żołądka"],ae:["kardiotoksyczność","reakcje wlewu","toksyczność hematologiczna"],
+ exam:"<b>Konieczna obecność HER2.</b> NIE łączyć z antracyklinami (kardiotoksyczność)."},
+{n:"Bewacyzumab",mod:"bio",grp:"onko",g:"Onkologia celowana",type:"hum",target:"VEGF",route:"i.v.",prof:true,ext:false,
+ mech:"Przeciw VEGF → hamuje angiogenezę i przepuszczalność naczyń guza.",use:["rak piersi, jelita grubego","NDRP, rak szyjki macicy"],ae:["nadciśnienie, białkomocz","zaburzone gojenie ran, zakrzepica","perforacje GI, krwawienia"],
+ exam:"Profil anty-VEGF: <b>nadciśnienie + białkomocz + krwawienia/perforacje</b>."},
+{n:"Cetuksymab",mod:"bio",grp:"onko",g:"Onkologia celowana",type:"chim",target:"EGFR",route:"i.v.",prof:false,ext:false,
+ mech:"Przeciw EGFR — hamowanie szlaku proliferacji.",use:["rak jelita grubego","rak głowy i szyi"],ae:["wysypka trądzikopodobna","hipomagnezemia","śródmiąższowe choroby płuc"],
+ exam:"Skuteczny <b>tylko w nowotworach EGFR+</b>. Charakterystyczna wysypka."},
+{n:"Alemtuzumab",mod:"bio",grp:"onko",g:"Onkologia celowana",type:"hum",target:"CD52",route:"i.v.",prof:true,ext:false,
+ mech:"Przeciw CD52 — głęboka deplecja limfocytów.",use:["stwardnienie rozsiane","(klasycznie CLL)"],ae:["zakażenia oportunistyczne","choroba Gravesa-Basedowa"],
+ exam:"Typowa <b>wtórna autoimmunizacja</b> po leczeniu (np. ch. Gravesa-Basedowa)."},
+
+/* ===== BIO: PCSK9 ===== */
+{n:"Ewolukumab",mod:"bio",grp:"pcsk9",g:"Inhibitory PCSK9",type:"ludz",target:"PCSK9",route:"s.c. co 2–4 tyg.",prof:false,ext:false,
+ mech:"Wiąże PCSK9 → ↓ degradacji receptorów LDL → ↑ czynnych receptorów LDL → silne ↓ LDL (do 60%).",use:["ciężka hipercholesterolemia","bardzo wysokie ryzyko S-N"],ae:["reakcje w miejscu wkłucia","objawy grypopodobne"],
+ exam:"Przeciwciało IgG anty-PCSK9 — <b>bardzo silne ↓ LDL</b>, wysoki koszt."},
+{n:"Alirokumab",mod:"bio",grp:"pcsk9",g:"Inhibitory PCSK9",type:"ludz",target:"PCSK9",route:"s.c. co 2–4 tyg.",prof:false,ext:false,
+ mech:"Przeciwciało IgG wiążące PCSK9 — mechanizm jak ewolukumab.",use:["ciężka hipercholesterolemia"],ae:["reakcje w miejscu wkłucia","objawy grypopodobne"],
+ exam:"Drugi inhibitor PCSK9 — <b>ten sam mechanizm</b> co ewolukumab."},
+
+/* ===== BIO: ASTMA ===== */
+{n:"Omalizumab",mod:"bio",grp:"astma",g:"Pulmonologia (astma)",type:"hum",target:"IgE",route:"s.c. co 2–4 tyg.",prof:true,ext:false,
+ mech:"Anty-IgE → hamowanie degranulacji mastocytów.",use:["ciężka astma alergiczna"],ae:["reakcje w miejscu wkłucia","bóle głowy"],
+ exam:"<b>NIE działa w POChP</b> — tylko astma alergiczna (mechanizm IgE-zależny)."},
+{n:"Mepolizumab",mod:"bio",grp:"astma",g:"Pulmonologia (astma)",type:"hum",target:"IL-5",route:"s.c. 100 mg",prof:false,ext:false,
+ mech:"Anty-IL-5 → ↓ eozynofilów.",use:["ciężka astma eozynofilowa"],ae:["bóle głowy, infekcje","reakcje nadwrażliwości"],
+ exam:"Cel = IL-5 (eozynofile), nie IgE — to różnica wobec omalizumabu. Od 12 r.ż."},
+{n:"Resulizumab",mod:"bio",grp:"astma",g:"Pulmonologia (astma)",type:"hum",target:"IL-5",route:"i.v. 100 mg",prof:false,ext:false,
+ mech:"Anty-IL-5 → ↓ eozynofilów.",use:["ciężka astma eozynofilowa"],ae:["bóle głowy","reakcje nadwrażliwości"],
+ exam:"Od 18 r.ż., podawany <b>i.v.</b> (mepolizumab s.c.) — ta sama oś IL-5."},
+
+/* ===== BIO: SM ===== */
+{n:"Natalizumab",mod:"bio",grp:"sm",g:"Neurologia / SM (biologiki)",type:"hum",target:"integryna α4",route:"i.v. 300 mg co 28 dni",prof:true,ext:false,
+ mech:"Blok integryn → ↓ migracji limfocytów do OUN.",use:["ciężkie RRMS"],ae:["infekcje"],
+ exam:"Sztandarowa pułapka: <b>ryzyko PML</b> (wirus JC)."},
+
+/* ===== BIO: OKULISTYKA ===== */
+{n:"Ranibizumab",mod:"bio",grp:"oko",g:"Okulistyka",type:"hum",target:"VEGF",route:"doszklistkowo",prof:true,ext:false,
+ mech:"Przeciw VEGF — hamowanie neowaskularyzacji w siatkówce.",use:["AMD (zwyrodnienie plamki)"],ae:["powikłania miejscowe (oczne)"],
+ exam:"Anty-VEGF podawany <b>doszklistkowo</b> — działanie miejscowe w oku."},
+
+/* ===== BIO: KOŚCI ===== */
+{n:"Denosumab",mod:"bio",grp:"kosci",g:"Kości / osteoporoza",type:"ludz",target:"RANKL",route:"s.c. 60 mg co 6 mies.",prof:false,ext:false,
+ mech:"Anty-RANKL → blokuje różnicowanie i przeżycie osteoklastów → ↓ resorpcji kości.",use:["osteoporoza pomenopauzalna i u mężczyzn","utrata masy kostnej w leczeniu raka prostaty"],ae:["zakażenia dróg moczowych/oddechowych","hipokalcemia"],
+ exam:"<b>Można stosować w niewydolności nerek</b> (nie kumuluje się w kościach). Efekt „rebound” po odstawieniu."},
+
+/* ===== BIO: HEMATOLOGIA ===== */
+{n:"Abcyksymab",mod:"bio",grp:"hem",g:"Hematologia / kardiologia",type:"chim",target:"GPIIb/IIIa",route:"i.v.",prof:false,ext:false,
+ mech:"Przeciwciało przeciw GPIIb/IIIa i witronektynie → blokada agregacji płytek.",use:["angioplastyka wieńcowa","ostry zespół wieńcowy"],ae:["trombocytopenia","krwawienia"],
+ exam:"Inhibitor GPIIb/IIIa o budowie przeciwciała — okołozabiegowo."},
+{n:"Idarucyzumab",mod:"bio",grp:"hem",g:"Hematologia / kardiologia",type:"hum",target:"dabigatran",route:"i.v.",prof:false,ext:false,
+ mech:"Fragment Fab neutralizujący dabigatran.",use:["krwawienie po dabigatranie"],ae:["rzadkie"],
+ exam:"<b>Swoiste antidotum dabigatranu</b>."},
+
+/* ===== BIO: INNE PRZECIWCIAŁA ===== */
+{n:"Teplizumab",mod:"bio",grp:"inne",g:"Inne przeciwciała monoklonalne",type:"hum",target:"CD3 (limfocyty T)",route:"i.v.",prof:true,ext:true,
+ mech:"Anty-CD3 → modulacja autoreaktywnych limfocytów T.",use:["opóźnienie wystąpienia cukrzycy typu 1 (stadium 2→3)"],ae:["limfopenia","zespół uwalniania cytokin, wysypka"],
+ exam:"Pierwszy lek <b>opóźniający rozwój cukrzycy typu 1</b>. Cel = CD3."},
+
+/* ===== BIO: IMMUNOSUPRESJA MAŁOCZĄSTECZKOWA ===== */
+{n:"Cyklosporyna",mod:"bio",grp:"immsup",g:"Immunosupresja małocząsteczkowa",type:"imm",target:"kalcyneuryna",route:"p.o. / i.v.",prof:true,ext:false,
+ mech:"Hamowanie kalcyneuryny → ↓ IL-2 → ↓ aktywacji limfocytów T.",use:["transplantologia","RZS, łuszczyca"],ae:["nefrotoksyczność","nadciśnienie","interakcje CYP3A4"],
+ exam:"Mała cząsteczka, nie biologik — profesor liczy ją do immunomodulujących. Sztandarowa <b>nefrotoksyczność</b>."},
+{n:"Azatiopryna",mod:"bio",grp:"immsup",g:"Immunosupresja małocząsteczkowa",type:"imm",target:"synteza puryn",route:"p.o. 1–3 mg/kg",prof:true,ext:false,
+ mech:"Antymetabolit puryn (prolek 6-merkaptopuryny) → ↓ proliferacji limfocytów.",use:["SLE","choroby autoimmunologiczne, transplantologia"],ae:["mielosupresja","większe ryzyko zakażeń"],
+ exam:"Metabolizm przez TPMT; groźna interakcja z <b>allopurynolem</b> (nasila toksyczność)."},
+{n:"Tofacytynib",mod:"bio",grp:"immsup",g:"Immunosupresja małocząsteczkowa",type:"imm",target:"JAK1 / JAK3 (szlak JAK-STAT)",route:"p.o. 5 / 10 mg",prof:false,ext:false,
+ mech:"Inhibitor kinaz janusowych JAK1 i JAK3 → blokada szlaku JAK-STAT → ↓ sygnalizacji cytokin → ↓ zapalenia.",
+ use:["RZS oporne na MTX i leczenie biologiczne"],
+ ae:["półpasiec (reaktywacja herpes zoster)","zakrzepica","↑ lipidów"],
+ exam:"Doustna mała cząsteczka (tsDMARD) — w tabelach opisany jako „doustny biologiczny”, ale działa wewnątrzkomórkowo na szlak JAK-STAT. Charakterystyczna pułapka: <b>reaktywacja półpaśca</b>."},
+
+/* ===== BIO: CYTOKINY I CZYNNIKI WZROSTU ===== */
+{n:"Interferon alfa",mod:"bio",grp:"cyto",g:"Cytokiny i czynniki wzrostu",type:"rek",target:"IFN-α",route:"i.m. / s.c.",prof:true,ext:false,
+ mech:"Pobudza odporność; hamuje syntezę białek i RNA wirusa.",use:["WZW B i WZW C","wybrane nowotwory"],ae:["objawy grypopodobne","depresja, anoreksja"],
+ exam:"Przeciwwskazany u <b>dzieci i młodzieży</b>; klasycznie wywołuje depresję."},
+{n:"Interferon beta (1a/1b)",mod:"bio",grp:"cyto",g:"Cytokiny i czynniki wzrostu",type:"rek",target:"IFN-β",route:"s.c. / i.m.",prof:true,ext:false,
+ mech:"Immunomodulacja; ↓ przechodzenia limfocytów przez barierę krew-mózg.",use:["RRMS (stwardnienie rozsiane)"],ae:["objawy grypopodobne","odczyn w miejscu wkłucia"],
+ exam:"Lek pierwszej linii w RRMS. Ciąża <b>kat. C</b>."},
+{n:"IL-2 (Aldesleukina)",mod:"bio",grp:"cyto",g:"Cytokiny i czynniki wzrostu",type:"rek",target:"IL-2",route:"i.v.",prof:false,ext:false,
+ mech:"Rekombinowana IL-2 → aktywacja limfocytów T i NK.",use:["rak nerki"],ae:["zespół przesiąkania włośniczek","ciężka toksyczność ogólnoustrojowa"],
+ exam:"<b>Wysoka toksyczność ogólnoustrojowa</b> ogranicza stosowanie."},
+{n:"G-CSF (Filgrastim)",mod:"bio",grp:"cyto",g:"Cytokiny i czynniki wzrostu",type:"rek",target:"G-CSF",route:"s.c.",prof:true,ext:false,
+ mech:"Stymulacja granulopoezy.",use:["neutropenia (np. po chemioterapii)"],ae:["bóle kostne"],
+ exam:"Czynnik wzrostu granulocytów. Typowo: <b>bóle kostne</b>."},
+{n:"GM-CSF (Sargramostim)",mod:"bio",grp:"cyto",g:"Cytokiny i czynniki wzrostu",type:"rek",target:"GM-CSF",route:"s.c. / i.v.",prof:true,ext:true,
+ mech:"Pobudza tworzenie kolonii granulocytów i makrofagów → ↑ neutrofili i monocytów.",use:["neutropenia (chemioterapia, przeszczep szpiku)"],ae:["gorączka, bóle kostne","zespół przesiąkania włośniczek"],
+ exam:"Szerszy niż G-CSF — pobudza też linię <b>monocytów/makrofagów</b>."},
+{n:"Erytropoetyna (EPO)",mod:"bio",grp:"cyto",g:"Cytokiny i czynniki wzrostu",type:"rek",target:"receptor EPO",route:"s.c. / i.v.",prof:true,ext:true,
+ mech:"Rekombinowany czynnik wzrostu → stymulacja erytropoezy w szpiku.",use:["niedokrwistość w PChN","niedokrwistość po chemioterapii"],ae:["nadciśnienie","zakrzepica"],
+ exam:"Nadużywana jako <b>doping</b>. Ryzyko zakrzepicy przy zbyt wysokim Hb."},
+{n:"Hormon wzrostu (GH)",mod:"bio",grp:"cyto",g:"Cytokiny i czynniki wzrostu",type:"rek",target:"receptor GH",route:"s.c.",prof:true,ext:true,
+ mech:"Rekombinowana somatropina → ↑ IGF-1 → wzrost kości i tkanek.",use:["niedobór GH u dzieci i dorosłych","zespół Turnera"],ae:["obrzęki, bóle stawów","insulinooporność, ↑ glikemii"],
+ exam:"Rekombinowany hormon; przeciwwskazany w <b>czynnej chorobie nowotworowej</b>."},
+
+/* ===== BIO: INNE BIAŁKA BIOLOGICZNE ===== */
+{n:"Alteplaza (rtPA)",mod:"bio",grp:"rekomb",g:"Inne białka biologiczne",type:"rek",target:"plazminogen",route:"i.v.",prof:true,ext:false,
+ mech:"Rekombinowany tkankowy aktywator plazminogenu → plazminogen → plazmina → rozpuszczanie skrzepu.",use:["udar niedokrwienny","masywna zatorowość płucna, STEMI"],ae:["krwawienia, w tym do OUN"],
+ exam:"Prawdziwy biologik. <b>Ścisłe okno czasowe</b> — główne ryzyko: krwawienie wewnątrzczaszkowe."},
+{n:"Insulina",mod:"bio",grp:"rekomb",g:"Inne białka biologiczne",type:"rek",target:"receptor insulinowy",route:"s.c. / i.v.",prof:true,ext:false,
+ mech:"Rekombinowany hormon → aktywacja receptora insulinowego → ↓ glikemii.",use:["cukrzyca typu 1","cukrzyca typu 2 (gdy konieczna)"],ae:["hipoglikemia","przyrost masy, lipodystrofia"],
+ exam:"Najstarszy lek biotechnologiczny. Kluczowe powikłanie: <b>hipoglikemia</b>."},
+{n:"Heparyna",mod:"bio",grp:"rekomb",g:"Inne białka biologiczne",type:"inne",target:"antytrombina III",route:"s.c. / i.v.",prof:true,ext:false,
+ mech:"Aktywuje antytrombinę III → inaktywacja trombiny (IIa) i czynnika Xa.",use:["profilaktyka i leczenie zakrzepicy","zatorowość płucna"],ae:["krwawienia","HIT (małopłytkowość poheparynowa)"],
+ exam:"Pochodzenia biologicznego (nie rekombinowana). Antidotum: <b>siarczan protaminy</b>."},
+{n:"Nezyrytyd",mod:"bio",grp:"rekomb",g:"Inne białka biologiczne",type:"rek",target:"BNP",route:"i.v.",prof:false,ext:false,
+ mech:"Rekombinowany ludzki BNP → ↑ cGMP → rozszerzenie naczyń, ↑ wydalania wody i sodu.",use:["ostra niewydolność serca"],ae:["niedociśnienie"],
+ exam:"Rekombinowany <b>peptyd natriuretyczny typu B</b>."},
+{n:"BCG",mod:"bio",grp:"rekomb",g:"Inne białka biologiczne",type:"inne",target:"immunostymulacja",route:"dopęcherzowo",prof:false,ext:false,
+ mech:"Żywa szczepionka → miejscowa aktywacja odpowiedzi immunologicznej.",use:["rak pęcherza moczowego"],ae:["gorączka","reakcje ogólne"],
+ exam:"<b>Żywa szczepionka</b> jako immunoterapia raka pęcherza (dopęcherzowo)."},
+{n:"Glatiramer (octan)",mod:"bio",grp:"rekomb",g:"Inne białka biologiczne",type:"inne",target:"mielina (mimetyk)",route:"s.c. 20 mg/d",prof:false,ext:false,
+ mech:"Syntetyczny polipeptyd — „mimetyk mieliny”, przekierowuje odpowiedź immunologiczną.",use:["RRMS"],ae:["reakcje miejscowe"],
+ exam:"Syntetyczny immunomodulator w SM (alternatywa dla IFN-β)."},
+
+/* ===================== NEURO MODULE ===================== */
+/* PARKINSON */
+{n:"Lewodopa + Karbidopa / Benserazyd",mod:"neuro",grp:"parko",g:"Choroba Parkinsona",type:null,target:"prekursor dopaminy",route:"p.o.",prof:true,ext:false,
+ mech:"Lewodopa = prekursor dopaminy (przechodzi BBB); karbidopa/benserazyd = inhibitory dekarboksylazy obwodowej → więcej dopaminy w OUN.",use:["podstawowy lek w chorobie Parkinsona"],ae:["nudności, hipotonia","dyskinezy","objawy psychotyczne, efekt „on-off”"],
+ exam:"Nie z posiłkiem białkowym (konkurencja o transporter). Po latach: <b>dyskinezy</b> i fluktuacje „on-off”."},
+{n:"Bromokryptyna",mod:"neuro",grp:"parko",g:"Choroba Parkinsona",type:null,target:"agonista D2 (ergolinowy)",route:"p.o.",prof:true,ext:false,
+ mech:"Agonista receptorów dopaminowych D2 (pochodna sporyszu).",use:["gdy brak skuteczności L-DOPY","hiperprolaktynemia"],ae:["nudności, hipotonia","halucynacje, dyskinezy"],
+ exam:"Agonista ergolinowy → ryzyko <b>zwłóknienia zastawek/opłucnej</b>."},
+{n:"Kabergolina",mod:"neuro",grp:"parko",g:"Choroba Parkinsona",type:null,target:"agonista D2 (ergolinowy)",route:"p.o.",prof:true,ext:true,
+ mech:"Długodziałający agonista D2 (ergolinowy).",use:["choroba Parkinsona","hiperprolaktynemia"],ae:["zwłóknienie zastawek serca","nudności"],
+ exam:"Bardzo długi t½; ergolinowy → kontrola echokardiograficzna (zwłóknienia)."},
+{n:"Pergolid",mod:"neuro",grp:"parko",g:"Choroba Parkinsona",type:null,target:"agonista D1/D2 (ergolinowy)",route:"p.o.",prof:true,ext:true,
+ mech:"Agonista dopaminowy ergolinowy.",use:["choroba Parkinsona (historycznie)"],ae:["zwłóknienie zastawek serca"],
+ exam:"W wielu krajach <b>wycofany</b> z powodu wad zastawkowych (fibroza)."},
+{n:"Ropinirol",mod:"neuro",grp:"parko",g:"Choroba Parkinsona",type:null,target:"agonista D (nieergolinowy)",route:"p.o.",prof:true,ext:false,
+ mech:"Nieergolinowy agonista receptorów dopaminowych.",use:["monoterapia wczesnego Parkinsona lub dodatek","zespół niespokojnych nóg"],ae:["senność, napady snu","zaburzenia kontroli impulsów"],
+ exam:"Nieergolinowy → bez zwłóknień. Typowe: <b>zaburzenia kontroli impulsów</b> (hazard, zakupy)."},
+{n:"Pramipeksol",mod:"neuro",grp:"parko",g:"Choroba Parkinsona",type:null,target:"agonista D2/D3 (nieergolinowy)",route:"p.o.",prof:true,ext:true,
+ mech:"Nieergolinowy agonista D2/D3.",use:["choroba Parkinsona","zespół niespokojnych nóg"],ae:["senność, napady snu","zaburzenia kontroli impulsów"],
+ exam:"Jak ropinirol — nieergolinowy; <b>zaburzenia kontroli impulsów</b> to klasyczna pułapka."},
+{n:"Amantadyna",mod:"neuro",grp:"parko",g:"Choroba Parkinsona",type:null,target:"↑ dopamina / antagonista NMDA",route:"p.o.",prof:true,ext:false,
+ mech:"Zwiększa uwalnianie dopaminy i hamuje jej wychwyt; antagonista NMDA.",use:["dyskinezy","drżenie"],ae:["obrzęki","livedo reticularis","pobudzenie, bezsenność"],
+ exam:"Łagodzi <b>dyskinezy polewodopowe</b>. Charakterystyczne: livedo reticularis."},
+{n:"Triheksyfenidyl",mod:"neuro",grp:"parko",g:"Choroba Parkinsona",type:null,target:"antagonista M",route:"p.o.",prof:true,ext:false,
+ mech:"Antagonista receptorów muskarynowych → przywraca równowagę DA/ACh.",use:["drżenie (zwłaszcza u młodszych)"],ae:["suchość w ustach","zaburzenia poznawcze"],
+ exam:"Działa głównie na <b>drżenie</b>; ostrożnie u starszych."},
+{n:"Pridinol",mod:"neuro",grp:"parko",g:"Choroba Parkinsona",type:null,target:"antycholinergiczny / spazmolityk",route:"p.o. / i.m.",prof:true,ext:true,
+ mech:"Lek antycholinergiczny o działaniu spazmolitycznym.",use:["sztywność i drżenie","bolesne skurcze mięśniowe"],ae:["suchość w ustach","zaburzenia widzenia"],
+ exam:"Antycholinergik o profilu zbliżonym do triheksyfenidylu."},
+{n:"Biperyden",mod:"neuro",grp:"parko",g:"Choroba Parkinsona",type:null,target:"antagonista M (penetruje OUN)",route:"p.o. / i.v.",prof:true,ext:false,
+ mech:"Antagonista muskarynowy dobrze penetrujący do OUN.",use:["sztywność i drżenie","polekowe objawy pozapiramidowe"],ae:["rozszerzenie źrenic, suchość skóry","splątanie, majaczenie"],
+ exam:"Antycholinergik — ratuje też <b>polekowy zespół pozapiramidowy</b> (po neuroleptykach)."},
+{n:"Selegilina",mod:"neuro",grp:"parko",g:"Choroba Parkinsona",type:null,target:"inhibitor MAO-B",route:"p.o.",prof:true,ext:false,
+ mech:"Selektywny inhibitor MAO-B → ↓ rozkładu dopaminy.",use:["wczesne stadia","leczenie wspomagające L-DOPY"],ae:["bezsenność, pobudzenie"],
+ exam:"Niebezpieczna interakcja z <b>SSRI/SNRI</b> → ryzyko zespołu serotoninowego."},
+{n:"Rasagilina",mod:"neuro",grp:"parko",g:"Choroba Parkinsona",type:null,target:"inhibitor MAO-B",route:"p.o.",prof:true,ext:false,
+ mech:"Selektywny, nieodwracalny inhibitor MAO-B.",use:["wczesny Parkinson","leczenie wspomagające"],ae:["bóle głowy"],
+ exam:"Silniejsza i nowsza niż selegilina; ta sama pułapka — <b>interakcje serotoninergiczne</b>."},
+{n:"Entakapon",mod:"neuro",grp:"parko",g:"Choroba Parkinsona",type:null,target:"inhibitor COMT (obwodowy)",route:"p.o.",prof:true,ext:true,
+ mech:"Inhibitor COMT działający obwodowo → przedłuża działanie lewodopy.",use:["dodatek do L-DOPY przy fluktuacjach"],ae:["nasilenie dyskinez","pomarańczowy mocz"],
+ exam:"Tylko z lewodopą. Obwodowy → <b>bez hepatotoksyczności</b> (inaczej niż tolkapon)."},
+{n:"Tolkapon",mod:"neuro",grp:"parko",g:"Choroba Parkinsona",type:null,target:"inhibitor COMT (ośrodkowy+obwodowy)",route:"p.o.",prof:true,ext:true,
+ mech:"Inhibitor COMT działający centralnie i obwodowo.",use:["dodatek do L-DOPY (gdy entakapon nieskuteczny)"],ae:["ciężka hepatotoksyczność"],
+ exam:"Wymaga <b>monitorowania prób wątrobowych</b> — ryzyko piorunującego zapalenia wątroby."},
+{n:"Apomorfina",mod:"neuro",grp:"parko",g:"Choroba Parkinsona",type:null,target:"agonista dopaminy",route:"s.c.",prof:true,ext:true,
+ mech:"Silny agonista receptorów dopaminowych (D1/D2).",use:["nagłe epizody „off”","terapia ratunkowa"],ae:["silne nudności/wymioty","hipotonia"],
+ exam:"s.c. w <b>epizodach „off”</b>; premedykacja przeciwwymiotna — NIE metoklopramidem."},
+{n:"Klozapina",mod:"neuro",grp:"parko",g:"Choroba Parkinsona",type:null,target:"antagonista D4>D2",route:"p.o.",prof:true,ext:false,
+ mech:"Atypowy neuroleptyk D4>D2 — nie nasila objawów ruchowych.",use:["psychozy w przebiegu Parkinsona"],ae:["agranulocytoza","sedacja"],
+ exam:"Lek z wyboru w <b>psychozie parkinsonowskiej</b>; monitorować morfologię (agranulocytoza)."},
+{n:"Domperidon",mod:"neuro",grp:"parko",g:"Choroba Parkinsona",type:null,target:"antagonista D2 (obwodowo)",route:"p.o.",prof:true,ext:false,
+ mech:"Obwodowy antagonista D2 — nie przechodzi przez BBB.",use:["nudności wywołane lekami dopaminergicznymi"],ae:["wydłużenie QT"],
+ exam:"Przeciwwymiotny <b>bez nasilania parkinsonizmu</b>; bezpieczny przy apomorfinie."},
+
+/* PADACZKA */
+{n:"Gabapentyna",mod:"neuro",grp:"pad",g:"Leki przeciwpadaczkowe",type:null,target:"podjednostka α2δ kanału Ca²⁺",route:"p.o.",prof:true,ext:false,
+ mech:"Wiąże podjednostkę α2δ kanałów wapniowych → ↓ uwalniania neuroprzekaźników pobudzających.",use:["napady ogniskowe","ból neuropatyczny"],ae:["sedacja, zawroty głowy"],
+ exam:"Częściej w <b>bólu neuropatycznym</b> niż w samej padaczce."},
+{n:"Lamotrygina",mod:"neuro",grp:"pad",g:"Leki przeciwpadaczkowe",type:null,target:"blok kanałów Na⁺",route:"p.o.",prof:true,ext:false,
+ mech:"Blok kanałów sodowych → stabilizacja błony neuronu.",use:["padaczka","choroba afektywna dwubiegunowa"],ae:["wysypka, ryzyko SJS"],
+ exam:"Powolne zwiększanie dawki ze względu na <b>zespół Stevensa-Johnsona</b>."},
+{n:"Wigabatryna",mod:"neuro",grp:"pad",g:"Leki przeciwpadaczkowe",type:null,target:"hamowanie GABA-T",route:"p.o.",prof:true,ext:false,
+ mech:"Nieodwracalne hamowanie transaminazy GABA → ↑ GABA.",use:["zespół Westa","padaczka oporna"],ae:["ubytek pola widzenia","retinopatia"],
+ exam:"Sztandarowa pułapka: <b>nieodwracalne ubytki pola widzenia</b>."},
+
+/* BENZODIAZEPINY */
+{n:"Klonazepam",mod:"neuro",grp:"benzo",g:"Benzodiazepiny (padaczka / stany nagłe)",type:null,target:"receptor GABA-A",route:"p.o.",prof:true,ext:false,
+ mech:"Benzodiazepina — ↑ działanie GABA na GABA-A (↑ częstości otwarć kanału Cl⁻).",use:["niektóre padaczki (miokloniczne)","zaburzenia lękowe"],ae:["sedacja, tolerancja","zależność"],
+ exam:"Długodziałająca; ryzyko <b>tolerancji i uzależnienia</b>."},
+{n:"Lorazepam",mod:"neuro",grp:"benzo",g:"Benzodiazepiny (padaczka / stany nagłe)",type:null,target:"receptor GABA-A",route:"i.v. / p.o.",prof:true,ext:false,
+ mech:"Benzodiazepina — wzmacnia hamujące działanie GABA.",use:["stan padaczkowy (i.v.)","ostre stany lękowe"],ae:["sedacja","depresja oddechowa"],
+ exam:"Lek <b>pierwszego rzutu w stanie padaczkowym</b> (i.v.)."},
+{n:"Midazolam",mod:"neuro",grp:"benzo",g:"Benzodiazepiny (padaczka / stany nagłe)",type:null,target:"receptor GABA-A",route:"i.v. / i.m. / donosowo",prof:true,ext:false,
+ mech:"Ultrakrótko działająca benzodiazepina — nasila działanie GABA na GABA-A.",use:["stan padaczkowy (donosowo/domięśniowo)","sedacja, premedykacja"],ae:["depresja oddechowa","amnezja"],
+ exam:"<b>Donosowy/domięśniowy</b> w stanie padaczkowym poza szpitalem."},
+
+/* INNE NEURO */
+{n:"Baklofen",mod:"neuro",grp:"inne_n",g:"Otępienie, spastyczność, depresja",type:null,target:"agonista GABA-B",route:"p.o. / dordzeniowo",prof:true,ext:true,
+ mech:"Agonista receptora GABA-B → ↓ napięcia mięśniowego.",use:["spastyczność (SM, uszkodzenie rdzenia)"],ae:["senność, osłabienie mięśni"],
+ exam:"Lek na <b>spastyczność</b>; nagłe odstawienie (dordzeniowe) → groźny zespół odstawienny."},
+{n:"Memantyna",mod:"neuro",grp:"inne_n",g:"Otępienie, spastyczność, depresja",type:null,target:"antagonista NMDA",route:"p.o.",prof:true,ext:true,
+ mech:"Antagonista receptora NMDA → ochrona przed ekscytotoksycznością glutaminianu.",use:["umiarkowana i ciężka choroba Alzheimera"],ae:["zawroty głowy","splątanie"],
+ exam:"Inaczej niż inhibitory AChE — <b>antagonista NMDA</b> w zaawansowanym Alzheimerze."},
+{n:"Takryna",mod:"neuro",grp:"inne_n",g:"Otępienie, spastyczność, depresja",type:null,target:"inhibitor AChE",route:"p.o.",prof:true,ext:true,
+ mech:"Inhibitor acetylocholinesterazy → ↑ acetylocholiny w OUN.",use:["choroba Alzheimera (historycznie)"],ae:["ciężka hepatotoksyczność","objawy cholinergiczne"],
+ exam:"Pierwszy inhibitor AChE — <b>wycofany przez hepatotoksyczność</b> (zastąpiony donepezilem)."},
+{n:"Fluoksetyna",mod:"neuro",grp:"inne_n",g:"Otępienie, spastyczność, depresja",type:null,target:"SSRI",route:"p.o.",prof:true,ext:false,
+ mech:"Selektywny inhibitor wychwytu zwrotnego serotoniny.",use:["depresja","zaburzenia lękowe, OCD"],ae:["zaburzenia seksualne","zaburzenia GI, ból głowy","powolny początek działania"],
+ exam:"Najdłuższy t½ z SSRI (aktywny metabolit) → najmniejszy zespół odstawienny. Interakcja z MAO-B."},
+{n:"Paroksetyna",mod:"neuro",grp:"inne_n",g:"Otępienie, spastyczność, depresja",type:null,target:"SSRI",route:"p.o.",prof:true,ext:false,
+ mech:"SSRI o najsilniejszym działaniu antycholinergicznym w grupie.",use:["depresja","lęk, fobie"],ae:["zaburzenia seksualne","przyrost masy ciała","silny zespół odstawienny"],
+ exam:"Krótki t½ → <b>najsilniejszy zespół odstawienny</b> z SSRI; unikać w ciąży."},
+{n:"Wenlafaksyna",mod:"neuro",grp:"inne_n",g:"Otępienie, spastyczność, depresja",type:null,target:"SNRI",route:"p.o.",prof:true,ext:false,
+ mech:"SNRI — małe dawki głównie serotonina, duże także noradrenalina.",use:["depresja z anergią/zmęczeniem","GAD, fobia społeczna, lęk paniczny"],ae:["nadciśnienie, tachykardia","zespół odstawienny (krótki t½)","zmniejszenie libido"],
+ exam:"W wyższych dawkach podnosi <b>ciśnienie</b> (komponenta noradrenergiczna)."}
+];
+
+const GROUPS={
+  bio:[["wszystkie","Wszystkie"],["tnf","Anty-TNF-α"],["cd20","Anty-CD20"],["cd25","Anty-CD25"],
+    ["il","IL / kostymulacja"],["check","Punkty kontrolne"],["onko","Onkologia"],["pcsk9","PCSK9"],
+    ["astma","Astma"],["sm","SM"],["oko","Okulistyka"],["kosci","Kości"],["hem","Hematologia"],
+    ["inne","Inne p/ciała"],["immsup","Immunosupresja"],["cyto","Cytokiny / czynniki wzrostu"],["rekomb","Inne białka"]],
+  neuro:[["wszystkie","Wszystkie"],["parko","Parkinson"],["pad","Padaczka"],["benzo","Benzodiazepiny"],["inne_n","Otępienie / ból / depresja"]]
+};
+
+let activeMod="bio", activeGroup="wszystkie", profOnly=false;
+
+/* stats */
+const bioN=DRUGS.filter(d=>d.mod==="bio").length;
+const neuroN=DRUGS.filter(d=>d.mod==="neuro").length;
+document.getElementById('bioCount').textContent=bioN+" leków";
+document.getElementById('neuroCount').textContent=neuroN+" leków";
+
+const chipsEl=document.getElementById('chips');
+const listEl=document.getElementById('list');
+const emptyEl=document.getElementById('empty');
+const searchEl=document.getElementById('search');
+const countNote=document.getElementById('countNote');
+const profToggleBtn=document.getElementById('profToggle');
+
+function buildChips(){
+  chipsEl.innerHTML="";
+  GROUPS[activeMod].forEach(([id,label])=>{
+    const b=document.createElement('button');
+    b.className='chip'+(id===activeGroup?' on':'');
+    b.textContent=label;b.dataset.g=id;
+    b.onclick=()=>{activeGroup=id;[...chipsEl.children].forEach(c=>c.classList.toggle('on',c.dataset.g===id));render();};
+    chipsEl.appendChild(b);
+  });
+}
+
+function cardHTML(d){
+  let typeB="";
+  if(d.type&&T[d.type]){const[cls,lbl]=T[d.type];typeB=`<span class="typebadge ${cls}">${lbl}</span>`;}
+  const flags=[];
+  if(d.prof)flags.push('<span class="prof-flag">★ profesor</span>');
+  if(d.ext)flags.push('<span class="ext-flag">spoza PDF</span>');
+  const uses=d.use.map(u=>`<div class="row use"><span class="ic">+</span><span class="tx">${u}</span></div>`).join('');
+  const aes=d.ae.map(a=>`<div class="row ae"><span class="ic">!</span><span class="tx">${a}</span></div>`).join('');
+  return `<div class="card${d.prof?' prof':''}">
+    <div class="card-top"><div class="drug">${d.n}</div><div class="badges">${typeB}</div></div>
+    <div class="meta-row"><span class="target-line">cel: ${d.target}</span>${flags.join('')}</div>
+    <div class="row"><span class="ic">→</span><span class="tx">${d.mech}</span></div>
+    ${uses}${aes}
+    <div class="exam"><div class="exam-box"><b class="h">Pułapka egzaminacyjna</b>${d.exam}</div></div>
+    <div class="route">droga / dawka: ${d.route}</div>
+  </div>`;
+}
+
+const flashEl=document.getElementById('flashview');
+let activeView="list", deck=[], dpos=0, flipped=false, shuffleOn=false;
+
+function getFiltered(){
+  const q=searchEl.value.trim().toLowerCase();
+  return DRUGS.filter(d=>d.mod===activeMod
+    &&(activeGroup==="wszystkie"||d.grp===activeGroup)
+    &&(!profOnly||d.prof)
+    &&(!q||(d.n+' '+d.target+' '+d.g+' '+d.use.join(' ')+' '+d.mech).toLowerCase().includes(q)));
+}
+
+/* ---- flashcards ---- */
+function flashFlags(d){
+  const f=[];
+  if(d.prof)f.push('<span class="prof-flag">★ profesor</span>');
+  if(d.ext)f.push('<span class="ext-flag">spoza PDF</span>');
+  return f.join('');
+}
+function flashInner(d){
+  let typeB="";
+  if(d.type&&T[d.type]){const[cls,lbl]=T[d.type];typeB=`<span class="typebadge ${cls}">${lbl}</span>`;}
+  const uses=d.use.map(u=>`<div class="row use"><span class="ic">+</span><span class="tx">${u}</span></div>`).join('');
+  const aes=d.ae.map(a=>`<div class="row ae"><span class="ic">!</span><span class="tx">${a}</span></div>`).join('');
+  return `<div class="flip-inner">
+    <div class="flip-face flip-front">
+      <div class="fc-name">${d.n}</div>
+      <div class="fc-flags">${flashFlags(d)}</div>
+      <div class="fc-hint">kliknij / spacja, aby odwrócić</div>
+    </div>
+    <div class="flip-face flip-back">
+      <div class="bk-name"><span>${d.n}</span>${typeB}</div>
+      <div class="meta-row"><span class="target-line">cel: ${d.target}</span></div>
+      <div class="row"><span class="ic">→</span><span class="tx">${d.mech}</span></div>
+      ${uses}${aes}
+      <div class="exam"><div class="exam-box"><b class="h">Pułapka egzaminacyjna</b>${d.exam}</div></div>
+      <div class="route">droga / dawka: ${d.route}</div>
+    </div>
+  </div>`;
+}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}}
+function buildDeck(){deck=getFiltered();if(shuffleOn)shuffle(deck);if(dpos>=deck.length)dpos=0;}
+function flip(){flipped=!flipped;const c=document.getElementById('flashcard');if(c)c.classList.toggle('flipped',flipped);}
+function go(step){if(!deck.length)return;dpos=(dpos+step+deck.length)%deck.length;flipped=false;renderCard();}
+function renderCard(){
+  if(!deck.length){flashEl.innerHTML='<div class="flash-empty">Brak fiszek dla tego filtra — wyczyść wyszukiwarkę albo wybierz „Wszystkie”.</div>';return;}
+  if(dpos>=deck.length)dpos=0;
+  const d=deck[dpos];
+  flashEl.innerHTML=`<div class="flashstage">
+    <div class="flashcard${d.prof?' prof':''}${flipped?' flipped':''}" id="flashcard" tabindex="0" role="button" aria-label="Fiszka, kliknij aby odwrócić">${flashInner(d)}</div>
+    <div class="flashnav">
+      <button id="fcPrev">‹ Poprzednia</button>
+      <button class="flip-btn" id="fcFlip">Odwróć</button>
+      <button id="fcNext">Następna ›</button>
+    </div>
+    <div class="flashmeta">
+      <span>${dpos+1} / ${deck.length}</span>
+      <button id="fcShuffle">${shuffleOn?'wył. tasowanie':'tasuj'}</button>
+      <button id="fcReset">do początku</button>
+    </div>
+  </div>`;
+  document.getElementById('flashcard').onclick=flip;
+  document.getElementById('flashcard').onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();flip();}};
+  document.getElementById('fcPrev').onclick=e=>{e.stopPropagation();go(-1);};
+  document.getElementById('fcNext').onclick=e=>{e.stopPropagation();go(1);};
+  document.getElementById('fcFlip').onclick=e=>{e.stopPropagation();flip();};
+  document.getElementById('fcShuffle').onclick=()=>{shuffleOn=!shuffleOn;dpos=0;flipped=false;buildDeck();renderCard();};
+  document.getElementById('fcReset').onclick=()=>{dpos=0;flipped=false;renderCard();};
+}
+
+function render(){
+  const filtered=getFiltered();
+  countNote.textContent=filtered.length+' leków';
+  if(activeView==='list'){
+    flashEl.style.display='none';listEl.style.display='';
+    const byG={};
+    filtered.forEach(d=>{(byG[d.g]=byG[d.g]||[]).push(d);});
+    let html="";
+    Object.keys(byG).forEach(gl=>{
+      html+=`<div class="grp-label">${gl}<span class="c">${byG[gl].length}</span></div><div class="grid">`;
+      html+=byG[gl].map(cardHTML).join('')+'</div>';
+    });
+    listEl.innerHTML=html;
+    emptyEl.style.display=filtered.length?'none':'block';
+  }else{
+    listEl.style.display='none';emptyEl.style.display='none';flashEl.style.display='';
+    dpos=0;flipped=false;buildDeck();renderCard();
+  }
+}
+
+/* module switching */
+document.querySelectorAll('.modbtn').forEach(btn=>{
+  btn.onclick=()=>{
+    activeMod=btn.dataset.mod;activeGroup="wszystkie";
+    document.querySelectorAll('.modbtn').forEach(b=>b.classList.toggle('on',b===btn));
+    document.getElementById('mod-bio').classList.toggle('hidden',activeMod!=="bio");
+    document.getElementById('mod-neuro').classList.toggle('hidden',activeMod!=="neuro");
+    document.getElementById('bioNote').style.display=activeMod==="bio"?"":"none";
+    document.body.classList.toggle('neuro-mode',activeMod==="neuro");
+    buildChips();render();window.scrollTo({top:0,behavior:'smooth'});
+  };
+});
+profToggleBtn.onclick=()=>{profOnly=!profOnly;profToggleBtn.classList.toggle('on',profOnly);render();};
+
+/* zwijane filtry */
+const filterToggle=document.getElementById('filterToggle');
+const filterCluster=document.getElementById('filterCluster');
+function setFilters(open){
+  filterCluster.classList.toggle('hidden',!open);
+  filterToggle.classList.toggle('collapsed',!open);
+  filterToggle.setAttribute('aria-expanded',open?'true':'false');
+  syncModbarH();
+}
+filterToggle.onclick=()=>setFilters(filterCluster.classList.contains('hidden'));
+
+/* view toggle */
+document.querySelectorAll('#viewseg button').forEach(b=>{
+  b.onclick=()=>{
+    activeView=b.dataset.view;
+    document.querySelectorAll('#viewseg button').forEach(x=>x.classList.toggle('on',x===b));
+    document.body.classList.toggle('cards-view',activeView==='cards');
+    setFilters(activeView!=='cards');
+    syncModbarH();
+    render();
+  };
+});
+/* keyboard for flashcards */
+document.addEventListener('keydown',e=>{
+  if(activeView!=='cards')return;
+  if(e.target&&(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA'))return;
+  if(e.key==='ArrowLeft'){e.preventDefault();go(-1);}
+  else if(e.key==='ArrowRight'){e.preventDefault();go(1);}
+  else if(e.key===' '&&e.target.tagName!=='BUTTON'){e.preventDefault();flip();}
+});
+searchEl.addEventListener('input',render);
+
+/* decoder */
+const wordEl=document.getElementById('decoderWord');
+const EX={chim:{w:[["inflik","dim"],["sy","dim"],["ksymab","tgt"]],c:"#E4C36A"},
+  hum:{w:[["tras","dim"],["tu","dim"],["zumab","tgt"]],c:"#7FC9B5"},
+  ludz:{w:[["adali","dim"],["mu","dim"],["mab","tgt"]],c:"#9FC0E6"}};
+function paint(suf){const e=EX[suf];wordEl.innerHTML=e.w.map(([t,k])=>`<span class="seg ${k}" ${k==="tgt"?`style="background:${e.c}33;color:${e.c}"`:''}>${t}</span>`).join('');}
+const keycards=document.querySelectorAll('.keycard');
+function setActive(suf){keycards.forEach(k=>k.classList.toggle('on',k.dataset.suf===suf));paint(suf);}
+keycards.forEach(k=>{k.addEventListener('click',()=>setActive(k.dataset.suf));
+  k.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();setActive(k.dataset.suf);}});});
+paint('hum');
+
+/* dopasuj odstęp paska filtrów do realnej wysokości paska modułów */
+function syncModbarH(){const h=document.querySelector('.modbar').offsetHeight;if(h)document.documentElement.style.setProperty('--modbar-h',h+'px');}
+syncModbarH();
+window.addEventListener('resize',syncModbarH);
+window.addEventListener('load',syncModbarH);
+setTimeout(syncModbarH,300);
+
+buildChips();render();
+</script>
+</body>
+</html>
