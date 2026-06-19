@@ -83,7 +83,42 @@
   .col-card li { font-size: 0.83em; color: var(--text-muted); padding: 3px 0 3px 14px; position: relative; }
   .col-card li::before { content: '▸'; position: absolute; left: 0; color: var(--border); }
   .scrolltop { position: fixed; bottom: 20px; right: 20px; background: var(--a); color: #000; border: none; border-radius: 50%; width: 40px; height: 40px; font-size: 1.2em; cursor: pointer; display: none; align-items: center; justify-content: center; z-index: 100; }
-  @media (max-width: 600px) { .twocol { grid-template-columns: 1fr; } .cmp-row { grid-template-columns: 110px 1fr; } }
+  /* expandable question rows */
+  tr.q-toggle { cursor: pointer; }
+  tr.q-toggle td:first-child::before { content: '▸ '; color: var(--a); font-weight: 900; transition: transform 0.15s; display: inline-block; }
+  tr.q-toggle.open td:first-child::before { content: '▾ '; }
+  tr.q-toggle:hover td { background: rgba(52,211,153,0.04); }
+  tr.q-detail { display: none; }
+  tr.q-detail.show { display: table-row; }
+  tr.q-detail > td { background: var(--bg); padding: 0; }
+  .qpanel { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+  .qpanel.single { grid-template-columns: 1fr; }
+  .qbox { padding: 14px 16px; }
+  .qbox.a { border-left: 3px solid var(--a); }
+  .qbox.b { border-left: 3px solid var(--b); background: rgba(245,158,11,0.02); }
+  .qbox-head { font-size: 0.74em; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+  .qbox.a .qbox-head { color: var(--a); }
+  .qbox.b .qbox-head { color: var(--b); }
+  .qstem { font-size: 0.86em; font-weight: 600; margin-bottom: 8px; color: var(--text); }
+  .qopts { list-style: none; }
+  .qopts li { font-size: 0.83em; padding: 4px 8px; margin-bottom: 3px; border-radius: 5px; color: var(--text-muted); display: flex; gap: 7px; }
+  .qopts li .ol { font-weight: 700; font-family: monospace; flex-shrink: 0; }
+  .qopts li.correct { background: rgba(52,211,153,0.12); color: var(--text); }
+  .qopts li.correct .ol { color: var(--a); }
+  .qbox.b .qopts li.correct { background: rgba(245,158,11,0.12); }
+  .qbox.b .qopts li.correct .ol { color: var(--b); }
+  .qkey { margin-top: 8px; font-size: 0.78em; }
+  .qkey .lbl { color: var(--text-muted); }
+  .qkey .val { font-weight: 700; font-family: monospace; }
+  .qbox.a .qkey .val { color: var(--a); }
+  .qbox.b .qkey .val { color: var(--b); }
+  .qmissing { font-size: 0.82em; color: var(--text-muted); font-style: italic; padding: 14px 16px; }
+  .expand-hint { font-size: 0.78em; color: var(--text-muted); margin-top: 8px; }
+  .expand-hint kbd { background: var(--surface2); border: 1px solid var(--border); border-radius: 4px; padding: 1px 6px; font-family: monospace; font-size: 0.9em; }
+  .ctrl-row { display: flex; gap: 8px; margin-bottom: 10px; }
+  .ctrl-btn { background: var(--surface2); border: 1px solid var(--border); color: var(--text-muted); border-radius: 6px; padding: 5px 12px; font-size: 0.8em; cursor: pointer; font-weight: 600; }
+  .ctrl-btn:hover { color: var(--a); border-color: var(--a); }
+  @media (max-width: 600px) { .twocol { grid-template-columns: 1fr; } .cmp-row { grid-template-columns: 110px 1fr; } .qpanel { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
@@ -159,55 +194,24 @@
   </div>
 </div>
 
+
+
 <!-- SECTION 2 -->
 <div class="section" id="s2">
   <div class="section-header"><div class="section-num">2</div><h2>Pytania wspólne — niemal identyczne 🔁</h2></div>
   <div class="card">
-    <div class="card-title">Te pytania pojawiły się w OBU egzaminach (z tym samym kluczem)</div>
-    <table>
-      <tr><th>Temat</th><th class="tag-a">Egz. A</th><th class="tag-b">Egz. B</th><th>Wspólny klucz / fakt</th></tr>
-      <tr><td>H1-blokery II gen. — astma/ch. lokomocyjna</td><td>Q1 (E)</td><td>Q41 (A — pokrzywka)</td><td><span class="diff">Różny klucz!</span> A: żadna; B: leczenie/profilaktyka pokrzywki</td></tr>
-      <tr><td>Tolerancja na działanie opioidów</td><td>Q2 (D)</td><td>Q42 (E)</td><td>Tolerancja NIE na zaparcia/miozę</td></tr>
-      <tr><td>Lek p/astmatyczny — mechanizm (montelukast LTD4)</td><td>Q3 (E)</td><td>Q43 (C)</td><td><span class="diff">Różny klucz</span> — inny zestaw dystraktorów</td></tr>
-      <tr><td>Drogi podania leków w astmie (omalizumab, montelukast)</td><td>Q4 (B)</td><td>Q44 (D)</td><td>Montelukast doustnie; omalizumab podskórnie (nie wziewnie)</td></tr>
-      <tr><td>Leki wziewne — działanie nep. / grupa-działanie</td><td>Q5 (B)</td><td>Q45 (D)</td><td>Salbutamol→tachykardia; GKS→kandydoza</td></tr>
-      <tr><td>Kliniczne zastosowanie benzodiazepin</td><td>Q6 (A — drgawki)</td><td>Q46 (C — drgawki+spastyczność)</td><td>NIE bezdech senny</td></tr>
-      <tr><td>Flumazenil</td><td>Q7 (E)</td><td>Q47 (B)</td><td>NIE blokuje barbituranów; ryzyko drgawek/blok zolpidemu</td></tr>
-      <tr><td>Leki nasenne typu „Z"</td><td>Q8 (B)</td><td>Q48 (D)</td><td>Obniżają sprawność psychomotoryczną; POWODUJĄ uzależnienie</td></tr>
-      <tr><td>Buspiron vs BDZ</td><td>Q9 (D)</td><td>Q49 (A)</td><td>Częściowy agonista 5-HT1A, NIE p/drgawkowy</td></tr>
-      <tr><td>Znieczulenie ogólne — droga podania</td><td>Q10 (B — propofol iv)</td><td>Q50 (B — ketamina pozajelitowo)</td><td>Propofol/ketamina/tiopental = pozajelitowo</td></tr>
-      <tr><td>Znieczulenie — wskazania (lidokaina)</td><td>Q11 (D)</td><td>Q51 (D)</td><td><span class="pill pill-same">identyczny klucz D</span> Lidokaina powierzchniowo, bupiwakaina nie</td></tr>
-      <tr><td>Depolaryzujące blokery NMJ</td><td>Q12 (E)</td><td>Q52 (B)</td><td><span class="diff">Różny klucz</span> — w A żadne(wszystkie niedepol.), w B cisatrakurium</td></tr>
-      <tr><td>Choroba afektywna dwubieg. — cecha leku</td><td>Q13 (B — karbamazepina indukcja P450)</td><td>Q53 (C — walproinian trombocytopenia)</td><td>Lit NIE daje sedacji/metabolizmu wątrobowego</td></tr>
-      <tr><td>Neuroleptyk — działanie niepożądane</td><td>Q14 (E)</td><td>Q54 (D)</td><td>Klozapina-agranulocytoza/cukrzyca; olanzapina-WZROST masy</td></tr>
-      <tr><td>Grupa onkologiczna — faza cyklu</td><td>Q15 (D)</td><td>Q55 (E)</td><td><span class="diff">Różny klucz</span> — taksany/alkaloidy faza M; pułapka „faza S/G"</td></tr>
-      <tr><td>Lek p/depresyjny — mechanizm</td><td>Q16 (A — citalopram SSRI)</td><td>Q56 (D — sertralina+wenlafaksyna)</td><td>Trazodon NIE jest SNRI/MAO-I</td></tr>
-      <tr><td>β-laktamy — stwierdzenia</td><td>Q17 (B — aztreonam→PMR)</td><td>Q57 (C — cefoperazon→krzepnięcie)</td><td>NIE wszystkie doustne na czczo</td></tr>
-      <tr><td>Antybiotyk — droga podania</td><td>Q18 (C — chloramfenikol miejscowo)</td><td>Q58 (D)</td><td>Tobramycyna NIE doustnie</td></tr>
-      <tr><td>Antybiotyki hamujące ścianę komórkową</td><td>Q19 (A — wankomycyna)</td><td>Q59 (E — wanko+cefepim+aztreonam)</td><td>Klindamycyna/azytromycyna = rybosom (NIE ściana)</td></tr>
-      <tr><td>P/gruźlicze — działanie niepożądane</td><td>Q20 (E)</td><td>Q60 (E)</td><td><span class="pill pill-same">identyczny klucz E</span> Izoniazyd-hepato/neuro, etambutol-wzrok</td></tr>
-      <tr><td>Inhibitory pompy protonowej</td><td>Q21 (A)</td><td>Q61 (E)</td><td><span class="diff">Różny klucz</span> — A: krótki T½/krótkie po bolusie; B: prolek+interakcje</td></tr>
-      <tr><td>Leki p/wirusowe (oseltamiwir, gancyklowir)</td><td>Q22 (D)</td><td>Q62 (D)</td><td><span class="pill pill-same">identyczny klucz D</span> Gancyklowir w CMV; acyklowir NIE bezpieczny w I trym.</td></tr>
-      <tr><td>Leki p/grzybicze (azole, terbinafina)</td><td>Q23 (B)</td><td>Q63 (A)</td><td>Terbinafina→epoksydaza skwalenu; azole→ergosterol</td></tr>
-      <tr><td>Leki p/wymiotne (setrony)</td><td>Q24 (B)</td><td>Q64 (C)</td><td>Setrony BLOKUJĄ 5-HT3; metoklopramid blokuje D2</td></tr>
-      <tr><td>Opioidy i antagoniści</td><td>Q25 (A — tapentadol µ+NET)</td><td>Q65 (E — żadna)</td><td>Buprenorfina = częściowy agonista µ; nalokson nie „tylko µ"</td></tr>
-      <tr><td>Biorównoważność / biodostępność / T½</td><td>Q26, Q30 (E, D)</td><td>Q66, Q67 (B, D)</td><td>i.v.=100%; T½ stały w kinetyce I rzędu</td></tr>
-      <tr><td>Częściowy agonista</td><td>—</td><td>Q69 (D)</td><td>Słabsza odpowiedź niż pełny agonista</td></tr>
-      <tr><td>Receptory (fenylefryna α1 / receptor-agonista)</td><td>Q28 (C — β2 formoterol)</td><td>Q68 (C — fenylefryna α1)</td><td>GPCR; trastuzumab NIE wewnątrzkomórkowy</td></tr>
-      <tr><td>Hipoalbuminemia / wiązanie z białkami</td><td>Q27 (B)</td><td>—</td><td>Ryzyko dla leków silnie wiążących albuminy >95%</td></tr>
-      <tr><td>Cholinolityki / cholinomimetyki</td><td>Q32 (D)</td><td>Q70 (A)</td><td>Cholinolityki NIE dają bradykardii</td></tr>
-      <tr><td>L-DOPA — działania niepożądane / kazus</td><td>Q59 (D)</td><td>Q21 (B)</td><td>NIE zaćma; L-DOPA+karbidopa optymalnie</td></tr>
-      <tr><td>Agoniści dopaminy / NMDA w Parkinsonie</td><td>Q60 (D)</td><td>Q23 (C)</td><td>Bromokryptyna/ropinirol = agoniści; amantadyna = NMDA</td></tr>
-      <tr><td>Karbamazepina — mechanizm</td><td>Q61 (E)</td><td>Q24 (D)</td><td>Kanały Na; nie GABA/glutaminian</td></tr>
-      <tr><td>Lek p/padaczkowy ↑ stężenie innych leków</td><td>Q62 (C — walproinian)</td><td>(Q53)</td><td>Walproinian = inhibitor; karbamazepina/fenytoina = induktory</td></tr>
-      <tr><td>SM — chodzenie / interferon-β działania nep.</td><td>Q63, Q64 (B, E)</td><td>Q25 (C)</td><td>Dalfamprydyna (chodzenie); interferon→grypopodobny+enzymy</td></tr>
-      <tr><td>Alzheimer — inhibitory AChE / memantyna NMDA</td><td>Q65, Q66 (C, D)</td><td>Q26 (A)</td><td>Memantyna = NMDA; galantamina = AChE+nikotyn.</td></tr>
-      <tr><td>Złośliwy zespół neuroleptyczny / nalokson kazus</td><td>Q69, Q70 (A, D)</td><td>Q38 (B)</td><td>Typowe neuroleptyki; nalokson w zatruciu opioidami</td></tr>
-      <tr><td>Farmakologia geriatryczna (Vd, eGFR)</td><td>Q67, Q68 (B, C)</td><td>—</td><td>Vd lipofilnych ↑; T½ hydrofilnych ↑ przez ↓eGFR</td></tr>
-      <tr><td>Farmakoekonomia + koncyliacja</td><td>Q54-58</td><td>Q32-36</td><td>Analizy kosztów; koncyliacja; nadzór nad bezpieczeństwem</td></tr>
-      <tr><td>Cukrzyca + choroby krążenia (GLP-1/SGLT2)</td><td>Q43 (E)</td><td>Q9, Q15 (E, D)</td><td>GLP-1 + SGLT2i = ochrona sercowo-naczyniowa</td></tr>
-      <tr><td>Bisfosfoniany / osteoporoza</td><td>Q39, Q40 (A, C)</td><td>Q6 (A)</td><td>Hamują osteoklasty; denosumab↔RANKL; prednizon→osteoporoza</td></tr>
+    <div class="card-title">Te pytania pojawiły się w OBU egzaminach — kliknij wiersz, aby zobaczyć pełną treść z dystraktorami</div>
+    <div class="ctrl-row">
+      <button class="ctrl-btn" onclick="toggleAll(true)">▾ Rozwiń wszystkie</button>
+      <button class="ctrl-btn" onclick="toggleAll(false)">▸ Zwiń wszystkie</button>
+    </div>
+    <table id="cmp-table">
+      <thead>
+        <tr><th>Temat</th><th class="tag-a">Egz. A</th><th class="tag-b">Egz. B</th><th>Wspólny klucz / fakt</th></tr>
+      </thead>
+      <tbody id="cmp-body"><!-- generowane przez JS --></tbody>
     </table>
+    <div class="expand-hint">💡 Kliknij dowolny wiersz, by rozwinąć pełne brzmienie pytania z obu egzaminów. Poprawna odpowiedź podświetlona.</div>
     <div class="callout">🎯 <strong>Pokrycie ~75%.</strong> Większość pytań to ta sama PULA — często z drobnymi modyfikacjami treści/dystraktorów i przetasowaną numeracją. Egzamin A i B to praktycznie dwie wersje tego samego egzaminu z tej samej sesji.</div>
   </div>
 </div>
@@ -377,6 +381,215 @@
 <script>
   const btn = document.getElementById('scrolltop');
   window.addEventListener('scroll', () => { btn.style.display = window.scrollY > 500 ? 'flex' : 'none'; });
+
+// ---- DANE PYTAŃ ----
+// a/b: {n: numer, stem: treść, opts: [opcje], key: litera poprawna (0=A..4=E)}
+// note: krótki wspólny fakt; diff: true gdy różny klucz
+const ROWS = [
+  { topic:"H1-blokery II generacji", note:"<span class='diff'>Różny klucz!</span> A: żadna prawidłowa; B: leczenie/profilaktyka pokrzywki",
+    a:{n:1, stem:"Wskazania do stosowania H-blokerów II generacji:", opts:["Nudności i wymioty ciężarnych","Każda postać astmy oskrzelowej","Choroba lokomocyjna","B i C","Żadna prawidłowa"], key:4},
+    b:{n:41, stem:"Wskazaniami do stosowania blokerów receptorów H1 II generacji są:", opts:["Leczenie i profilaktyka pokrzywki","Każda postać astmy oskrzelowej","Choroba lokomocyjna","A i C są prawidłowe","A, B i C są prawidłowe"], key:0} },
+
+  { topic:"Tolerancja na działanie opioidów", note:"Tolerancja rozwija się na p/kaszlowe i depresję oddechową; NIE na zaparcia/miozę",
+    a:{n:2, stem:"Działanie opioidowych leków p/bólowych, na które rozwija się tolerancja:", opts:["Działanie p/kaszlowe","Depresja oddechowa","Zaparcia","A i B","A, B i C"], key:3},
+    b:{n:42, stem:"Wskaż działanie opioidowych leków przeciwbólowych, na które NIE rozwija się tolerancja:", opts:["Analgezja","Depresja oddechowa","Nudności i wymioty","Sedacja","Zaparcia"], key:4} },
+
+  { topic:"Lek p/astmatyczny — mechanizm", note:"<span class='diff'>Różny klucz</span> — montelukast BLOKUJE LTD4 (nie stymuluje)",
+    a:{n:3, stem:"Prawidłowa para „Lek p/astmatyczny - mechanizm działania”:", opts:["Teofilina - stymulacja receptorów alfa1","Salmeterol - selektywny blok receptorów beta2","Montelukast - stymulacja receptorów leukotrienowych D4","A i C","Żadna prawidłowa"], key:4},
+    b:{n:43, stem:"Wskaż prawidłowe zestawienie: „Lek przeciwastmatyczny - mechanizm działania”:", opts:["Teofilina - agonista adenozyny","Salmeterol - nieselektywna stymulacja receptorów β","Montelukast - blokada receptorów leukotrienowych D4","A i C są prawidłowe","Żadna odpowiedź nie jest prawidłowa"], key:2} },
+
+  { topic:"Drogi podania leków w astmie", note:"Montelukast doustnie; omalizumab podskórnie/parenteralnie (NIE wziewnie)",
+    a:{n:4, stem:"Drogi podania leków w astmie oskrzelowej:", opts:["Omalizumab - wziewnie","Montelukast - doustnie","Budezonid - doustnie","A i C","B i C"], key:1},
+    b:{n:44, stem:"Wskaż drogi podania leków przeciwastmatycznych:", opts:["Omalizumab - parenteralnie","Montelukast - wziewnie","Prednizon - doustnie","A i C są prawidłowe","B i C są prawidłowe"], key:3} },
+
+  { topic:"Leki wziewne — działanie niepożądane", note:"Salbutamol→tachykardia; GKS wziewne→kandydoza jamy ustnej",
+    a:{n:5, stem:"Prawidłowa para „lek wziewny - działanie niepożądane”:", opts:["Flutikazon - hipoglikemia","Salbutamol - tachykardia","Ipratropium - bradykardia","B i C","A, B i C"], key:1},
+    b:{n:45, stem:"Wskaż prawidłowe stwierdzenie: „grupa leków przeciwastmatycznych - działanie niepożądane”:", opts:["Glikokortykosteroidy - zakażenia grzybicze jamy ustnej","Antagonisty leukotrienów - zaostrzenie astmy aspirynowej","Metyloksantyny - tachykardia","A i C są prawidłowe","A, B i C są prawidłowe"], key:3} },
+
+  { topic:"Kliniczne zastosowanie benzodiazepin", note:"BDZ: drgawki + spastyczność mięśni; NIE bezdech senny",
+    a:{n:6, stem:"Prawidłowa para „wskazanie kliniczne - lek”:", opts:["Drgawki - Diazepam","Bezdech senny - Estazolam","Spastyczność mięśni szkieletowych - Eszopiklon","A i B","B i C"], key:0},
+    b:{n:46, stem:"Kliniczne zastosowanie benzodiazepin obejmuje:", opts:["Kinetozy","Bezdech senny","Spastyczność mięśni szkieletowych","A i B są prawidłowe","B i C są prawidłowe"], key:2} },
+
+  { topic:"Flumazenil", note:"NIE blokuje barbituranów; ryzyko drgawek przy TLPD / blokuje zolpidem",
+    a:{n:7, stem:"Prawidłowe o Flumazenilu:", opts:["Przy zatruciu BDZ zwykle konieczne wielokrotne podanie","Blokuje działanie barbituranów","U pacjentów na BDZ z TLPD jego podanie może spowodować drgawki","A i B","A i C"], key:4},
+    b:{n:47, stem:"Flumazenil:", opts:["Jest agonistą receptorów GABAA","Blokuje działanie zolpidemu","Antagonizuje działanie opioidów","A i B są prawidłowe","A i C są prawidłowe"], key:1} },
+
+  { topic:"Leki nasenne typu „Z”", note:"Obniżają sprawność psychomotoryczną; POWODUJĄ uzależnienie",
+    a:{n:8, stem:"Leki nasenne typu „Z”:", opts:["Mają właściwości p/drgawkowe","Obniżają sprawność psychomotoryczną","Nie powodują uzależnienia","A i B","B i C"], key:1},
+    b:{n:48, stem:"Leki nasenne typu „Z”:", opts:["Mogą powodować senność w dniu następnym po zastosowaniu","Obniżają sprawność psychomotoryczną","Nie powodują uzależnienia","A i B są prawidłowe","B i C są prawidłowe"], key:3} },
+
+  { topic:"Buspiron vs benzodiazepiny", note:"Częściowy agonista 5-HT1A; NIE jest p/drgawkowy",
+    a:{n:9, stem:"Buspiron w odróżnieniu od benzodiazepin:", opts:["Jest częściowym agonistą 5-HT1A","Nie jest przekształcany do aktywnego metabolitu","Nie jest lekiem przeciwdrgawkowym","A i C","A, B i C"], key:3},
+    b:{n:49, stem:"Buspiron:", opts:["Jest częściowym agonistą receptorów 5-HT","Jest przeciwwskazany w ciąży","Wykazuje addytywny efekt depresyjny na OUN z lekami uspokajająco-nasennymi","A i C są prawidłowe","A, B i C są prawidłowe"], key:0} },
+
+  { topic:"Znieczulenie ogólne — droga podania", note:"Propofol/ketamina/tiopental = pozajelitowo (iv); etomidat iv",
+    a:{n:10, stem:"Prawidłowa para „lek do znieczulenia ogólnego - droga podania”:", opts:["Etomidat - wziewnie","Propofol - dożylnie","Tiopental - domięśniowo","A i C","A, B i C"], key:1},
+    b:{n:50, stem:"Wskaż prawidłowe zestawienie: „lek stosowany do znieczulenia - droga podania”:", opts:["Tiopental - wziewnie","Ketamina - pozajelitowo","Etomidat - doustnie","A i C są prawidłowe","A, B i C są prawidłowe"], key:1} },
+
+  { topic:"Znieczulenie — wskazania (lidokaina)", note:"<span class='pill pill-same'>identyczny klucz D</span> Lidokaina powierzchniowo; bupiwakaina NIE powierzchniowo",
+    a:{n:11, stem:"Prawidłowa para „lek do znieczulenia - wskazania”:", opts:["Lidokaina - znieczulenie powierzchniowe","Bupiwakaina - znieczulenie powierzchniowe","Ketamina - znieczulenie dożylne","A i C","A, B i C"], key:3},
+    b:{n:51, stem:"Wskaż prawidłowe zestawienie: „lek stosowany w znieczuleniu - rodzaj znieczulenia”:", opts:["Lidokaina - znieczulenie zewnątrzoponowe","Bupiwakaina - znieczulenie powierzchniowe","Prilokaina - znieczulenie powierzchniowe","A i C są prawidłowe","A, B i C są prawidłowe"], key:3} },
+
+  { topic:"Blokery przekaźnictwa nerwowo-mięśniowego", note:"<span class='diff'>Różny klucz</span> — sukcynylocholina = jedyny DEpolaryzujący; reszta niedepolaryzująca",
+    a:{n:12, stem:"Które to DEpolaryzujące środki blokujące przekaźnictwo nerwowo-mięśniowe:", opts:["Rokuronium","Cisatrakurium","Pankuronium","A i C","Żadne z powyższych"], key:4},
+    b:{n:52, stem:"Do NIEdepolaryzujących środków blokujących przekaźnictwo nerwowo-mięśniowe należą:", opts:["Sukcynylocholina","Cisatrakurium","Diazepam","A i C są prawidłowe","B i C są prawidłowe"], key:1} },
+
+  { topic:"Choroba afektywna dwubiegunowa — cecha leku", note:"Karbamazepina = induktor P450; walproinian → trombocytopenia; lit NIE daje sedacji/metab. wątrobowego",
+    a:{n:13, stem:"Prawidłowa para „lek do choroby afektywnej dwubiegunowej - jego cecha farmakologiczna”:", opts:["Lit - znacząca sedacja","Karbamazepina - indukcja P450","Kwas walproinowy - pokarm znacznie przyspiesza jego wchłanianie","A i B","B i C"], key:1},
+    b:{n:53, stem:"Wskaż prawidłowe zestawienie: „lek stosowany w chorobie afektywnej dwubiegunowej - jego cecha farmakologiczna”:", opts:["Lit - intensywny metabolizm w wątrobie","Karbamazepina - hamowanie cytochromu P450","Kwas walproinowy - może powodować trombocytopenię","A i B są prawidłowe","Żadna odpowiedź nie jest prawidłowa"], key:2} },
+
+  { topic:"Neuroleptyk — działanie niepożądane", note:"Klozapina-agranulocytoza/cukrzyca; olanzapina → WZROST masy (nie spadek!)",
+    a:{n:14, stem:"Prawidłowa para „lek p/psychotyczny - działanie niepożądane”:", opts:["Klozapina - agranulocytoza","Olanzapina - hipercholesterolemia","Risperidon - hiperprolaktynemia","A i C","A, B i C"], key:4},
+    b:{n:54, stem:"Wskaż prawidłowe zestawienie: „lek przeciwpsychotyczny - działanie niepożądane”:", opts:["Klozapina - indukcja cukrzycy","Olanzapina - spadek masy ciała","Haloperidol - zespół pozapiramidowy","A i C są prawidłowe","A, B i C są prawidłowe"], key:3} },
+
+  { topic:"Grupa onkologiczna — faza cyklu komórkowego", note:"<span class='diff'>Różny klucz</span> — taksany i alkaloidy barwinka działają w fazie M",
+    a:{n:15, stem:"Prawidłowa para „grupa leków p/nowotworowych - faza cyklu kom.”:", opts:["Taksany - faza M","Antymetabolity - faza G","Alkaloidy barwinka - faza M","A i C","Żadna prawidłowa"], key:3},
+    b:{n:55, stem:"Wskaż prawidłowe zestawienie: „grupa leków przeciwnowotworowych - faza cyklu komórkowego w której leki działają”:", opts:["Taksany - faza S","Antymetabolity - faza M","Alkaloidy barwinka - faza S","A i C są prawidłowe","Żadna odpowiedź nie jest prawidłowa"], key:4} },
+
+  { topic:"Lek p/depresyjny — mechanizm", note:"Citalopram/sertralina = SSRI; wenlafaksyna = SNRI; trazodon NIE jest SNRI/MAO-I",
+    a:{n:16, stem:"Prawidłowa para „lek p/depresyjny - mechanizm działania”:", opts:["Citalopram - SSRI","Trazodon - SNRI","Buspiron - MAO-I","A i B","A i C"], key:0},
+    b:{n:56, stem:"Wskaż prawidłowe zestawienie: „lek przeciwdepresyjny - mechanizm działania”:", opts:["Sertralina - SSRI","Wenlafaksyna - SNRI","Trazodon - MAO-I","A i B są prawidłowe","A i C są prawidłowe"], key:3} },
+
+  { topic:"β-laktamy — stwierdzenia", note:"Aztreonam→PMR; cefoperazon→zaburzenia krzepnięcia; NIE wszystkie doustne na czczo",
+    a:{n:17, stem:"Prawidłowe o beta-laktamach:", opts:["Wszystkie stosowane doustnie należy przyjmować na czczo","Aztreonam dobrze penetruje do płynu mózgowo-rdzeniowego","Ceftarolina szczególnie aktywna wobec bakterii produkujących ESBL","A i B","A i C"], key:1},
+    b:{n:57, stem:"Wskaż prawidłowe stwierdzenie dotyczące β-laktamów:", opts:["Wszystkie stosowane doustnie można podawać razem z posiłkiem","Monobaktamy są aktywne tylko wobec bakterii G(+)","Niektóre cefalosporyny (np. cefoperazon) mogą powodować zaburzenia krzepnięcia","A i B są prawidłowe","B i C są prawidłowe"], key:2} },
+
+  { topic:"Antybiotyk — droga podania", note:"Chloramfenikol miejscowo; tobramycyna NIE doustnie",
+    a:{n:18, stem:"Prawidłowa para „antybiotyk (chemioterapeutyk) - możliwa droga podania”:", opts:["Tobramycyna - doustnie","Piperacylina - do worka spojówkowego","Chloramfenikol - miejscowo","A i B","A, B i C"], key:2},
+    b:{n:58, stem:"Wskaż prawidłowe zestawienie: „antybiotyk (chemioterapeutyk) - droga podania”:", opts:["Tobramycyna - wziewnie","Ciprofloksacyna - do worka spojówkowego","Azytromycyna - naskórnie","A i B są prawidłowe","A, B i C są prawidłowe"], key:3} },
+
+  { topic:"Antybiotyki hamujące syntezę ściany komórkowej", note:"Wankomycyna + β-laktamy (cefepim, aztreonam); klindamycyna/azytromycyna = rybosom",
+    a:{n:19, stem:"Antybiotykami hamującymi syntezę ściany komórkowej bakterii są:", opts:["Wankomycyna","Klindamycyna","Azytromycyna","A i C","A, B i C"], key:0},
+    b:{n:59, stem:"Antybiotykami hamującymi syntezę ściany komórkowej bakterii są:", opts:["Wankomycyna","Cefepim","Aztreonam","A i C są prawidłowe","A, B i C są prawidłowe"], key:4} },
+
+  { topic:"Leki p/gruźlicze — działanie niepożądane", note:"<span class='pill pill-same'>identyczny klucz E</span> Izoniazyd→hepato/neuropatia; etambutol→n. wzrokowy; pyrazynamid→hiperurykemia",
+    a:{n:20, stem:"Prawidłowa para „lek p/gruźliczy - działanie niepożądane”:", opts:["Izoniazyd - hepatotoksyczność","Etambutol - pozagałkowe zapalenie nerwu wzrokowego","Ryfampicyna - trombocytopenia","A i B","A, B i C"], key:4},
+    b:{n:60, stem:"Wskaż prawidłowe zestawienie: „lek przeciwgruźliczy - działanie niepożądane”:", opts:["Izoniazyd - neuropatia obwodowa","Pyrazynamid - hiperurykemia","Ryfampicyna - zapalenie nerek","A i C są prawidłowe","A, B i C są prawidłowe"], key:4} },
+
+  { topic:"Inhibitory pompy protonowej", note:"<span class='diff'>Różny klucz</span> — A: krótki T½/krótko po bolusie; B: proleki + interakcje + inhibicja CYP2C19",
+    a:{n:21, stem:"Inhibitory pompy protonowej:", opts:["Mają krótki T½","Nie wchodzą w interakcje międzylekowe","Po podaniu dożylnym w bolusie działają krótko","A i C","A, B i C"], key:0},
+    b:{n:61, stem:"Inhibitory pompy protonowej:", opts:["Są prolekami","Mogą zmieniać wchłanianie niektórych leków (np. digoksyny)","Minimalną inhibicję CYP2C19 wykazuje pantoprazol","B i C są prawidłowe","A, B i C są prawidłowe"], key:4} },
+
+  { topic:"Leki przeciwwirusowe", note:"<span class='pill pill-same'>identyczny klucz D</span> Gancyklowir w CMV; acyklowir NIE bezpieczny w I trymestrze",
+    a:{n:22, stem:"Prawidłowe o lekach p/wirusowych:", opts:["Oseltamiwir jest prolekiem","Aciklowir jest silnie teratogenny w I trymestrze ciąży","Gancyklowir jest skuteczny w leczeniu zakażenia cytomegalią","A i C","A, B i C"], key:3},
+    b:{n:62, stem:"Wskaż prawidłowe stwierdzenie dotyczące leków przeciwwirusowych:", opts:["Oseltamiwir i zanamiwir nieodwracalnie hamują neuraminidazę wirusową","Aktywny metabolit gancyklowiru powstaje tylko w komórkach zakażonych wirusem (CMV)","Acyklowir jest bezpieczny w I trymestrze ciąży","B i C są prawidłowe","A, B i C są prawidłowe"], key:3} },
+
+  { topic:"Leki przeciwgrzybicze", note:"Azole zaburzają syntezę ergosterolu; terbinafina → epoksydaza skwalenu",
+    a:{n:23, stem:"Prawidłowe o lekach p/grzybiczych:", opts:["Azole blokują syntezę beta-glukanu","Terbinafina hamuje epoksydazę skwalenu","Nystatyna jest stosowana ogólnoustrojowo","A i C","A, B i C"], key:1},
+    b:{n:63, stem:"Wskaż prawidłowe stwierdzenie dotyczące leków przeciwgrzybiczych:", opts:["Azole zaburzają syntezę ergosterolu","Terbinafina aktywuje epoksydazę skwalenu","Amfoterycyna B blokuje syntezę β-glukanu","A i C są prawidłowe","A, B i C są prawidłowe"], key:0} },
+
+  { topic:"Leki przeciwwymiotne (setrony)", note:"Setrony BLOKUJĄ 5-HT3; metoklopramid blokuje D2",
+    a:{n:24, stem:"Prawidłowe o lekach p/wymiotnych:", opts:["Setrony aktywują receptor 5-HT3 w jelitach oraz OUN","Metoklopramid blokuje receptory D2","Aprepitant blokuje zarówno 5-HT3 jak i D2","A i C","A, B i C"], key:1},
+    b:{n:64, stem:"Setrony:", opts:["Aktywują receptor 5-HT3 w jelitach oraz OUN","To np. aprepitant","Podawane są m.in. i.v.","A i C są prawidłowe","A, B i C są prawidłowe"], key:2} },
+
+  { topic:"Opioidy i antagoniści", note:"Buprenorfina = częściowy agonista µ; nalokson działa nie „tylko µ”",
+    a:{n:25, stem:"Prawidłowe o opioidach i ich antagonistach:", opts:["Tapentadol to agonista receptorów µ i inhibitor NET","Nalokson to wyłącznie antagonista receptorów µ","Buprenorfina to częściowy agonista κ oraz antagonista µ","Loperamid w dawkach terapeutycznych przenika do OUN","Żadna prawidłowa"], key:0},
+    b:{n:65, stem:"Wskaż prawidłowe stwierdzenie dotyczące opioidów:", opts:["Dekstrometorfan w monoterapii jest skutecznym lekiem przeciwbólowym","Fentanyl nie ulega efektowi pierwszego przejścia","Buprenorfina jest czystym agonistą receptorów κ","A i C są prawidłowe","Żadna odpowiedź nie jest prawidłowa"], key:4} },
+
+  { topic:"L-DOPA — działania niepożądane / kazus Parkinson", note:"L-DOPA NIE powoduje zaćmy; L-DOPA + karbidopa = optymalna terapia",
+    a:{n:59, stem:"U pacjenta lat 70 z chorobą Parkinsona — które działanie niepożądane L-DOPA należy POMINĄĆ:", opts:["Sztywność mięśni","Akatyzja","Ograniczona w czasie skuteczność (wearing-off)","Zaćma","Zaburzenia nastroju"], key:3},
+    b:{n:21, stem:"Pacjent 72 l. z drżeniem spoczynkowym, sztywnością (choroba Parkinsona) — który lek będzie optymalny aby rozpocząć farmakoterapię?", opts:["L-DOPA w monoterapii","L-DOPA w skojarzeniu z karbidopą","Gabapentyna","A i B są prawidłowe","Żadna z powyższych nie jest prawidłowa"], key:1} },
+
+  { topic:"Agoniści dopaminy / NMDA w Parkinsonie", note:"Bromokryptyna i ropinirol = agoniści DA; amantadyna = bloker NMDA",
+    a:{n:60, stem:"Który z poniższych leków pobudza receptory dopaminowe?", opts:["Bromokryptyna","Ropinirol","Amantadyna","A i B są prawidłowe","A, B i C są prawidłowe"], key:3},
+    b:{n:23, stem:"Który z leków stosowanych w Parkinsonie działa przez blokowanie receptorów NMDA?", opts:["Rasagilina","Ropinirol","Amantadyna","B i C są prawidłowe","A, B i C są prawidłowe"], key:2} },
+
+  { topic:"Karbamazepina — mechanizm / lek p/padaczkowy", note:"Karbamazepina = blokada kanałów Na; walproinian = inhibitor enzymów (↑ inne leki)",
+    a:{n:61, stem:"Przeciwpadaczkowe działanie karbamazepiny jest związane z:", opts:["Blokowaniem kanałów wapniowych","Ułatwieniem działania GABA na kanały chlorkowe","Blokowaniem receptorów glutaminowych","Hamowaniem GABA-transmisji","Żadna odpowiedź nie jest prawidłowa"], key:4},
+    b:{n:24, stem:"Wskaż prawidłowe zestawienie lek p/padaczkowy - punkt uchwytu (molecular target):", opts:["Diazepam - receptor GABAA","Etosuksymid - kanały wapniowe typu T","Karbamazepina - kanały potasowe Kv7","A i B są prawidłowe","A, B i C są prawidłowe"], key:3} },
+
+  { topic:"Alzheimer — inhibitory AChE / memantyna NMDA", note:"Memantyna = antagonista NMDA; riwastygmina/donepezil/galantamina = inhibitory AChE",
+    a:{n:65, stem:"Do inhibitorów cholinesterazy stosowanych w chorobie Alzheimera zaliczamy:", opts:["Memantynę","Selegilinę","Riwastygminę","A i B są prawidłowe","Żadna odpowiedź nie jest prawidłowa"], key:2},
+    b:{n:26, stem:"Które z leków stosowanych w farmakoterapii choroby Alzheimera to antagonista receptora NMDA?", opts:["Galantamina","Riwastygmina","Donepezil","Memantyna","Żaden z powyższych"], key:3} },
+
+  { topic:"SM — chodzenie / interferon-β", note:"Dalfamprydyna ułatwia chodzenie; interferon-β → zespół grypopodobny + ↑ enzymy wątrobowe",
+    a:{n:63, stem:"W celu ułatwienia chodzenia u osób ze stwardnieniem rozsianym jest stosowany lek:", opts:["Alprostadil","Dalfamprydyna","Natalizumab","A i B są prawidłowe","Żadna odpowiedź nie jest prawidłowa"], key:1},
+    b:{n:25, stem:"Pacjent z SM — zgłasza zespół grypopodobny, obniżony nastrój, wzrost enzymów wątrobowych i zmęczenie. Który lek mógł spowodować takie działania?", opts:["Fingolimod","Natalizumab","Interferon beta-1a","Teriflunomid","Żaden z powyższych"], key:2} },
+
+  { topic:"Cholinolityki / cholinomimetyki", note:"Cholinolityki NIE dają bradykardii (dają tachykardię, suchość, zaparcia)",
+    a:{n:32, stem:"Cholinomimetyki:", opts:["Mogą stymulować receptory M lub N","Mogą hamować aktywność cholinesterazy","Są stosowane w nietrzymaniu moczu i POChP","A i B są prawidłowe","A, B i C są prawidłowe"], key:3},
+    b:{n:70, stem:"Działaniem niepożądanym leków cholinolitycznych NIE jest:", opts:["Bradykardia","Kserostomia","Zaparcie","Zwiększone ciśnienie wewnątrzgałkowe","Niewyraźne widzenie"], key:0} },
+
+  { topic:"Paracetamol — zatrucie / dawkowanie", note:"Odtrutka N-acetylocysteina; wątroba narząd krytyczny",
+    a:{n:45, stem:"Paracetamol w dawkach terapeutycznych:", opts:["Może być stosowany w ciąży","Działa przeciwzapalnie","Zwiększa ryzyko chorób układu krążenia","Bardzo często jest nefrotoksyczny","A i C są prawidłowe"], key:0},
+    b:{n:39, stem:"W ostrym zatruciu paracetamolem:", opts:["Minimalna toksyczna dawka dzienna dla dorosłego to 3 g","Głównym narządem krytycznym jest wątroba","Alkalizacja moczu przyspiesza jego eliminację","Odtrutką jest N-acetylocysteina","B i D są prawidłowe"], key:4} },
+
+  { topic:"Antidota — zestawienie lek/substancja", note:"Warfaryna→wit.K; morfina→nalokson; fosforoorganiczne→atropina+pralidoksym",
+    a:{n:70, stem:"Szybkie odwrócenie działania długotrwale przyjmowanych opioidów przez nalokson może spowodować:", opts:["Odruchowy skurcz oskrzeli","Ciężką hipokaliemię","Uogólnioną wysypkę","Ostry zespół odstawienny z pobudzeniem i bólami","Trombocytopenię"], key:3},
+    b:{n:40, stem:"Wskaż prawidłowe zestawienie „lek/substancja - objawy zatrucia - odtrutka”:", opts:["Warfaryna - krwioplucie, smoliste stolce - witamina K","Amitryptylina - zespół cholinolityczny - deferoksamina","Fenobarbital - drgawki, tachykardia, rozszerzone źrenice - atropina","Związki fosforoorganiczne - biegunka, bradykardia, łzawienie, pobudzenie - atropina i pralidoksym","A i D są prawidłowe"], key:4} },
+
+  { topic:"Analogi GLP-1 / cukrzyca + serce", note:"GLP-1 + SGLT2i = ochrona sercowo-naczyniowa; GLP-1 ↓ masa, podskórnie",
+    a:{n:43, stem:"Jakie leki przeciwcukrzycowe są szczególnie zalecane pacjentom z chorobami układu krążenia?", opts:["Akarboza","Analogi GLP-1","Tiazolidynodiony","Inhibitory SGLT-2","B i D są prawidłowe"], key:4},
+    b:{n:9, stem:"Analogi GLP-1 stosowane w cukrzycy:", opts:["Można stosować z metforminą lub pochodną sulfonylomocznika","Mogą zmniejszać masę ciała","Stosowane podskórnie","A i C są prawidłowe","A, B i C są prawidłowe"], key:4} },
+
+  { topic:"Niewydolność serca — leki I wyboru / inotropia", note:"SGLT2i + ACEI przedłużają życie; sakubitryl/walsartan BEZ inotropii (+)",
+    a:{n:49, stem:"Leki przedłużające życie w przewlekłej NS oraz stosowane jako I wybór:", opts:["Glikozydy nasercowe","Inhibitory SGLT-2","Inhibitory ACE lub blokery AT-1","B i C są prawidłowe","A, B i C są prawidłowe"], key:3},
+    b:{n:16, stem:"Jakie leki stosowane w niewydolności serca NIE mają dodatnich właściwości inotropowych?", opts:["Digoksyna","Sakubitril/walsartan","Dobutamina","Lewosimendan","A i C są prawidłowe"], key:1} },
+
+  { topic:"Bisfosfoniany / osteoporoza", note:"Hamują osteoklasty; denosumab↔RANKL; NIE są dobrze wchłaniane doustnie",
+    a:{n:39, stem:"Wskaż prawidłowe zdanie dotyczące bisfosfonianów:", opts:["Hamują aktywność osteoklastów","Zapobiegają działaniu RANKL","Są bezpieczne dla przewodu pokarmowego","Są dobrze wchłaniane z przewodu pokarmowego","A i D są prawidłowe"], key:0},
+    b:{n:6, stem:"Wskaż lek(i) stosowany(e) w leczeniu osteoporozy i ich działania niepożądane:", opts:["Denosumab - zwiększone ryzyko infekcji","Raloksyfen - zwiększone ryzyko zdarzeń zakrzepowo-zatorowych","Cholekalcyferol - hiperkalcemia","B i C są prawidłowe","A i B są prawidłowe"], key:4} },
+
+  { topic:"Lewotyroksyna / tarczyca", note:"Lek z wyboru w niedoczynności; bezpieczna w ciąży; długi T½",
+    a:{n:38, stem:"Wskaż właściwy lek stosowany w zaburzeniach funkcji tarczycy:", opts:["Metimazol (tiamazol) - niedoczynność tarczycy","Tyroksyna - preparat z wyboru w terapii zastępczej","Niektóre β-blokery - tyreotoksykoza","B i C są prawidłowe","A i B są prawidłowe"], key:3},
+    b:{n:5, stem:"Lewotyroksyna:", opts:["Jest przeciwwskazana w ciąży","Jest lekiem z wyboru w niedoczynności tarczycy","Ma krótki okres półtrwania","A i B są prawidłowe","B i C są prawidłowe"], key:1} },
+
+  { topic:"ACEI / sartany / nadciśnienie", note:"Oba w NT i NS; sartany NIE dają większego kaszlu; oba zakazane w ciąży",
+    a:{n:46, stem:"Wskaż prawidłowe stwierdzenie dotyczące inhibitorów układu RAA:", opts:["Sartany powodują większe ryzyko suchego kaszlu niż ACEI","Zarówno ACEI jak i sartany mogą być stosowane w NT i przewlekłej NS","Zaleca się łączne stosowanie małych dawek sartanów i ACEI","Leki te są bezpieczne w ciąży","Żadna odpowiedź nie jest prawidłowa"], key:1},
+    b:{n:13, stem:"Wskaż BŁĘDNE zdanie dotyczące leków moczopędnych u pacjentów z NT:", opts:["Diuretyki tiazydopodobne należą do leków I wyboru w NT","Sartany można stosować łącznie z indapamidem lub HCTZ","Eplerenon może zmniejszać stężenie potasu","Furosemid stosuje się w leczeniu ciężkiego NT i NS","Niektóre leki moczopędne mogą zwiększać syntezę kwasu moczowego"], key:2} },
+
+  { topic:"Receptory — agonista / typ receptora", note:"Fenylefryna = α1 (GPCR); formoterol = β2 (GPCR); trastuzumab NIE wewnątrzkomórkowy",
+    a:{n:28, stem:"Prawidłowa para „receptor - agonista”:", opts:["beta1 - propranolol","receptor wewnątrzkomórkowy - trastuzumab","beta2 - formoterol","GABA-A - flumazenil","B i C"], key:2},
+    b:{n:68, stem:"Wskaż prawidłowe zestawienie „agonista lub antagonista - typ receptora - rodzaj receptora”:", opts:["Propranolol - receptor jonotropowy - β1","Nikotyna - receptor jonotropowy - M","Fenylefryna - receptor sprzężony z białkiem G - α1","Oksybutynina - receptor sprzężony z białkiem G - H2","Żadne nie jest prawidłowe"], key:2} },
+
+  { topic:"Biodostępność / okres półtrwania", note:"i.v. = 100%; efekt I przejścia ↓ biodostępność; T½ stały w kinetyce I rzędu",
+    a:{n:30, stem:"Wskaż prawidłową odpowiedź:", opts:["Biodostępność to ułamek dawki wchłoniętej w żołądku","Wszystkie leki są metabolizowane w wątrobie","Jednostką półtrwania jest %","Szybkość eliminacji leku jest stała w kinetyce I rzędu","A i D są prawidłowe"], key:3},
+    b:{n:67, stem:"Wskaż poprawne zdanie dotyczące biodostępności:", opts:["Po podaniu dożylnym wynosi 100%","Efekt pierwszego przejścia może obniżyć ten parametr","Dla leków o niskiej biodostępności dawki doustne muszą być równe dawkom pozajelitowym","A i B są prawidłowe","B i C są prawidłowe"], key:3} }
+];
+
+function optHTML(opts, key){
+  const letters = ['A','B','C','D','E'];
+  return '<ul class="qopts">' + opts.map((o,i)=>
+    `<li class="${i===key?'correct':''}"><span class="ol">${letters[i]}.</span><span>${o}${i===key?' ✓':''}</span></li>`
+  ).join('') + '</ul>';
+}
+function qboxHTML(side, q){
+  const letters=['A','B','C','D','E'];
+  if(!q) return `<div class="qbox ${side}"><div class="qmissing">— brak odpowiednika w tym egzaminie —</div></div>`;
+  const label = side==='a' ? 'Egzamin A · 2024/2025' : 'Egzamin B · 03.07.2024';
+  return `<div class="qbox ${side}">
+    <div class="qbox-head">${label} · pytanie ${q.n}</div>
+    <div class="qstem">${q.stem}</div>
+    ${optHTML(q.opts, q.key)}
+    <div class="qkey"><span class="lbl">Poprawna odpowiedź: </span><span class="val">${letters[q.key]}</span></div>
+  </div>`;
+}
+
+const tbody = document.getElementById('cmp-body');
+ROWS.forEach((row, idx)=>{
+  const aTag = row.a ? `Q${row.a.n} (${['A','B','C','D','E'][row.a.key]})` : '—';
+  const bTag = row.b ? `Q${row.b.n} (${['A','B','C','D','E'][row.b.key]})` : '—';
+  const tr = document.createElement('tr');
+  tr.className = 'q-toggle';
+  tr.innerHTML = `<td>${row.topic}</td><td class="tag-a">${aTag}</td><td class="tag-b">${bTag}</td><td>${row.note}</td>`;
+  const detail = document.createElement('tr');
+  detail.className = 'q-detail';
+  const single = !(row.a && row.b);
+  detail.innerHTML = `<td colspan="4"><div class="qpanel ${single?'single':''}">${qboxHTML('a',row.a)}${qboxHTML('b',row.b)}</div></td>`;
+  tr.addEventListener('click', ()=>{
+    const open = tr.classList.toggle('open');
+    detail.classList.toggle('show', open);
+  });
+  tbody.appendChild(tr);
+  tbody.appendChild(detail);
+});
+
+function toggleAll(open){
+  document.querySelectorAll('#cmp-body .q-toggle').forEach(tr=>{
+    tr.classList.toggle('open', open);
+    tr.nextElementSibling.classList.toggle('show', open);
+  });
+}
 </script>
 </body>
 </html>
