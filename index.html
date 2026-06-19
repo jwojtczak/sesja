@@ -155,57 +155,5 @@
 
     </div>
   </section>
-
-  <section style="padding-top:6px">
-    <div class="sec-head"><span class="n">2</span><h2>Jak podpiąć kolejną stronę</h2></div>
-    <p class="sec-sub">Strony HTML łączą się zwykłym linkiem <code style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;background:var(--panel-2);padding:1px 6px;border-radius:5px">&lt;a href="…"&gt;</code>. Bez serwera, bez frameworków — wystarczą pliki obok siebie.</p>
-
-    <div class="howto">
-      <ol class="steps">
-        <li>Zapisz nowy plik, np. <code>anatomia.html</code>, w <b>tym samym folderze</b> co <code>index.html</code>.</li>
-        <li>Skopiuj poniższy blok kafelka i wklej go w sekcji <code>&lt;div class="tiles"&gt;</code> (możesz nadpisać pusty kafelek).</li>
-        <li>Zmień <code>href</code> na nazwę swojego pliku oraz podmień tytuł i opis.</li>
-        <li>Otwórz <code>index.html</code> w przeglądarce — link działa od razu.</li>
-      </ol>
-
-      <pre id="snippet"><span class="tag">&lt;a</span> <span class="att">class</span>=<span class="val">"tile"</span> <span class="att">href</span>=<span class="val">"anatomia.html"</span><span class="tag">&gt;</span>
-  <span class="tag">&lt;span</span> <span class="att">class</span>=<span class="val">"tile-num"</span><span class="tag">&gt;</span><span class="txt">02</span><span class="tag">&lt;/span&gt;</span>
-  <span class="tag">&lt;span</span> <span class="att">class</span>=<span class="val">"tile-title"</span><span class="tag">&gt;</span><span class="txt">Anatomia</span><span class="tag">&lt;/span&gt;</span>
-  <span class="tag">&lt;span</span> <span class="att">class</span>=<span class="val">"tile-desc"</span><span class="tag">&gt;</span><span class="txt">Krótki opis tej strony.</span><span class="tag">&lt;/span&gt;</span>
-  <span class="tag">&lt;span</span> <span class="att">class</span>=<span class="val">"tile-go"</span><span class="tag">&gt;</span><span class="txt">otwórz →</span><span class="tag">&lt;/span&gt;</span>
-<span class="tag">&lt;/a&gt;</span></pre>
-
-      <button class="copybtn" id="copyBtn">Skopiuj kod kafelka</button>
-
-      <p class="tip"><b>Foldery i ścieżki:</b> jeśli trzymasz strony w podfolderze, użyj ścieżki względnej, np. <code style="font-family:'IBM Plex Mono',monospace;font-size:12px;background:var(--panel-2);padding:1px 5px;border-radius:4px">href="podstrony/anatomia.html"</code>. Z powrotem w górę: <code style="font-family:'IBM Plex Mono',monospace;font-size:12px;background:var(--panel-2);padding:1px 5px;border-radius:4px">href="../index.html"</code>. Najważniejsze: nazwy plików liczą się co do znaku (wielkość liter też), więc trzymaj się małych liter bez spacji.</p>
-    </div>
-  </section>
-
-  <footer>Strona główna · pliki HTML łączone linkami względnymi · trzymaj wszystkie pliki w jednym folderze</footer>
-</main>
-
-<script>
-  // Przycisk "Skopiuj" — kopiuje czysty kod kafelka (bez kolorowania) do schowka.
-  const tpl = `<a class="tile" href="anatomia.html">
-  <span class="tile-num">02</span>
-  <span class="tile-title">Anatomia</span>
-  <span class="tile-desc">Krótki opis tej strony.</span>
-  <span class="tile-go">otwórz →</span>
-</a>`;
-  const btn = document.getElementById('copyBtn');
-  btn.addEventListener('click', async () => {
-    try {
-      await navigator.clipboard.writeText(tpl);
-      const old = btn.textContent;
-      btn.textContent = 'Skopiowano ✓';
-      setTimeout(() => btn.textContent = old, 1600);
-    } catch (e) {
-      // awaryjnie: zaznacz tekst w <pre>, gdyby schowek był niedostępny
-      const r = document.createRange();
-      r.selectNodeContents(document.getElementById('snippet'));
-      const s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
-    }
-  });
-</script>
 </body>
 </html>
