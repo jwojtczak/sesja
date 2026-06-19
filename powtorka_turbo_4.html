@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Powtórka turbo — leki przeciwdrobnoustrojowe</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#EAEDEF;--panel:#FBFCFD;--panel-2:#F1F4F6;
+    --ink:#16222B;--muted:#566570;--faint:#8794A0;
+    --line:#D2D9DE;--line-2:#E1E7EB;
+    --accent:#1F6FA0;--accent-soft:#D8E8F2;--accent-ink:#0F4865;
+    --warn:#A6492C;--gold:#92701A;--gold-soft:#EFE7CD;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:"Space Grotesk",system-ui,sans-serif;-webkit-font-smoothing:antialiased;line-height:1.5}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 22px}
+
+  header.hero{padding:46px 0 26px;border-bottom:1px solid var(--line)}
+  .backlink{display:inline-block;font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--muted);text-decoration:none;margin-bottom:14px;letter-spacing:.03em;transition:color .15s}
+  .backlink:hover{color:var(--accent)}
+  .eyebrow{font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);margin:0 0 14px}
+  h1{font-family:"Newsreader",serif;font-weight:500;font-size:clamp(28px,4.8vw,48px);line-height:1.05;margin:0;letter-spacing:-.015em}
+  h1 em{font-style:italic;color:var(--accent)}
+  .lede{font-family:"Newsreader",serif;font-size:17px;color:var(--muted);max-width:64ch;margin:15px 0 0;line-height:1.45}
+
+  /* MODBAR (dynamiczne przyciski modułów) */
+  .modbar{position:sticky;top:0;z-index:40;background:rgba(234,237,239,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);transition:padding .16s}
+  .modbar-inner{display:flex;flex-wrap:wrap;gap:8px;padding:12px 22px}
+  .modbtn{flex:1 1 auto;min-width:120px;font-family:"Space Grotesk",sans-serif;font-size:14px;font-weight:600;border:1px solid var(--line);background:var(--panel);color:var(--muted);padding:11px 15px;border-radius:11px;cursor:pointer;transition:all .16s;display:flex;flex-direction:column;align-items:flex-start;gap:1px;text-align:left}
+  .modbtn .sub{font-family:"IBM Plex Mono",monospace;font-size:10.5px;font-weight:400;letter-spacing:.04em}
+  .modbtn.on{background:var(--accent);border-color:var(--accent);color:#fff}
+  .modbtn.on .sub{color:rgba(255,255,255,.82)}
+  .modbtn:not(.on):hover{border-color:var(--accent)}
+  .scrolled .modbtn{flex-direction:row;align-items:center;gap:7px;padding:7px 13px;font-size:13px}
+  .scrolled .modbtn .sub{display:none}
+  .scrolled .modbar-inner{padding:7px 22px}
+
+  /* CONTROLS */
+  .controls{position:sticky;top:var(--modbar-h,64px);z-index:30;background:rgba(234,237,239,.93);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);border-top:1px solid var(--line);padding:13px 0}
+  .controls-inner{display:flex;flex-wrap:wrap;gap:11px;align-items:center}
+  .viewseg{display:inline-flex;background:var(--panel-2);border:1px solid var(--line);border-radius:10px;padding:3px;gap:3px;flex:none}
+  .viewseg button{font-family:"Space Grotesk",sans-serif;font-size:12.5px;font-weight:600;border:none;background:none;color:var(--muted);padding:7px 14px;border-radius:7px;cursor:pointer;transition:all .15s}
+  .viewseg button.on{background:var(--ink);color:#EAEDEF}
+  .filterbtn{font-family:"Space Grotesk",sans-serif;font-size:12.5px;font-weight:600;border:1px solid var(--line);background:var(--panel);color:var(--muted);padding:7px 13px;border-radius:999px;cursor:pointer;display:inline-flex;align-items:center;gap:7px;white-space:nowrap}
+  .filterbtn:hover{border-color:var(--accent);color:var(--accent-ink)}
+  .filterbtn .caret{display:inline-block;transition:transform .15s;font-size:11px}
+  .filterbtn.collapsed .caret{transform:rotate(-90deg)}
+  .count-note{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--faint);margin-left:auto;white-space:nowrap}
+  .filtercluster{display:flex;flex-wrap:wrap;gap:11px;align-items:center;flex:1 1 100%}
+  .filtercluster.hidden{display:none}
+  .search{flex:1 1 220px;display:flex;align-items:center;gap:9px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:9px 13px}
+  .search input{border:none;background:none;outline:none;font:inherit;font-size:14px;width:100%;color:var(--ink)}
+  .search svg{flex:none;stroke:var(--faint)}
+  .chips{display:flex;flex-wrap:wrap;gap:7px}
+  .cards-view .chips{flex:1 1 100%;flex-wrap:nowrap;overflow-x:auto;padding-bottom:3px;scrollbar-width:thin}
+  .cards-view .chips::-webkit-scrollbar{height:5px}
+  .cards-view .chips::-webkit-scrollbar-thumb{background:var(--line);border-radius:3px}
+  .chip{font-family:"Space Grotesk",sans-serif;font-size:12.5px;font-weight:500;border:1px solid var(--line);background:var(--panel);color:var(--muted);padding:6px 12px;border-radius:999px;cursor:pointer;transition:all .15s;white-space:nowrap}
+  .chip:hover{border-color:var(--accent);color:var(--accent-ink)}
+  .chip.on{background:var(--ink);border-color:var(--ink);color:#EAEDEF}
+  .cards-view .legend,.cards-view #note{display:none}
+
+  /* LIST CARDS */
+  .grp-label{font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.13em;text-transform:uppercase;color:var(--accent);margin:30px 0 13px;padding-bottom:7px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:end}
+  .grp-label span.c{color:var(--faint);letter-spacing:.04em}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:15px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 17px 14px;display:flex;flex-direction:column;transition:box-shadow .18s,transform .18s,border-color .18s}
+  .card:hover{box-shadow:0 8px 26px -16px rgba(16,40,55,.4);transform:translateY(-2px)}
+  .drug{font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:17px;letter-spacing:-.01em;line-height:1.15}
+  .kl{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--accent-ink);background:var(--accent-soft);display:inline-block;padding:3px 9px;border-radius:6px;margin:7px 0 11px;width:fit-content}
+  .row{display:flex;gap:9px;font-size:13px;margin:6px 0;line-height:1.44}
+  .row .ic{flex:none;width:14px;text-align:center;color:var(--faint);font-family:"IBM Plex Mono",monospace;margin-top:1px}
+  .row.use .ic{color:var(--accent)}
+  .keybox{margin-top:auto;padding-top:11px}
+  .keybox .inner{background:var(--gold-soft);border-left:3px solid var(--gold);border-radius:0 8px 8px 0;padding:9px 12px;font-size:12.5px;color:#5f4c12;line-height:1.45}
+  .keybox b.h{color:var(--gold);font-weight:600;font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:3px}
+  .empty{text-align:center;color:var(--faint);padding:46px 0;font-size:15px;display:none}
+
+  /* FLASHCARDS */
+  #flashview{padding:8px 0 0}
+  .flashstage{max-width:560px;margin:18px auto 0;display:flex;flex-direction:column;align-items:center;gap:18px}
+  .flashcard{width:100%;height:min(62vh,480px);perspective:1600px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+  .flip-inner{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .5s cubic-bezier(.4,.1,.2,1)}
+  .flashcard.flipped .flip-inner{transform:rotateY(180deg)}
+  .flip-face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border:1px solid var(--line);border-radius:18px;background:var(--panel);padding:26px;display:flex;flex-direction:column;box-shadow:0 10px 30px -20px rgba(16,40,55,.5)}
+  .flip-front{align-items:center;justify-content:center;text-align:center;gap:12px}
+  .fc-name{font-family:"Newsreader",serif;font-weight:500;font-size:clamp(25px,5.6vw,38px);line-height:1.12;letter-spacing:-.01em}
+  .fc-hint{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--faint);margin-top:6px}
+  .flip-back{transform:rotateY(180deg);overflow-y:auto;gap:2px}
+  .flip-back .bk-name{font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:18px;margin-bottom:2px}
+  .flashnav{display:flex;gap:9px;width:100%;justify-content:center;align-items:center;flex-wrap:wrap}
+  .flashnav button{font-family:"Space Grotesk",sans-serif;font-size:13.5px;font-weight:600;border:1px solid var(--line);background:var(--panel);color:var(--ink);padding:10px 16px;border-radius:10px;cursor:pointer;transition:all .15s}
+  .flashnav button:hover{border-color:var(--accent)}
+  .flashnav .flip-btn{background:var(--ink);color:#EAEDEF;border-color:var(--ink);flex:1;max-width:200px}
+  .flashmeta{display:flex;gap:14px;align-items:center;font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--muted)}
+  .flashmeta button{font:inherit;border:none;background:none;color:var(--accent);cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+  .flash-empty{text-align:center;color:var(--faint);padding:50px 0;font-size:15px}
+
+  .legend{display:flex;flex-wrap:wrap;gap:16px;align-items:center;padding:16px 0 0;font-size:12.5px;color:var(--muted)}
+  #note{background:var(--panel-2);border:1px solid var(--line);border-radius:14px;padding:16px 18px;font-size:13.5px;color:var(--muted);line-height:1.55;margin-top:6px}
+  #note b{color:var(--ink)}
+  footer{padding:36px 0 56px;border-top:1px solid var(--line);margin-top:18px;font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--faint);letter-spacing:.03em}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}.flip-inner{transition:none}}
+  .hidden{display:none!important}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <a href="index.html" class="backlink">← Strona główna</a>
+    <p class="eyebrow">Powtórka turbo · IV kolokwium</p>
+    <h1>Leki <em>przeciwdrobnoustrojowe</em></h1>
+    <p class="lede">Szybka powtórka według listy: klasa, mechanizm w jednym zdaniu, kluczowe zastosowanie i to, co trzeba zapamiętać (charakterystyczna toksyczność / pułapka). Przełączaj moduły, ucz się z listy albo z fiszek.</p>
+  </div>
+</header>
+
+<div class="modbar"><div class="wrap modbar-inner" id="modbar"></div></div>
+
+<div class="wrap">
+  <div class="legend"><div>Każda karta: <b style="color:var(--ink)">klasa → mechanizm → zastosowanie → „Zapamiętaj”</b> (najważniejsza toksyczność lub haczyk egzaminacyjny).</div></div>
+</div>
+
+<div class="controls">
+  <div class="wrap controls-inner">
+    <div class="viewseg" id="viewseg">
+      <button data-view="list" class="on">Lista</button>
+      <button data-view="cards">Fiszki</button>
+    </div>
+    <button class="filterbtn collapsed" id="filterToggle" aria-expanded="false"><span class="caret">▾</span>Filtry</button>
+    <span class="count-note" id="countNote"></span>
+    <div class="filtercluster hidden" id="filterCluster">
+      <label class="search">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input id="search" type="search" placeholder="Szukaj: nazwa, klasa, zastosowanie…" aria-label="Szukaj leku">
+      </label>
+      <div class="chips" id="chips"></div>
+    </div>
+  </div>
+</div>
+
+<main class="wrap">
+  <div id="list"></div>
+  <div class="empty" id="empty">Brak leków dla tego filtra.</div>
+  <div id="flashview"></div>
+  <div id="note" style="margin-top:34px"><b>Zakres.</b> Ten moduł obejmuje antybiotyki (z przeciwgruźliczymi), leki przeciwwirusowe, przeciwgrzybicze i przeciwpierwotniakowe — czyli blok „IV kolokwium”. Leki przeciwnowotworowe dorzucę jako osobny moduł.</div>
+  <footer>Powtórka turbo · układ: klasa → mechanizm → zastosowanie → zapamiętaj · materiał skrótowy do szybkiej powtórki</footer>
+</main>
+
+<script>
+const MODULES=[
+  {id:"ab",label:"Antybiotyki"},
+  {id:"av",label:"Przeciwwirusowe"},
+  {id:"af",label:"Przeciwgrzybicze"},
+  {id:"ap",label:"Przeciwpierwotniakowe"}
+];
+const GROUPS={
+  ab:[["wszystkie","Wszystkie"],["penicyliny","Penicyliny"],["cefalosporyny","Cefalosporyny"],["monobakt","Monobaktam"],["karbapenemy","Karbapenemy"],["aminoglikozydy","Aminoglikozydy"],["tetracykliny","Tetracykliny"],["makrolidy","Makrolidy"],["linkozamidy","Linkozamidy"],["sulfonamidy","Sulfonamidy"],["chinolony","Chinolony"],["glikopeptydy","Glikopeptydy"],["inne_ab","Inne"],["tb","Przeciwgruźlicze"]],
+  av:[["wszystkie","Wszystkie"],["herpes","Anty-herpes/CMV"],["hiv","HIV (ARV)"],["grypa","Grypa"],["wzw","WZW / inne"]],
+  af:[["wszystkie","Wszystkie"],["poliieny","Polieny"],["azole","Azole"],["echino","Echinokandyny"],["inne_af","Inne"]],
+  ap:[["wszystkie","Wszystkie"],["malaria","Przeciwmalaryczne"],["inne_ap","Inne pierwotniaki"]]
+};
+
+const DRUGS=[
+/* ===================== ANTYBIOTYKI ===================== */
+/* Penicyliny */
+{n:"Penicylina G",mod:"ab",grp:"penicyliny",g:"Penicyliny",kl:"β-laktam (naturalna)",mech:"Hamuje syntezę ściany (wiąże PBP/transpeptydazy).",use:"Paciorkowce, kiła, meningokoki",key:"Wąskie spektrum; i.v./i.m.; reakcje alergiczne (krzyżowe z innymi β-laktamami)."},
+{n:"Penicylina benzatynowa",mod:"ab",grp:"penicyliny",g:"Penicyliny",kl:"β-laktam (depot)",mech:"Powolne uwalnianie penicyliny G z domięśniowego depo.",use:"Kiła, profilaktyka gorączki reumatycznej",key:"Działa tygodniami z jednego wstrzyknięcia i.m."},
+{n:"Nafcylina",mod:"ab",grp:"penicyliny",g:"Penicyliny",kl:"penicylina przeciwgronkowcowa",mech:"Oporna na penicylinazę gronkowca.",use:"MSSA",key:"NIE działa na MRSA."},
+{n:"Kloksacylina",mod:"ab",grp:"penicyliny",g:"Penicyliny",kl:"penicylina przeciwgronkowcowa",mech:"Oporna na penicylinazę.",use:"MSSA, zakażenia skóry",key:"Nieskuteczna wobec MRSA."},
+{n:"Metycylina",mod:"ab",grp:"penicyliny",g:"Penicyliny",kl:"penicylina przeciwgronkowcowa (hist.)",mech:"Oporna na penicylinazę.",use:"Historyczna — definiuje „MRSA”",key:"Śródmiąższowe zapalenie nerek; wycofana."},
+{n:"Amoksycylina",mod:"ab",grp:"penicyliny",g:"Penicyliny",kl:"aminopenicylina",mech:"Szersze spektrum, w tym część G-.",use:"Ucho/zatoki/drogi oddechowe, H. pylori",key:"Lepsza biodostępność doustna niż ampicylina."},
+{n:"Amoksycylina/klawulanian",mod:"ab",grp:"penicyliny",g:"Penicyliny",kl:"aminopenicylina + inhibitor β-laktamaz",mech:"Klawulanian chroni przed β-laktamazą.",use:"Zakażenia mieszane, pokąsania",key:"Biegunka; rozszerza spektrum o szczepy produkujące β-laktamazę."},
+{n:"Ampicylina",mod:"ab",grp:"penicyliny",g:"Penicyliny",kl:"aminopenicylina",mech:"Spektrum jak amoksycylina.",use:"Listeria, enterokoki (i.v.)",key:"Wysypka przy mononukleozie zakaźnej."},
+{n:"Ampicylina/sulbaktam",mod:"ab",grp:"penicyliny",g:"Penicyliny",kl:"aminopenicylina + inhibitor β-laktamaz",mech:"Sulbaktam blokuje β-laktamazy.",use:"Zakażenia mieszane, jamy brzusznej",key:"Podawany i.v."},
+{n:"Piperacylina/tazobaktam",mod:"ab",grp:"penicyliny",g:"Penicyliny",kl:"ureidopenicylina + inhibitor",mech:"Bardzo szerokie spektrum z P. aeruginosa.",use:"Ciężkie zakażenia szpitalne",key:"Obejmuje Pseudomonas — lek „szerokowachlarzowy”."},
+/* Cefalosporyny */
+{n:"Cefazolina",mod:"ab",grp:"cefalosporyny",g:"Cefalosporyny",kl:"I generacja",mech:"Działa głównie na G+ (gronkowce, paciorkowce).",use:"Profilaktyka okołooperacyjna",key:"I gen. = przewaga G+."},
+{n:"Cefaleksyna",mod:"ab",grp:"cefalosporyny",g:"Cefalosporyny",kl:"I generacja (doustna)",mech:"Spektrum G+.",use:"Skóra, drogi moczowe",key:"Doustna cefalosporyna I gen."},
+{n:"Cefaklor",mod:"ab",grp:"cefalosporyny",g:"Cefalosporyny",kl:"II generacja",mech:"Większa aktywność wobec G-.",use:"Ucho, drogi oddechowe",key:"II gen. = G+ i część G-."},
+{n:"Cefuroksym",mod:"ab",grp:"cefalosporyny",g:"Cefalosporyny",kl:"II generacja",mech:"G+ i G-, w tym H. influenzae.",use:"Drogi oddechowe",key:"Klasyczna II generacja."},
+{n:"Ceftriakson",mod:"ab",grp:"cefalosporyny",g:"Cefalosporyny",kl:"III generacja",mech:"Szerokie G-, przenika do OUN.",use:"Zapalenie opon, rzeżączka, posocznica",key:"1×/d; kamica rzekoma żółci; NIE z wapniem u noworodków."},
+{n:"Cefotaksym",mod:"ab",grp:"cefalosporyny",g:"Cefalosporyny",kl:"III generacja",mech:"Szerokie G-, OUN.",use:"Zapalenie opon (też u noworodków)",key:"Bezpieczniejszy u noworodków niż ceftriakson."},
+{n:"Ceftazydym",mod:"ab",grp:"cefalosporyny",g:"Cefalosporyny",kl:"III generacja (anty-Pseudomonas)",mech:"Aktywny wobec P. aeruginosa.",use:"Zakażenia Pseudomonas",key:"III gen. z działaniem przeciw Pseudomonas."},
+{n:"Cefepim",mod:"ab",grp:"cefalosporyny",g:"Cefalosporyny",kl:"IV generacja",mech:"Szerokie G+/G-, w tym Pseudomonas.",use:"Ciężkie zakażenia szpitalne, gorączka neutropeniczna",key:"IV gen. = najszersze spektrum klasycznych cefalosporyn."},
+{n:"Ceftarolina",mod:"ab",grp:"cefalosporyny",g:"Cefalosporyny",kl:"V generacja",mech:"Wiąże zmienione PBP2a.",use:"MRSA",key:"Jedyna cefalosporyna skuteczna wobec MRSA."},
+/* Monobaktam */
+{n:"Aztreonam",mod:"ab",grp:"monobakt",g:"Monobaktam",kl:"monobaktam",mech:"β-laktam działający tylko na tlenowe G-.",use:"Zakażenia G- przy alergii na penicyliny",key:"Bezpieczny przy alergii na penicyliny; brak G+/beztlenowców."},
+/* Karbapenemy */
+{n:"Imipenem/cylastatyna",mod:"ab",grp:"karbapenemy",g:"Karbapenemy",kl:"karbapenem",mech:"Bardzo szerokie spektrum; cylastatyna hamuje rozkład w nerce.",use:"Ciężkie zakażenia wielobakteryjne",key:"Ryzyko drgawek; cylastatyna = inhibitor dehydropeptydazy."},
+{n:"Ertapenem",mod:"ab",grp:"karbapenemy",g:"Karbapenemy",kl:"karbapenem",mech:"Szerokie spektrum, ale bez Pseudomonas.",use:"Zakażenia jamy brzusznej (1×/d)",key:"NIE działa na Pseudomonas/Acinetobacter."},
+{n:"Doripenem",mod:"ab",grp:"karbapenemy",g:"Karbapenemy",kl:"karbapenem",mech:"Szerokie, w tym Pseudomonas.",use:"Ciężkie zakażenia",key:"Obejmuje Pseudomonas."},
+{n:"Meropenem",mod:"ab",grp:"karbapenemy",g:"Karbapenemy",kl:"karbapenem",mech:"Szerokie, Pseudomonas, dobra penetracja do OUN.",use:"Zapalenie opon, posocznica",key:"Mniejsze ryzyko drgawek niż imipenem."},
+/* Aminoglikozydy */
+{n:"Gentamycyna",mod:"ab",grp:"aminoglikozydy",g:"Aminoglikozydy",kl:"aminoglikozyd (30S)",mech:"Nieodwracalnie wiąże 30S → błędne białka (bakteriobójczy).",use:"Ciężkie G- (w skojarzeniu z β-laktamem)",key:"Nefro- i ototoksyczność; monitorować stężenia."},
+{n:"Tobramycyna",mod:"ab",grp:"aminoglikozydy",g:"Aminoglikozydy",kl:"aminoglikozyd",mech:"Wiąże 30S.",use:"Pseudomonas (też wziewnie w mukowiscydozie)",key:"Nefro-/ototoksyczność."},
+{n:"Amikacyna",mod:"ab",grp:"aminoglikozydy",g:"Aminoglikozydy",kl:"aminoglikozyd",mech:"Wiąże 30S; oporna na enzymy inaktywujące.",use:"Szczepy oporne, prątki atypowe",key:"Najszersze spektrum w grupie."},
+{n:"Streptomycyna",mod:"ab",grp:"aminoglikozydy",g:"Aminoglikozydy",kl:"aminoglikozyd",mech:"Wiąże 30S.",use:"Gruźlica, dżuma, tularemia",key:"Ototoksyczność (głównie przedsionkowa)."},
+{n:"Neomycyna",mod:"ab",grp:"aminoglikozydy",g:"Aminoglikozydy",kl:"aminoglikozyd (miejscowo/p.o.)",mech:"Wiąże 30S.",use:"Dekontaminacja jelita, preparaty miejscowe",key:"Zbyt toksyczna ogólnoustrojowo — tylko miejscowo/doustnie."},
+{n:"Plazomycyna",mod:"ab",grp:"aminoglikozydy",g:"Aminoglikozydy",kl:"aminoglikozyd (nowy)",mech:"Wiąże 30S; oporna na enzymy.",use:"Oporne enterobakterie (powikłane ZUM)",key:"Działa na szczepy ESBL/CRE."},
+/* Tetracykliny */
+{n:"Tetracyklina",mod:"ab",grp:"tetracykliny",g:"Tetracykliny",kl:"tetracyklina (30S)",mech:"Blokuje przyłączenie aminoacylo-tRNA do 30S (bakteriostatyczny).",use:"Trądzik, atypowe, krętki",key:"Przebarwienia zębów u dzieci; chelatuje Ca/Fe; fotouczulenie."},
+{n:"Doksycyklina",mod:"ab",grp:"tetracykliny",g:"Tetracykliny",kl:"tetracyklina",mech:"Wiąże 30S.",use:"Atypowe zapalenie płuc, borelioza, profilaktyka malarii",key:"Bezpieczna w niewydolności nerek; światłoczułość."},
+{n:"Minocyklina",mod:"ab",grp:"tetracykliny",g:"Tetracykliny",kl:"tetracyklina",mech:"Wiąże 30S.",use:"Trądzik, część MRSA",key:"Zawroty głowy, przebarwienia skóry."},
+{n:"Tygecyklina",mod:"ab",grp:"tetracykliny",g:"Tetracykliny",kl:"glicylocyklina",mech:"Wiąże 30S, omija mechanizmy oporności.",use:"Oporne zakażenia skóry i jamy brzusznej",key:"NIE w bakteriemii; ostrzeżenie o ↑ śmiertelności."},
+{n:"Omadacyklina",mod:"ab",grp:"tetracykliny",g:"Tetracykliny",kl:"aminometylocyklina",mech:"Wiąże 30S.",use:"Pozaszpitalne zapalenie płuc, zakażenia skóry",key:"Obejmuje szczepy oporne na tetracykliny."},
+{n:"Erawacyklina",mod:"ab",grp:"tetracykliny",g:"Tetracykliny",kl:"fluorocyklina",mech:"Wiąże 30S.",use:"Powikłane zakażenia jamy brzusznej",key:"Działa na wielooporne G-."},
+{n:"Demeklocyklina",mod:"ab",grp:"tetracykliny",g:"Tetracykliny",kl:"tetracyklina",mech:"Wiąże 30S; hamuje też działanie ADH na nerkę.",use:"SIADH (off-label)",key:"Wywołuje moczówkę nerkową — wykorzystywane w SIADH."},
+/* Makrolidy */
+{n:"Erytromycyna",mod:"ab",grp:"makrolidy",g:"Makrolidy",kl:"makrolid (50S)",mech:"Blokuje translokację na 50S (bakteriostatyczny).",use:"Atypowe, alergia na penicyliny",key:"Prokinetyk (agonista motyliny); ↑ QT; inhibitor CYP3A4; zaburzenia GI."},
+{n:"Klarytromycyna",mod:"ab",grp:"makrolidy",g:"Makrolidy",kl:"makrolid",mech:"Wiąże 50S.",use:"H. pylori, atypowe, prątki atypowe",key:"Inhibitor CYP3A4; ↑ QT; metaliczny smak."},
+{n:"Azytromycyna",mod:"ab",grp:"makrolidy",g:"Makrolidy",kl:"azalid",mech:"Wiąże 50S; bardzo długi t½ tkankowy.",use:"Atypowe, chlamydia, krztusiec",key:"Krótkie kuracje (3–5 dni); mało interakcji CYP; ↑ QT."},
+/* Linkozamidy */
+{n:"Klindamycyna",mod:"ab",grp:"linkozamidy",g:"Linkozamidy",kl:"linkozamid (50S)",mech:"Wiąże 50S; hamuje produkcję toksyn.",use:"Beztlenowce nad przeponą, MRSA skóry, wstrząs paciorkowcowy",key:"Rzekomobłoniaste zapalenie jelit (C. difficile)."},
+/* Sulfonamidy */
+{n:"Sulfadiazyna srebra",mod:"ab",grp:"sulfonamidy",g:"Sulfonamidy",kl:"sulfonamid (miejscowo)",mech:"Hamuje syntezę kwasu foliowego bakterii.",use:"Profilaktyka zakażeń ran oparzeniowych",key:"Stosowana miejscowo na oparzenia."},
+{n:"Sulfametoksazol/trimetoprim",mod:"ab",grp:"sulfonamidy",g:"Sulfonamidy",kl:"sulfonamid + inhibitor reduktazy DHF",mech:"Podwójny blok syntezy folianów (sekwencyjny).",use:"ZUM, Pneumocystis (PCP), część MRSA",key:"Hiperkaliemia, wysypki (SJS), żółtaczka u noworodków."},
+{n:"Sulfacetamid",mod:"ab",grp:"sulfonamidy",g:"Sulfonamidy",kl:"sulfonamid (okulistyczny)",mech:"Blok syntezy folianów.",use:"Zakażenia oka",key:"Stosowany miejscowo do oka."},
+/* Chinolony */
+{n:"Cyprofloksacyna",mod:"ab",grp:"chinolony",g:"Chinolony",kl:"fluorochinolon",mech:"Hamuje gyrazę DNA (i topoizomerazę IV).",use:"G-, Pseudomonas, ZUM, zakażenia jelitowe",key:"Zerwanie ścięgna, ↑ QT, chelacja z Ca/Mg; nie u dzieci/ciąży."},
+{n:"Norfloksacyna",mod:"ab",grp:"chinolony",g:"Chinolony",kl:"fluorochinolon",mech:"Hamuje gyrazę.",use:"Zakażenia dróg moczowych",key:"Działa głównie w drogach moczowych."},
+{n:"Lewofloksacyna",mod:"ab",grp:"chinolony",g:"Chinolony",kl:"fluorochinolon „oddechowy”",mech:"Gyraza/topoizomeraza IV.",use:"Zapalenie płuc, zatok",key:"Obejmuje pneumokoki; ↑ QT, ścięgna."},
+{n:"Moksyfloksacyna",mod:"ab",grp:"chinolony",g:"Chinolony",kl:"fluorochinolon „oddechowy”",mech:"Gyraza/topo IV; działa też na beztlenowce.",use:"Drogi oddechowe, beztlenowce",key:"Nie do ZUM (niskie stężenia w moczu); ↑ QT."},
+{n:"Ofloksacyna",mod:"ab",grp:"chinolony",g:"Chinolony",kl:"fluorochinolon",mech:"Hamuje gyrazę.",use:"ZUM, drogi oddechowe, krople do oka/ucha",key:"Starszy fluorochinolon o szerokim zastosowaniu."},
+/* Glikopeptydy / lipopeptyd */
+{n:"Wankomycyna",mod:"ab",grp:"glikopeptydy",g:"Glikopeptydy",kl:"glikopeptyd",mech:"Wiąże D-Ala-D-Ala → blok syntezy ściany.",use:"MRSA, C. difficile (doustnie)",key:"Zespół czerwonego człowieka (szybki wlew), nefrotoksyczność; monitorować stężenie."},
+{n:"Teikoplanina",mod:"ab",grp:"glikopeptydy",g:"Glikopeptydy",kl:"glikopeptyd",mech:"Jak wankomycyna.",use:"Ciężkie G+ w tym MRSA",key:"Rzadziej zespół czerwonego człowieka."},
+{n:"Daptomycyna",mod:"ab",grp:"glikopeptydy",g:"Glikopeptydy",kl:"lipopeptyd",mech:"Depolaryzuje błonę komórkową G+.",use:"MRSA, bakteriemia, prawostronne zapalenie wsierdzia",key:"NIE w zapaleniu płuc (inaktywowana surfaktantem); ↑ CK (miopatia)."},
+/* Inne */
+{n:"Chloramfenikol",mod:"ab",grp:"inne_ab",g:"Inne",kl:"inhibitor 50S",mech:"Blokuje transferazę peptydylową.",use:"Ratunkowo (dur, ropień mózgu)",key:"Niedokrwistość aplastyczna; zespół szary noworodka."},
+{n:"Metronidazol",mod:"ab",grp:"inne_ab",g:"Inne",kl:"nitroimidazol",mech:"Tworzy wolne rodniki uszkadzające DNA.",use:"Beztlenowce, pierwotniaki, C. difficile",key:"Reakcja disulfiramowa z alkoholem; metaliczny smak."},
+{n:"Tynidazol",mod:"ab",grp:"inne_ab",g:"Inne",kl:"nitroimidazol",mech:"Uszkadza DNA (wolne rodniki).",use:"Rzęsistkowica, lamblioza, ameboza",key:"Dłuższy t½ niż metronidazol; reakcja z alkoholem."},
+{n:"Fosfomycyna",mod:"ab",grp:"inne_ab",g:"Inne",kl:"inhibitor wczesnego etapu syntezy ściany",mech:"Blokuje enzym MurA.",use:"Niepowikłane ZUM",key:"Pojedyncza dawka doustna."},
+{n:"Bacytracyna",mod:"ab",grp:"inne_ab",g:"Inne",kl:"inhibitor syntezy ściany (miejscowo)",mech:"Blokuje transport prekursorów ściany.",use:"Miejscowo, zakażenia skóry G+",key:"Nefrotoksyczna ogólnoustrojowo → tylko miejscowo."},
+/* Przeciwgruźlicze */
+{n:"Izoniazyd (INH)",mod:"ab",grp:"tb",g:"Przeciwgruźlicze",kl:"przeciwprątkowy",mech:"Hamuje syntezę kwasów mykolowych ściany prątka.",use:"Gruźlica (leczenie i profilaktyka)",key:"Neuropatia obwodowa (dodać wit. B6), hepatotoksyczność."},
+{n:"Ryfampicyna",mod:"ab",grp:"tb",g:"Przeciwgruźlicze",kl:"przeciwprątkowy",mech:"Hamuje bakteryjną polimerazę RNA.",use:"Gruźlica, profilaktyka meningokoków",key:"Pomarańczowe wydzieliny; silny induktor CYP450 (interakcje!)."},
+{n:"Pirazynamid (PZA)",mod:"ab",grp:"tb",g:"Przeciwgruźlicze",kl:"przeciwprątkowy",mech:"Aktywny w kwaśnym środowisku makrofagów.",use:"Gruźlica (faza intensywna)",key:"Hepatotoksyczność; hiperurykemia (dna)."},
+{n:"Etambutol (EMB)",mod:"ab",grp:"tb",g:"Przeciwgruźlicze",kl:"przeciwprątkowy",mech:"Hamuje arabinozylotransferazę (synteza ściany).",use:"Gruźlica",key:"Pozagałkowe zapalenie nerwu wzrokowego (zaburzenia widzenia barw)."},
+{n:"Klofazymina",mod:"ab",grp:"tb",g:"Przeciwgruźlicze",kl:"przeciwprątkowy",mech:"Wiąże DNA prątka.",use:"Trąd, prątki atypowe",key:"Czerwono-brązowe przebarwienie skóry."},
+{n:"Cykloseryna",mod:"ab",grp:"tb",g:"Przeciwgruźlicze",kl:"przeciwprątkowy (II rzut)",mech:"Hamuje syntezę ściany (analog D-alaniny).",use:"Gruźlica wielolekooporna",key:"Neurotoksyczność (drgawki, psychozy)."},
+
+/* ===================== PRZECIWWIRUSOWE ===================== */
+/* Anty-herpes / CMV */
+{n:"Acyklowir",mod:"av",grp:"herpes",g:"Anty-herpes / VZV",kl:"analog nukleozydu",mech:"Fosforylowany przez wirusową kinazę tymidynową → hamuje polimerazę DNA.",use:"HSV, VZV (półpasiec, ospa)",key:"Nefrotoksyczność (krystaluria) — dobrze nawodnić."},
+{n:"Walacyklowir",mod:"av",grp:"herpes",g:"Anty-herpes / VZV",kl:"prolek acyklowiru",mech:"Po wchłonięciu przechodzi w acyklowir (lepsza biodostępność).",use:"HSV, VZV doustnie",key:"Rzadsze dawkowanie niż acyklowir."},
+{n:"Famcyklowir",mod:"av",grp:"herpes",g:"Anty-herpes / VZV",kl:"prolek pencyklowiru",mech:"Hamuje polimerazę DNA.",use:"Półpasiec, opryszczka narządów płciowych",key:"Postać doustna."},
+{n:"Pencyklowir",mod:"av",grp:"herpes",g:"Anty-herpes / VZV",kl:"analog nukleozydu (miejscowo)",mech:"Hamuje polimerazę DNA HSV.",use:"Opryszczka wargowa (krem)",key:"Stosowany miejscowo."},
+{n:"Dokozanol",mod:"av",grp:"herpes",g:"Anty-herpes / VZV",kl:"miejscowy",mech:"Hamuje fuzję wirusa z błoną komórki.",use:"Opryszczka wargowa (OTC)",key:"Działa miejscowo, nie przeciwwirusowo wewnątrzkomórkowo."},
+{n:"Gancyklowir",mod:"av",grp:"herpes",g:"Anty-CMV",kl:"analog nukleozydu",mech:"Hamuje polimerazę DNA CMV.",use:"Zapalenie siatkówki CMV u immunoniekompetentnych",key:"Mielosupresja (neutropenia)."},
+{n:"Walgancyklowir",mod:"av",grp:"herpes",g:"Anty-CMV",kl:"prolek gancyklowiru",mech:"Przechodzi w gancyklowir.",use:"CMV doustnie",key:"Mielosupresja."},
+{n:"Foskarnet",mod:"av",grp:"herpes",g:"Anty-CMV",kl:"analog pirofosforanu",mech:"Bezpośrednio hamuje polimerazę (bez fosforylacji wirusowej).",use:"CMV/HSV oporne na acyklowir/gancyklowir",key:"Nefrotoksyczność; zaburzenia Ca/Mg (tężyczka)."},
+/* HIV */
+{n:"Zydowudyna (AZT)",mod:"av",grp:"hiv",g:"HIV — NRTI",kl:"NRTI",mech:"Analog tymidyny hamujący odwrotną transkryptazę.",use:"HIV; profilaktyka transmisji matka-dziecko",key:"Mielosupresja (anemia, neutropenia)."},
+{n:"Lamiwudyna",mod:"av",grp:"hiv",g:"HIV — NRTI",kl:"NRTI",mech:"Hamuje odwrotną transkryptazę.",use:"HIV, WZW B",key:"Dobrze tolerowana."},
+{n:"Abakawir",mod:"av",grp:"hiv",g:"HIV — NRTI",kl:"NRTI",mech:"Hamuje odwrotną transkryptazę.",use:"HIV",key:"Reakcja nadwrażliwości — testować HLA-B*5701."},
+{n:"Stawudyna",mod:"av",grp:"hiv",g:"HIV — NRTI",kl:"NRTI",mech:"Hamuje odwrotną transkryptazę.",use:"HIV (starszy)",key:"Neuropatia obwodowa, lipoatrofia."},
+{n:"Tenofowir",mod:"av",grp:"hiv",g:"HIV — NtRTI",kl:"NtRTI",mech:"Nukleotydowy inhibitor odwrotnej transkryptazy.",use:"HIV, WZW B, PrEP",key:"Nefrotoksyczność, spadek gęstości kości."},
+{n:"Efawirenz",mod:"av",grp:"hiv",g:"HIV — NNRTI",kl:"NNRTI",mech:"Niekompetycyjnie hamuje odwrotną transkryptazę.",use:"HIV",key:"Objawy neuropsychiatryczne, żywe sny; teratogen."},
+{n:"Newirapina",mod:"av",grp:"hiv",g:"HIV — NNRTI",kl:"NNRTI",mech:"Hamuje odwrotną transkryptazę.",use:"HIV",key:"Wysypka (ryzyko SJS), hepatotoksyczność."},
+{n:"Indynawir",mod:"av",grp:"hiv",g:"HIV — inhibitory proteazy",kl:"inhibitor proteazy",mech:"Blokuje proteazę HIV (dojrzewanie wirionów).",use:"HIV",key:"Kamica nerkowa, hiperbilirubinemia."},
+{n:"Sakwinawir",mod:"av",grp:"hiv",g:"HIV — inhibitory proteazy",kl:"inhibitor proteazy",mech:"Blokuje proteazę HIV.",use:"HIV",key:"Wzmacniany rytonawirem."},
+{n:"Nelfinawir",mod:"av",grp:"hiv",g:"HIV — inhibitory proteazy",kl:"inhibitor proteazy",mech:"Blokuje proteazę HIV.",use:"HIV",key:"Biegunka."},
+{n:"Darunawir",mod:"av",grp:"hiv",g:"HIV — inhibitory proteazy",kl:"inhibitor proteazy",mech:"Blokuje proteazę HIV.",use:"HIV (z rytonawirem)",key:"Wysoka bariera oporności; wysypka (pochodna sulfonamidu)."},
+{n:"Rytonawir",mod:"av",grp:"hiv",g:"HIV — inhibitory proteazy",kl:"inhibitor proteazy / booster",mech:"Silny inhibitor CYP3A4 — „boostuje” inne inhibitory proteazy.",use:"Wzmacnianie farmakokinetyczne innych PI",key:"Dziś głównie jako booster, nie samodzielny lek."},
+{n:"Raltegrawir",mod:"av",grp:"hiv",g:"HIV — inhibitor integrazy",kl:"inhibitor integrazy",mech:"Blokuje integrację DNA wirusa do genomu.",use:"HIV",key:"Dobrze tolerowany; możliwe ↑ CK."},
+{n:"Marawirok",mod:"av",grp:"hiv",g:"HIV — inhibitor wejścia",kl:"antagonista CCR5",mech:"Blokuje koreceptor CCR5 → hamuje wejście wirusa.",use:"HIV o tropizmie CCR5",key:"Wymaga wcześniejszego testu tropizmu."},
+/* Grypa */
+{n:"Oseltamiwir",mod:"av",grp:"grypa",g:"Grypa",kl:"inhibitor neuraminidazy",mech:"Blokuje uwalnianie nowych wirionów z komórki.",use:"Grypa A/B (najlepiej ≤48 h)",key:"Doustny; nudności/wymioty."},
+{n:"Zanamiwir",mod:"av",grp:"grypa",g:"Grypa",kl:"inhibitor neuraminidazy (wziewny)",mech:"Blokuje neuraminidazę.",use:"Grypa A/B",key:"Wziewny — ostrożnie w astmie (skurcz oskrzeli)."},
+{n:"Peramiwir",mod:"av",grp:"grypa",g:"Grypa",kl:"inhibitor neuraminidazy (i.v.)",mech:"Blokuje neuraminidazę.",use:"Grypa (dożylnie)",key:"Zwykle jednorazowa dawka i.v."},
+{n:"Rymantadyna",mod:"av",grp:"grypa",g:"Grypa",kl:"inhibitor białka M2",mech:"Blokuje rozpłaszczanie (uncoating) wirusa.",use:"Grypa A (historycznie)",key:"Powszechna oporność; tylko grypa A."},
+/* WZW / inne */
+{n:"Interferon alfa",mod:"av",grp:"wzw",g:"WZW / inne",kl:"cytokina / immunomodulator",mech:"Pobudza wewnątrzkomórkową odpowiedź przeciwwirusową.",use:"WZW B i C (historycznie)",key:"Objawy grypopodobne, depresja."},
+{n:"Rybawiryna",mod:"av",grp:"wzw",g:"WZW / inne",kl:"analog nukleozydu",mech:"Hamuje replikację RNA wirusa.",use:"WZW C (skojarzenia), RSV",key:"Teratogen (przeciwwskazana w ciąży); anemia hemolityczna."},
+
+/* ===================== PRZECIWGRZYBICZE ===================== */
+{n:"Amfoterycyna B",mod:"af",grp:"poliieny",g:"Polieny",kl:"polien",mech:"Wiąże ergosterol → tworzy pory w błonie grzyba.",use:"Ciężkie grzybice układowe",key:"Nefrotoksyczność, dreszcze/gorączka po wlewie („amfoterrible”)."},
+{n:"Nystatyna",mod:"af",grp:"poliieny",g:"Polieny",kl:"polien (miejscowo)",mech:"Wiąże ergosterol.",use:"Kandydoza skóry i jamy ustnej",key:"Tylko miejscowo — zbyt toksyczna ogólnoustrojowo."},
+{n:"Ketokonazol",mod:"af",grp:"azole",g:"Azole",kl:"azol (imidazol)",mech:"Hamuje 14-α-demetylazę (synteza ergosterolu).",use:"Grzybice (dziś rzadziej)",key:"Hamuje steroidogenezę (ginekomastia), hepatotoksyczność, inhibitor CYP."},
+{n:"Itrakonazol",mod:"af",grp:"azole",g:"Azole",kl:"azol (triazol)",mech:"Hamuje syntezę ergosterolu.",use:"Grzybice układowe, dermatofity",key:"Ujemny inotrop (ostrożnie w niewydolności serca); inhibitor CYP3A4."},
+{n:"Flukonazol",mod:"af",grp:"azole",g:"Azole",kl:"azol (triazol)",mech:"Hamuje syntezę ergosterolu.",use:"Kandydoza, kryptokokowe zapalenie opon",key:"Dobra penetracja do OUN; inhibitor CYP."},
+{n:"Worikonazol",mod:"af",grp:"azole",g:"Azole",kl:"azol (triazol)",mech:"Hamuje syntezę ergosterolu.",use:"Aspergiloza (lek z wyboru)",key:"Zaburzenia widzenia, fototoksyczność."},
+{n:"Posakonazol",mod:"af",grp:"azole",g:"Azole",kl:"azol (triazol)",mech:"Hamuje syntezę ergosterolu.",use:"Profilaktyka u immunoniekompetentnych, mukormykoza",key:"Bardzo szerokie spektrum, w tym pleśnie."},
+{n:"Kaspofungina",mod:"af",grp:"echino",g:"Echinokandyny",kl:"echinokandyna",mech:"Hamuje syntezę β-1,3-glukanu ściany komórkowej.",use:"Inwazyjna kandydoza, oporna aspergiloza",key:"Dobra tolerancja; podawana i.v."},
+{n:"Mikafungina",mod:"af",grp:"echino",g:"Echinokandyny",kl:"echinokandyna",mech:"Blokuje syntezę glukanu.",use:"Kandydoza, profilaktyka u biorców przeszczepu szpiku",key:"i.v., mało interakcji lekowych."},
+{n:"Anidulafungina",mod:"af",grp:"echino",g:"Echinokandyny",kl:"echinokandyna",mech:"Blokuje syntezę glukanu.",use:"Kandydemia",key:"Metabolizm niezależny od wątroby i nerek."},
+{n:"Flucytozyna",mod:"af",grp:"inne_af",g:"Inne",kl:"analog pirymidyny",mech:"Przekształcana w 5-FU → hamuje syntezę DNA/RNA grzyba.",use:"Kryptokokoza (z amfoterycyną B)",key:"Mielosupresja; zawsze w skojarzeniu (szybka oporność)."},
+{n:"Gryzeofulwina",mod:"af",grp:"inne_af",g:"Inne",kl:"przeciwgrzybiczy układowy",mech:"Zaburza mikrotubule grzyba; gromadzi się w keratynie.",use:"Dermatofity skóry/włosów/paznokci",key:"Induktor CYP; reakcja disulfiramowa; długa kuracja."},
+{n:"Terbinafina",mod:"af",grp:"inne_af",g:"Inne",kl:"alliloamina",mech:"Hamuje skwalenową epoksydazę (synteza ergosterolu).",use:"Grzybica paznokci, dermatofity",key:"Hepatotoksyczność, zaburzenia smaku."},
+
+/* ===================== PRZECIWPIERWOTNIAKOWE ===================== */
+{n:"Chlorochina",mod:"ap",grp:"malaria",g:"Przeciwmalaryczne",kl:"przeciwmalaryczny",mech:"Gromadzi się w wakuoli pasożyta, blokuje polimeryzację hemu.",use:"Malaria wrażliwa; toczeń, RZS",key:"Retinopatia; rozległa oporność P. falciparum."},
+{n:"Hydroksychlorochina",mod:"ap",grp:"malaria",g:"Przeciwmalaryczne",kl:"przeciwmalaryczny / immunomodulator",mech:"Jak chlorochina.",use:"Toczeń, RZS, malaria",key:"Retinopatia — wymaga kontroli okulistycznej."},
+{n:"Meflochina",mod:"ap",grp:"malaria",g:"Przeciwmalaryczne",kl:"przeciwmalaryczny",mech:"Blokuje polimeryzację hemu.",use:"Profilaktyka i leczenie malarii",key:"Objawy neuropsychiatryczne (koszmary, lęk, psychozy)."},
+{n:"Prymachina",mod:"ap",grp:"malaria",g:"Przeciwmalaryczne",kl:"przeciwmalaryczny (formy wątrobowe)",mech:"Niszczy hipnozoity w wątrobie.",use:"Eradykacja P. vivax/ovale (zapobiega nawrotom)",key:"Hemoliza w niedoborze G6PD — testować przed podaniem."},
+{n:"Atowakwon/proguanil (Malarone)",mod:"ap",grp:"malaria",g:"Przeciwmalaryczne",kl:"przeciwmalaryczny (złożony)",mech:"Atowakwon hamuje łańcuch oddechowy pasożyta; proguanil — dihydroreduktazę.",use:"Profilaktyka i leczenie malarii u podróżnych",key:"Dobra tolerancja; wygodna profilaktyka."},
+{n:"Lumefantryna",mod:"ap",grp:"malaria",g:"Przeciwmalaryczne",kl:"przeciwmalaryczny",mech:"Blokuje polimeryzację hemu.",use:"Malaria (w połączeniu z artemeterem)",key:"Stosowana w terapii skojarzonej (ACT)."},
+{n:"Artemizynina",mod:"ap",grp:"malaria",g:"Przeciwmalaryczne",kl:"przeciwmalaryczny",mech:"Wolne rodniki uszkadzają białka pasożyta.",use:"Ciężka malaria (podstawa terapii ACT)",key:"Bardzo szybkie działanie; rdzeń leczenia P. falciparum."},
+{n:"Metronidazol",mod:"ap",grp:"inne_ap",g:"Inne pierwotniaki",kl:"nitroimidazol",mech:"Tworzy wolne rodniki uszkadzające DNA.",use:"Pełzakowica, lamblioza, rzęsistkowica",key:"Reakcja disulfiramowa z alkoholem."},
+{n:"Tynidazol",mod:"ap",grp:"inne_ap",g:"Inne pierwotniaki",kl:"nitroimidazol",mech:"Uszkadza DNA pierwotniaka.",use:"Rzęsistkowica, lamblioza, ameboza",key:"Dłuższy t½ niż metronidazol."}
+];
+
+/* ====================== SILNIK ====================== */
+let activeMod="ab", activeGroup="wszystkie", activeView="list";
+let deck=[], dpos=0, flipped=false, shuffleOn=false;
+
+const modbarEl=document.getElementById('modbar');
+const chipsEl=document.getElementById('chips');
+const listEl=document.getElementById('list');
+const emptyEl=document.getElementById('empty');
+const flashEl=document.getElementById('flashview');
+const searchEl=document.getElementById('search');
+const countNote=document.getElementById('countNote');
+const filterToggle=document.getElementById('filterToggle');
+const filterCluster=document.getElementById('filterCluster');
+
+function modCount(id){return DRUGS.filter(d=>d.mod===id).length;}
+function buildModbar(){
+  modbarEl.innerHTML="";
+  MODULES.forEach(m=>{
+    const b=document.createElement('button');
+    b.className='modbtn'+(m.id===activeMod?' on':'');
+    b.dataset.mod=m.id;
+    b.innerHTML=m.label+'<span class="sub">'+modCount(m.id)+' leków</span>';
+    b.onclick=()=>{
+      activeMod=m.id;activeGroup="wszystkie";
+      [...modbarEl.children].forEach(x=>x.classList.toggle('on',x.dataset.mod===m.id));
+      buildChips();render();window.scrollTo({top:0,behavior:'smooth'});
+    };
+    modbarEl.appendChild(b);
+  });
+}
+function buildChips(){
+  chipsEl.innerHTML="";
+  (GROUPS[activeMod]||[]).forEach(([id,label])=>{
+    const b=document.createElement('button');
+    b.className='chip'+(id===activeGroup?' on':'');
+    b.textContent=label;b.dataset.g=id;
+    b.onclick=()=>{activeGroup=id;[...chipsEl.children].forEach(c=>c.classList.toggle('on',c.dataset.g===id));render();};
+    chipsEl.appendChild(b);
+  });
+}
+function getFiltered(){
+  const q=searchEl.value.trim().toLowerCase();
+  return DRUGS.filter(d=>d.mod===activeMod
+    &&(activeGroup==="wszystkie"||d.grp===activeGroup)
+    &&(!q||(d.n+' '+d.kl+' '+d.g+' '+d.use+' '+d.mech).toLowerCase().includes(q)));
+}
+function cardHTML(d){
+  return `<div class="card">
+    <div class="drug">${d.n}</div>
+    <span class="kl">${d.kl}</span>
+    <div class="row"><span class="ic">→</span><span class="tx">${d.mech}</span></div>
+    <div class="row use"><span class="ic">+</span><span class="tx">${d.use}</span></div>
+    <div class="keybox"><div class="inner"><b class="h">Zapamiętaj</b>${d.key}</div></div>
+  </div>`;
+}
+/* flashcards */
+function flashInner(d){
+  return `<div class="flip-inner">
+    <div class="flip-face flip-front"><div class="fc-name">${d.n}</div><div class="fc-hint">kliknij / spacja, aby odwrócić</div></div>
+    <div class="flip-face flip-back">
+      <div class="bk-name">${d.n}</div>
+      <span class="kl">${d.kl}</span>
+      <div class="row"><span class="ic">→</span><span class="tx">${d.mech}</span></div>
+      <div class="row use"><span class="ic">+</span><span class="tx">${d.use}</span></div>
+      <div class="keybox"><div class="inner"><b class="h">Zapamiętaj</b>${d.key}</div></div>
+    </div>
+  </div>`;
+}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}}
+function buildDeck(){deck=getFiltered();if(shuffleOn)shuffle(deck);if(dpos>=deck.length)dpos=0;}
+function flip(){flipped=!flipped;const c=document.getElementById('flashcard');if(c)c.classList.toggle('flipped',flipped);}
+function go(step){if(!deck.length)return;dpos=(dpos+step+deck.length)%deck.length;flipped=false;renderCard();}
+function renderCard(){
+  if(!deck.length){flashEl.innerHTML='<div class="flash-empty">Brak fiszek dla tego filtra.</div>';return;}
+  if(dpos>=deck.length)dpos=0;
+  const d=deck[dpos];
+  flashEl.innerHTML=`<div class="flashstage">
+    <div class="flashcard${flipped?' flipped':''}" id="flashcard" tabindex="0" role="button" aria-label="Fiszka, kliknij aby odwrócić">${flashInner(d)}</div>
+    <div class="flashnav">
+      <button id="fcPrev">‹ Poprzednia</button>
+      <button class="flip-btn" id="fcFlip">Odwróć</button>
+      <button id="fcNext">Następna ›</button>
+    </div>
+    <div class="flashmeta"><span>${dpos+1} / ${deck.length}</span><button id="fcShuffle">${shuffleOn?'wył. tasowanie':'tasuj'}</button><button id="fcReset">do początku</button></div>
+  </div>`;
+  document.getElementById('flashcard').onclick=flip;
+  document.getElementById('flashcard').onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();flip();}};
+  document.getElementById('fcPrev').onclick=e=>{e.stopPropagation();go(-1);};
+  document.getElementById('fcNext').onclick=e=>{e.stopPropagation();go(1);};
+  document.getElementById('fcFlip').onclick=e=>{e.stopPropagation();flip();};
+  document.getElementById('fcShuffle').onclick=()=>{shuffleOn=!shuffleOn;dpos=0;flipped=false;buildDeck();renderCard();};
+  document.getElementById('fcReset').onclick=()=>{dpos=0;flipped=false;renderCard();};
+}
+function render(){
+  const filtered=getFiltered();
+  countNote.textContent=filtered.length+' leków';
+  if(activeView==='list'){
+    flashEl.style.display='none';listEl.style.display='';
+    const byG={};filtered.forEach(d=>{(byG[d.g]=byG[d.g]||[]).push(d);});
+    let html="";
+    Object.keys(byG).forEach(gl=>{
+      html+=`<div class="grp-label">${gl}<span class="c">${byG[gl].length}</span></div><div class="grid">`;
+      html+=byG[gl].map(cardHTML).join('')+'</div>';
+    });
+    listEl.innerHTML=html;
+    emptyEl.style.display=filtered.length?'none':'block';
+  }else{
+    listEl.style.display='none';emptyEl.style.display='none';flashEl.style.display='';
+    dpos=0;flipped=false;buildDeck();renderCard();
+  }
+}
+/* filtry zwijane */
+function setFilters(open){
+  filterCluster.classList.toggle('hidden',!open);
+  filterToggle.classList.toggle('collapsed',!open);
+  filterToggle.setAttribute('aria-expanded',open?'true':'false');
+  syncModbarH();
+}
+filterToggle.onclick=()=>setFilters(filterCluster.classList.contains('hidden'));
+/* view toggle */
+document.querySelectorAll('#viewseg button').forEach(b=>{
+  b.onclick=()=>{
+    activeView=b.dataset.view;
+    document.querySelectorAll('#viewseg button').forEach(x=>x.classList.toggle('on',x===b));
+    document.body.classList.toggle('cards-view',activeView==='cards');
+    setFilters(false);
+    syncModbarH();render();
+  };
+});
+/* klawiatura */
+document.addEventListener('keydown',e=>{
+  if(activeView!=='cards')return;
+  if(e.target&&(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA'))return;
+  if(e.key==='ArrowLeft'){e.preventDefault();go(-1);}
+  else if(e.key==='ArrowRight'){e.preventDefault();go(1);}
+  else if(e.key===' '&&e.target.tagName!=='BUTTON'){e.preventDefault();flip();}
+});
+searchEl.addEventListener('input',render);
+/* sticky offset + slim po przewinięciu */
+function syncModbarH(){const h=document.querySelector('.modbar').offsetHeight;if(h)document.documentElement.style.setProperty('--modbar-h',h+'px');}
+let _scrolled=false;
+window.addEventListener('scroll',()=>{const s=window.scrollY>14;if(s!==_scrolled){_scrolled=s;document.body.classList.toggle('scrolled',s);syncModbarH();}},{passive:true});
+window.addEventListener('resize',syncModbarH);
+window.addEventListener('load',syncModbarH);
+setTimeout(syncModbarH,300);
+
+buildModbar();buildChips();render();syncModbarH();
+</script>
+</body>
+</html>
