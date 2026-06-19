@@ -1,0 +1,855 @@
+<!DOCTYPE html><html lang="pl"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Diagnostyka laboratoryjna — kompendium z załącznikiem</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fbfcfd;--ink:#1c2530;--ink2:#3a4654;--muted:#6b7884;--line:#dce3ea;--line2:#cfdce6;
+--crit:#c0392b;--hy:#b8801a;--hyc:#e8a33d;--teal:#2c7a8c;--green:#2c7a4b;--head:#10171f}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);
+ font-family:'IBM Plex Sans',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+ font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.mono,.formula,.ch-num,.t-num,.tg,.ch-crit,.ex-h{font-family:'IBM Plex Mono',ui-monospace,monospace}
+a{color:var(--teal);text-decoration:none}
+
+/* top nav */
+header.top{position:sticky;top:0;z-index:30;background:rgba(251,252,253,.9);backdrop-filter:blur(8px);
+ border-bottom:1px solid var(--line)}
+header.top .bar{max-width:1000px;margin:0 auto;padding:11px 22px;display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+header.top .brand{font-weight:700;font-size:14px;margin-right:auto}
+header.top .brand b{color:var(--crit)}
+header.top a{font-size:13px;color:var(--muted);font-weight:500}
+header.top a:hover{color:var(--ink)}
+
+.wrap{max-width:1000px;margin:0 auto;padding:0 22px}
+
+/* hero */
+.hero{padding:54px 0 8px}
+.hero .kicker{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--crit);font-weight:700}
+.hero h1{font-size:clamp(30px,5vw,44px);line-height:1.06;margin:12px 0 6px;letter-spacing:-.5px;color:var(--head)}
+.hero .rule{height:4px;width:120px;background:linear-gradient(90deg,var(--crit),var(--hyc));border-radius:2px;margin:18px 0}
+.hero .sub{color:var(--muted);max-width:70ch;font-size:16px}
+.legend{display:flex;gap:10px;flex-wrap:wrap;margin:22px 0 0}
+.legend .lg{font-size:12px;border:1px solid var(--line);border-radius:9px;padding:8px 12px;background:#fff}
+.legend .lg b{display:block;font-size:10px;letter-spacing:.05em;text-transform:uppercase;margin-bottom:2px}
+.lg.c b{color:var(--crit)} .lg.h b{color:var(--hy)} .lg.k b{color:var(--green)}
+
+/* toc */
+.toc{margin:34px 0 10px;scroll-margin-top:64px;border:1px solid var(--line);border-radius:14px;background:#fff;padding:20px 24px}
+.toc h2{font-size:18px;margin:0 0 12px;color:var(--head)}
+.toc .grp{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--crit);margin:10px 0 4px;font-weight:700}
+.toc ol{list-style:none;padding:0;margin:0;columns:2;column-gap:28px}
+.toc li{break-inside:avoid;padding:5px 0;border-bottom:1px dotted var(--line)}
+.toc a{display:flex;gap:10px;align-items:baseline;color:var(--ink2)}
+.toc a:hover{color:var(--crit)}
+.toc .t-num{color:var(--crit);font-weight:700;font-size:12px;min-width:30px}
+.toc .t-name{font-weight:600;font-size:13.5px}
+
+/* divider for attachment */
+.divider{margin:46px 0 8px;scroll-margin-top:64px;padding:22px 24px;border-radius:14px;color:#fff;
+ background:linear-gradient(120deg,#10171f,#2a3744)}
+.divider .kk{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#f0b88f}
+.divider h2{margin:6px 0 4px;font-size:24px}
+.divider p{margin:0;color:#c3ccd6;font-size:14px;max-width:74ch}
+
+/* chapter */
+.chapter{margin:0 0 10px;padding:0;scroll-margin-top:64px}
+.ch-head{display:flex;gap:14px;align-items:flex-start;border-bottom:2px solid var(--head);padding:14px 0 8px;margin:26px 0 12px}
+.ch-num{font-size:22px;font-weight:700;color:var(--crit);line-height:1}
+.ch-titles h3{font-size:19px;color:var(--head);line-height:1.2;margin:0}
+.ch-scope{margin:3px 0 0;color:var(--muted);font-size:13px}
+.ch-crit{display:inline-block;margin-left:8px;font-size:9px;letter-spacing:.08em;color:#fff;background:var(--crit);padding:2px 7px;border-radius:4px;vertical-align:middle}
+h4{font-size:14px;color:#34536b;margin:18px 0 7px;padding-bottom:3px;border-bottom:1px solid #e3e9ef}
+
+.prose{margin:7px 0 9px;color:var(--ink2);font-size:14.5px}
+
+.facts{margin:0}
+.frow{display:grid;grid-template-columns:32% 68%;gap:14px;padding:8px 12px;border-radius:7px;margin-bottom:4px}
+.frow dt{font-weight:700;color:var(--ink);font-size:14px}
+.frow dd{margin:0;color:var(--ink2);font-size:14px}
+.frow.crit{background:#fcf0ee;border-left:3px solid var(--crit)}
+.frow.hy{background:#fdf6e9;border-left:3px solid var(--hyc)}
+.tg{display:inline-block;font-size:9px;letter-spacing:.05em;padding:2px 6px;border-radius:3px;margin-left:7px;vertical-align:middle;font-weight:700}
+.tg-c{background:var(--crit);color:#fff} .tg-h{background:var(--hyc);color:#3a2a06}
+
+table{width:100%;border-collapse:collapse;margin:10px 0 14px;font-size:13.5px}
+caption{text-align:left;font-size:12.5px;color:var(--muted);font-style:italic;padding-bottom:5px}
+th{background:var(--head);color:#fff;text-align:left;padding:8px 10px;font-size:13px;font-weight:600}
+td{border:1px solid var(--line);padding:8px 10px;vertical-align:top}
+tbody tr:nth-child(even){background:#f6f9fb}
+
+.formula{background:#eef4f8;border:1px solid var(--line2);border-left:3px solid var(--teal);
+ border-radius:8px;padding:12px 15px;margin:10px 0;font-size:14px;color:var(--head);overflow-x:auto}
+.formula small{display:block;font-family:'IBM Plex Sans',sans-serif;color:var(--muted);margin-top:6px;font-size:12.5px;line-height:1.45}
+
+.callout{border-radius:9px;padding:13px 16px;margin:12px 0}
+.callout .co-h{display:flex;align-items:center;gap:8px;font-weight:700;font-size:14px;margin-bottom:4px}
+.callout p{margin:0;font-size:13.8px;line-height:1.5}
+.callout.crit{background:#fcf0ee;border:1px solid #e7b6ae;border-left:4px solid var(--crit)}
+.callout.crit .co-h{color:var(--crit)}
+.callout.trap{background:#fdf6e9;border:1px solid #ecd49b;border-left:4px solid var(--hyc)}
+.callout.trap .co-h{color:var(--hy)}
+.callout.note{background:#eef4f8;border:1px solid var(--line2);border-left:4px solid var(--teal)}
+.callout.note .co-h{color:var(--teal)}
+
+.example{border:1px solid var(--line2);border-radius:10px;background:#fafcfd;padding:14px 17px;margin:12px 0}
+.example .ex-h{font-size:11px;letter-spacing:.1em;color:var(--teal);font-weight:700;margin-bottom:7px}
+.example .ex-i{margin:0 0 8px;font-size:14px;color:#34414e;font-style:italic}
+.example .ex-steps{margin:0 0 8px;padding-left:20px}
+.example .ex-steps li{font-size:13.8px;margin-bottom:5px;color:var(--ink2)}
+.example .ex-c{margin:0;font-size:14px;background:#eaf4ee;border-left:3px solid var(--green);padding:9px 12px;border-radius:6px}
+
+b{font-weight:700} sub,sup{font-size:75%}
+
+footer{margin:50px 0;border-top:1px solid var(--line);padding-top:22px;color:var(--muted);font-size:13px}
+.backtop{position:fixed;right:18px;bottom:18px;background:var(--head);color:#fff;border-radius:10px;
+ padding:9px 13px;font-size:12px;font-weight:600;box-shadow:0 4px 14px rgba(0,0,0,.18)}
+
+@media (max-width:640px){
+ .frow{grid-template-columns:1fr;gap:3px}
+ .toc ol{columns:1}
+ header.top .brand{width:100%;margin-right:0}
+}
+
+/* DRUK */
+@media print{
+ @page{size:A4;margin:16mm 14mm}
+ header.top,.backtop{display:none}
+ body{font-size:10.3px;background:#fff}
+ .wrap{max-width:none;padding:0}
+ .hero{padding:10px 0}
+ .chapter{page-break-inside:auto}
+ .ch-head{page-break-after:avoid}
+ .frow,.callout,.formula,.example,table{page-break-inside:avoid}
+ .divider{page-break-before:always}
+ a{color:inherit}
+}
+</style></head><body>
+
+<header class="top"><div class="bar">
+  <span class="brand">DIAG·LAB <b>/</b> kompendium</span>
+  <a href="#toc">Spis</a><a href="#ch09">RKZ</a><a href="#ch10">Woda-elektrolity</a>
+  <a href="#ch11">Wapń-fosfor</a><a href="#zal">Załącznik</a>
+</div></header>
+
+<div class="wrap">
+  <div class="hero" id="top">
+    <div class="kicker">Kompendium do nauki + załącznik</div>
+    <h1>Diagnostyka laboratoryjna</h1>
+    <div class="rule"></div>
+    <p class="sub">Wszystkie kluczowe działy i informacje w jednym miejscu — wartości referencyjne, wzory,
+    rozróżnienia i wyjątki — a na końcu pogłębione omówienie trzech działów krytycznych
+    (RKZ, woda-elektrolity, wapń-fosfor-magnez) z mechanizmami i przykładami liczbowymi.</p>
+    <div class="legend">
+      <div class="lg c"><b>Krytyczne</b>czerwona ramka / znacznik — musi być opanowane</div>
+      <div class="lg h"><b>Ważne</b>żółta ramka — wysokorentowne</div>
+      <div class="lg k"><b>Wzór / zasada</b>niebieski blok — na pamięć</div>
+    </div>
+  </div>
+
+  <div class="toc" id="toc">
+    <h2>Spis treści</h2>
+    <div class="grp">Kompendium — 16 działów</div>
+    <ol><li><a href="#ch01"><span class="t-num">01</span><span class="t-name">Podstawy: przedanalityka, jakość, wartości referencyjne</span></a></li>
+<li><a href="#ch02"><span class="t-num">02</span><span class="t-name">Mocz i ocena funkcji nerek</span></a></li>
+<li><a href="#ch03"><span class="t-num">03</span><span class="t-name">Białka osocza</span></a></li>
+<li><a href="#ch04"><span class="t-num">04</span><span class="t-name">Gospodarka lipidowa i ryzyko sercowo-naczyniowe</span></a></li>
+<li><a href="#ch05"><span class="t-num">05</span><span class="t-name">Zawał serca i choroby wątroby</span></a></li>
+<li><a href="#ch06"><span class="t-num">06</span><span class="t-name">Transfuzjologia i immunohematologia</span></a></li>
+<li><a href="#ch07"><span class="t-num">07</span><span class="t-name">Endokrynologia — podstawy diagnostyki</span></a></li>
+<li><a href="#ch08"><span class="t-num">08</span><span class="t-name">Cukrzyca i hipoglikemia</span></a></li>
+<li><a href="#ch09"><span class="t-num">09</span><span class="t-name">Równowaga kwasowo-zasadowa (RKZ) · krytyczny</span></a></li>
+<li><a href="#ch10"><span class="t-num">10</span><span class="t-name">Gospodarka wodno-elektrolitowa · krytyczny</span></a></li>
+<li><a href="#ch11"><span class="t-num">11</span><span class="t-name">Gospodarka wapniowo-fosforanowo-magnezowa · krytyczny</span></a></li>
+<li><a href="#ch12"><span class="t-num">12</span><span class="t-name">Diagnostyka hematologiczna</span></a></li>
+<li><a href="#ch13"><span class="t-num">13</span><span class="t-name">Zaburzenia krzepnięcia (hemostaza) · krytyczny</span></a></li>
+<li><a href="#ch14"><span class="t-num">14</span><span class="t-name">Zatrucia ostre</span></a></li>
+<li><a href="#ch15"><span class="t-num">15</span><span class="t-name">Diagnostyka molekularna i onkologiczna</span></a></li>
+<li><a href="#ch16"><span class="t-num">16</span><span class="t-name">Markery nowotworowe</span></a></li></ol>
+    <div class="grp" style="margin-top:16px">Załącznik — pogłębione omówienie</div>
+    <ol><li><a href="#zal09"><span class="t-num">09+</span><span class="t-name">Równowaga kwasowo-zasadowa — pogłębione</span></a></li><li><a href="#zal10"><span class="t-num">10+</span><span class="t-name">Gospodarka wodno-elektrolitowa — pogłębione</span></a></li><li><a href="#zal11"><span class="t-num">11+</span><span class="t-name">Gospodarka wapniowo-fosforanowo-magnezowa — pogłębione</span></a></li></ol>
+  </div>
+
+  <section class="chapter" id="ch01">
+      <div class="ch-head">
+        <span class="ch-num">01</span>
+        <div class="ch-titles"><h3>Podstawy: przedanalityka, jakość, wartości referencyjne</h3>
+        <p class="ch-scope">Materiał, probówki, błędy, interpretacja wyniku, POCT.</p></div>
+      </div>
+      <h4>Probówki i antykoagulanty</h4>
+<dl class="facts">
+<div class="frow crit"><dt>Surowica<span class="tg tg-c">KRYTYCZNE</span></dt><dd>probówka z żelem separacyjnym / „na skrzep” (bez antykoagulantu).</dd></div>
+<div class="frow crit"><dt>Układ krzepnięcia<span class="tg tg-c">KRYTYCZNE</span></dt><dd>cytrynian sodu 3,2–3,8%, stosunek krew:antykoagulant 9:1; badania w <b>osoczu</b>.</dd></div>
+<div class="frow crit"><dt>Glukoza<span class="tg tg-c">KRYTYCZNE</span></dt><dd>fluorek sodu + szczawian potasu (hamuje glikolizę — inaczej wynik zaniżony).</dd></div>
+<div class="frow"><dt>Morfologia / hematologia / grupa krwi</dt><dd>K2EDTA lub K3EDTA.</dd></div>
+<div class="frow"><dt>Gazometria / RKZ</dt><dd>heparynizowana strzykawka, bez pęcherzyków powietrza.</dd></div>
+<div class="frow hy"><dt>Diagnostyka molekularna (DNA)<span class="tg tg-h">WAŻNE</span></dt><dd>EDTA lub cytrynian; <b>nie heparyna</b> — hamuje PCR.</dd></div>
+</dl>
+<h4>Błędy i czynniki przedanalityczne</h4>
+<div class="callout crit"><div class=" co-h">⚠ <span>Błąd przedanalityczny vs analityczny</span></div><p>Przedanalityczne: hemoliza, zły antykoagulant, zbyt długi transport, błędne skierowanie, pozycja ciała, staza, pora pobrania. <b>Źle skalibrowany analizator to błąd ANALITYCZNY</b> — częsta pułapka.</p></div>
+<dl class="facts">
+<div class="frow hy"><dt>Hemoliza — zawyża<span class="tg tg-h">WAŻNE</span></dt><dd>K⁺, LDH, AST, ALT, fosforany, Mg, żelazo (uwalniane z erytrocytów).</dd></div>
+<div class="frow"><dt>Czynniki biologiczne</dt><dd>wysiłek fizyczny, nagła zmiana pozycji, stres, rytm dobowy, ciąża — „wszystkie wpływają”.</dd></div>
+<div class="frow"><dt>Bilirubina, karoten</dt><dd>próbka chroniona przed światłem.</dd></div>
+</dl>
+<h4>Wartości referencyjne i wartość diagnostyczna testu</h4>
+<dl class="facts">
+<div class="frow"><dt>Zakres referencyjny</dt><dd>2,5–97,5 percentyl (95% zdrowej populacji); 5% zdrowych wypada poza zakres.</dd></div>
+<div class="frow hy"><dt>Czułość<span class="tg tg-h">WAŻNE</span></dt><dd>odsetek chorych z wynikiem dodatnim (mało wyników fałszywie ujemnych → dobry test przesiewowy).</dd></div>
+<div class="frow hy"><dt>Swoistość<span class="tg tg-h">WAŻNE</span></dt><dd>odsetek zdrowych z wynikiem ujemnym (mało fałszywie dodatnich → test potwierdzający).</dd></div>
+<div class="frow"><dt>PPV / NPV</dt><dd>zależą od częstości choroby w populacji (chorobowości).</dd></div>
+</dl>
+<h4>POCT (badania przyłóżkowe)</h4>
+<dl class="facts">
+<div class="frow"><dt>Cechy</dt><dd>wynik w kilkanaście minut, sprzęt dla niefachowego personelu, krew włośniczkowa / żylna.</dd></div>
+<div class="frow hy"><dt>Pułapka<span class="tg tg-h">WAŻNE</span></dt><dd><b>nie</b> mają wyższej jakości niż laboratorium i <b>nie</b> są tanie w przeliczeniu na badanie.</dd></div>
+</dl>
+    </section>
+<section class="chapter" id="ch02">
+      <div class="ch-head">
+        <span class="ch-num">02</span>
+        <div class="ch-titles"><h3>Mocz i ocena funkcji nerek</h3>
+        <p class="ch-scope">Badanie ogólne moczu, białkomocz, GFR, ONN.</p></div>
+      </div>
+      <h4>Badanie ogólne moczu</h4>
+<dl class="facts">
+<div class="frow"><dt>Parametry paska</dt><dd>ciężar właściwy, pH, białko, glukoza, ketony, krew/Hb, leukocyty (esteraza), azotyny, bilirubina, urobilinogen.</dd></div>
+<div class="frow hy"><dt>Kryształy w osadzie<span class="tg tg-h">WAŻNE</span></dt><dd>szczawiany Ca → <b>zatrucie glikolem etylenowym</b>; moczany; fosforany (mocz zasadowy).</dd></div>
+<div class="frow crit"><dt>Mikroproteinuria kanalikowa<span class="tg tg-c">KRYTYCZNE</span></dt><dd>β2-mikroglobulina ↑ (uszkodzenie kanalików); kłębuszkowa → albumina.</dd></div>
+</dl>
+<h4>Białkomocz — wartości</h4>
+<dl class="facts">
+<div class="frow hy"><dt>Fizjologiczny<span class="tg tg-h">WAŻNE</span></dt><dd>< 150 mg/24h.</dd></div>
+<div class="frow"><dt>Mikroalbuminuria</dt><dd>30–300 mg/24h (wczesna nefropatia cukrzycowa).</dd></div>
+<div class="frow"><dt>Selektywny vs nieselektywny</dt><dd>selektywny = głównie albumina (kłębuszkowy); nieselektywny = duże białka (ciężkie uszkodzenie, np. zespół nerczycowy).</dd></div>
+</dl>
+<h4>Filtracja kłębuszkowa (GFR)</h4>
+<div class="formula">Klirens kreatyniny = (U<sub>kreat</sub> × V<sub>moczu</sub>) / P<sub>kreat</sub><small>Wzory szacunkowe: CKD-EPI (zalecany), MDRD, Cockcroft-Gault.</small></div>
+<div class="callout crit"><div class=" co-h">⚠ <span>Ostra niewydolność nerek (ONN)</span></div><p>W ONN <b>żaden wzór eGFR nie obowiązuje</b> (brak stanu stacjonarnego stężenia kreatyniny) — ocenia się bezpośrednio <b>kreatyninę w surowicy</b> i jej dynamikę.</p></div>
+    </section>
+<section class="chapter" id="ch03">
+      <div class="ch-head">
+        <span class="ch-num">03</span>
+        <div class="ch-titles"><h3>Białka osocza</h3>
+        <p class="ch-scope">Elektroforeza, białka ostrej fazy, albumina, OB, gammapatie.</p></div>
+      </div>
+      <h4>Frakcje i białka ostrej fazy</h4>
+<dl class="facts">
+<div class="frow"><dt>Frakcje elektroforezy</dt><dd>albumina, α1, α2, β, γ (immunoglobuliny).</dd></div>
+<div class="frow hy"><dt>Dodatnie białka ostrej fazy<span class="tg tg-h">WAŻNE</span></dt><dd>CRP, fibrynogen, haptoglobina, α1-antytrypsyna, ceruloplazmina, ferrytyna, prokalcytonina.</dd></div>
+<div class="frow crit"><dt>NIE jest białkiem ostrej fazy<span class="tg tg-c">KRYTYCZNE</span></dt><dd>β2-mikroglobulina (ani albumina/transferyna/transtyretyna — to białka ujemnej ostrej fazy).</dd></div>
+<div class="frow crit"><dt>Albumina ↑<span class="tg tg-c">KRYTYCZNE</span></dt><dd><b>tylko</b> przy odwodnieniu (zagęszczenie). Spadek: zapalenie, zespół nerczycowy, marskość, niedożywienie.</dd></div>
+</dl>
+<h4>Niedobór białek (zespół nerczycowy)</h4>
+<div class="formula">Niedobór białka (g) = (60 − białko aktualne [g/L]) × 9<small>60 g/L = dolna granica normy białka całkowitego; 9 L = objętość dystrybucji albuminy. Np. 43 g/L → 153 g; 40 g/L → 180 g.</small></div>
+<h4>OB i gammapatie</h4>
+<dl class="facts">
+<div class="frow"><dt>OB (odczyn Biernackiego)</dt><dd>droga opadania krwinek czerwonych w niekrzepnącej krwi w ciągu 1 godziny.</dd></div>
+<div class="frow"><dt>OB ↑</dt><dd>stany zapalne, niedokrwistość, ciąża, gammapatia; spadek przy nadkrwistości, hipofibrynogenemii.</dd></div>
+<div class="frow hy"><dt>Gammapatia monoklonalna<span class="tg tg-h">WAŻNE</span></dt><dd>wąski, wysoki prążek w obszarze γ (szpiczak — białko Bence-Jonesa w moczu).</dd></div>
+<div class="frow"><dt>Prokalcytonina</dt><dd>ciężkie układowe zakażenia bakteryjne, sepsa, noworodki, monitorowanie. Nie rośnie w zakażeniach wirusowych.</dd></div>
+</dl>
+    </section>
+<section class="chapter" id="ch04">
+      <div class="ch-head">
+        <span class="ch-num">04</span>
+        <div class="ch-titles"><h3>Gospodarka lipidowa i ryzyko sercowo-naczyniowe</h3>
+        <p class="ch-scope">Lipoproteiny, profil lipidowy, cele LDL, SCORE2, nie-HDL.</p></div>
+      </div>
+      <h4>Lipoproteiny i transport</h4>
+<table><caption>Lipoproteiny — co transportują</caption><thead><tr>
+<th>Frakcja</th>
+<th>Główny ładunek / rola</th>
+</tr></thead><tbody>
+<tr><td>Chylomikrony</td><td>TG <b>pokarmowe</b> (egzogenne)</td></tr>
+<tr><td>VLDL</td><td>TG endogenne (z wątroby)</td></tr>
+<tr><td>LDL</td><td><b>główny transporter cholesterolu</b> — aterogenny</td></tr>
+<tr><td>HDL</td><td>zwrotny transport cholesterolu (ochronny)</td></tr>
+<tr><td>Lp(a)</td><td>niezależny czynnik ryzyka miażdżycy</td></tr>
+</tbody></table>
+<dl class="facts">
+<div class="frow"><dt>Apolipoproteiny</dt><dd>apoB → LDL/VLDL/chylomikrony; apoA1 → HDL.</dd></div>
+<div class="frow hy"><dt>Friedewald (LDL wyliczane)<span class="tg tg-h">WAŻNE</span></dt><dd>LDL = TC − HDL − TG/5 (mg/dL); <b>nieważny</b> gdy TG > 400 mg/dL, brak czczo lub chylomikronemia.</dd></div>
+</dl>
+<h4>Ocena ryzyka i cele leczenia</h4>
+<div class="callout crit"><div class=" co-h">⚠ <span>Górna granica / cel LDL</span></div><p><b>Zależy od ryzyka sercowo-naczyniowego (karty SCORE2)</b> — NIE jest stała dla wszystkich. Cele orientacyjne: bardzo wysokie ryzyko &lt; 55, wysokie &lt; 70, umiarkowane &lt; 100, niskie &lt; 116 mg/dL.</p></div>
+<dl class="facts">
+<div class="frow crit"><dt>nie-HDL-cholesterol<span class="tg tg-c">KRYTYCZNE</span></dt><dd>= TC − HDL; cel = LDL + 30 mg/dL. Przydatny przy ↑TG, nie wymaga czczo. Element <b>SCORE2</b>.</dd></div>
+<div class="frow hy"><dt>SCORE2 vs zespół metaboliczny<span class="tg tg-h">WAŻNE</span></dt><dd>SCORE2 używa <b>nie-HDL</b>; kryteria zespołu metabolicznego to <b>TG ≥150 i HDL niski</b> (różne parametry!).</dd></div>
+<div class="frow hy"><dt>Abetalipoproteinemia<span class="tg tg-h">WAŻNE</span></dt><dd>brak apoB → bardzo niskie TG i cholesterol (wyjątek od „co podnosi TG”).</dd></div>
+</dl>
+    </section>
+<section class="chapter" id="ch05">
+      <div class="ch-head">
+        <span class="ch-num">05</span>
+        <div class="ch-titles"><h3>Zawał serca i choroby wątroby</h3>
+        <p class="ch-scope">Troponiny, CK-MB, BNP; enzymy i funkcja wątroby, bilirubina.</p></div>
+      </div>
+      <h4>Markery martwicy mięśnia sercowego</h4>
+<table><caption>Kinetyka markerów zawału</caption><thead><tr>
+<th>Marker</th>
+<th>Wzrost</th>
+<th>Uwaga</th>
+</tr></thead><tbody>
+<tr><td>Troponina T/I</td><td>3–4 h, utrzymuje się 7–14 (do 20) dni</td><td>najbardziej swoista; podstawa rozpoznania</td></tr>
+<tr><td>hs-cTn</td><td>najwcześniej i najczulej</td><td>szybki rule-in/rule-out</td></tr>
+<tr><td>CK-MB(mass)</td><td>3–6 h, normalizacja 48–72 h</td><td>wykrywanie <b>dorzutu</b> zawału (reinfarction)</td></tr>
+<tr><td>Mioglobina</td><td>1–2 h (najwcześniej)</td><td>mało swoista</td></tr>
+</tbody></table>
+<div class="callout crit"><div class=" co-h">⚠ <span>Potwierdzenie zawału</span></div><p>Parametry rekomendowane: <b>troponina T lub I + CK-MBmass</b>. Najszybszy do potwierdzenia = hs-cTn.</p></div>
+<dl class="facts">
+<div class="frow hy"><dt>NT-proBNP / BNP<span class="tg tg-h">WAŻNE</span></dt><dd>marker <b>niewydolności serca</b> (nie zapalenia, nie rozpoznania zawału).</dd></div>
+</dl>
+<h4>Wątroba — enzymy i funkcja</h4>
+<dl class="facts">
+<div class="frow hy"><dt>ALT, AST<span class="tg tg-h">WAŻNE</span></dt><dd>integralność komórek (cytoliza). de Ritis = AST/ALT: &gt;2 → alkoholowe/marskość/sercowe; &lt;1 → wirusowe.</dd></div>
+<div class="frow"><dt>ALP, GGT</dt><dd>cholestaza (ALP też kostna; GGT też indukcja alkoholem).</dd></div>
+<div class="frow"><dt>Funkcja syntetyczna</dt><dd>albumina, czas protrombinowy (PT/INR), cholinoesteraza.</dd></div>
+<div class="frow"><dt>LDH/AST</dt><dd>różnicowanie przyczyny żółtaczki (np. hemolityczna).</dd></div>
+</dl>
+<h4>Bilirubina i hiperbilirubinemie</h4>
+<dl class="facts">
+<div class="frow crit"><dt>Zespół Gilberta<span class="tg tg-c">KRYTYCZNE</span></dt><dd>↑ bilirubiny <b>niesprzężonej (pośredniej)</b>, AST/ALT prawidłowe, brak hemolizy (defekt UGT1A1).</dd></div>
+<div class="frow hy"><dt>Cholestaza<span class="tg tg-h">WAŻNE</span></dt><dd>↑ bilirubiny <b>sprzężonej</b>, ALP/GGT ↑, bilirubina w moczu (+), urobilinogen w moczu ↓.</dd></div>
+<div class="frow"><dt>Wrodzone</dt><dd>niesprzężona: Gilbert, Crigler-Najjar; sprzężona: Dubin-Johnson, Rotor.</dd></div>
+</dl>
+    </section>
+<section class="chapter" id="ch06">
+      <div class="ch-head">
+        <span class="ch-num">06</span>
+        <div class="ch-titles"><h3>Transfuzjologia i immunohematologia</h3>
+        <p class="ch-scope">Grupy krwi, próba zgodności, powikłania poprzetoczeniowe.</p></div>
+      </div>
+      <h4>Grupy krwi i dobór</h4>
+<dl class="facts">
+<div class="frow"><dt>Układy</dt><dd>ABO, Rh (antygen <b>D</b> najbardziej immunogenny), Kell (K — istotny u kobiet w wieku rozrodczym).</dd></div>
+<div class="frow"><dt>Oznaczanie grupy</dt><dd>odczynniki monoklonalne anty-A/anty-B/anty-D + krwinki wzorcowe (kontrola surowicy).</dd></div>
+<div class="frow hy"><dt>Próba zgodności serologiczna<span class="tg tg-h">WAŻNE</span></dt><dd>ważna <b>48 h od pobrania</b> krwi biorcy.</dd></div>
+<div class="frow hy"><dt>RhD słaby<span class="tg tg-h">WAŻNE</span></dt><dd>jako <b>biorca</b> → krew RhD ujemna; jako <b>dawca</b> → traktowany jak RhD dodatni.</dd></div>
+</dl>
+<h4>Powikłania poprzetoczeniowe</h4>
+<table><caption>Powikłania — kluczowe rozpoznania</caption><thead><tr>
+<th>Powikłanie</th>
+<th>Cechy</th>
+</tr></thead><tbody>
+<tr><td>Ostra hemoliza</td><td>niezgodność ABO — najgroźniejsza; gorączka, ból, hemoglobinuria, ↑LDH, ↑bilirubina niesprzężona</td></tr>
+<tr><td>TRALI</td><td>&lt; 6 h, obraz <b>płucny</b> (niewydolność oddechowa); brak przeciwciał nie wyklucza</td></tr>
+<tr><td>TACO</td><td>przeciążenie krążenia (obraz sercowy)</td></tr>
+<tr><td>Gorączkowa niehemolityczna</td><td>najczęstsza, łagodna</td></tr>
+<tr><td>GvHD</td><td>→ profilaktyka: <b>napromienianie</b> składników komórkowych</td></tr>
+</tbody></table>
+<div class="callout crit"><div class=" co-h">⚠ <span>Pułapki transfuzjologiczne</span></div><p>TRALI to obraz <b>płucny</b> w &lt;6 h, nie sercowy. Napromienianie zapobiega <b>GvHD</b> (nie sterylizuje, nie przedłuża przechowywania). Masywna transfuzja → <b>hipokalcemia</b> (cytrynian wiąże Ca), hiperkaliemia, hipotermia.</p></div>
+    </section>
+<section class="chapter" id="ch07">
+      <div class="ch-head">
+        <span class="ch-num">07</span>
+        <div class="ch-titles"><h3>Endokrynologia — podstawy diagnostyki</h3>
+        <p class="ch-scope">Testy dynamiczne osi podwzgórze-przysadka, tarczyca, nadnercza.</p></div>
+      </div>
+      <div class="callout note"><div class=" co-h">› <span>Zasada testów dynamicznych</span></div><p>Przy podejrzeniu <b>niedoczynności</b> → testy <b>stymulacji</b>. Przy podejrzeniu <b>nadczynności</b> → testy <b>hamowania</b>.</p></div>
+<dl class="facts">
+<div class="frow hy"><dt>Hormon wzrostu (GH)<span class="tg tg-h">WAŻNE</span></dt><dd>niedobór → stymulacja (insulina/hipoglikemia, klonidyna, arginina, glukagon); nadmiar → hamowanie glukozą (OGTT) + IGF-1.</dd></div>
+<div class="frow"><dt>Prolaktyna — rezerwa</dt><dd>stymulacja metoklopramidem lub TRH.</dd></div>
+<div class="frow"><dt>Hiperprolaktynemia reaktywna</dt><dd>odpowiedź na stres / hipoglikemię (lub ucisk szypuły przez guz).</dd></div>
+<div class="frow hy"><dt>Kortyzol / zespół Cushinga<span class="tg tg-h">WAŻNE</span></dt><dd>przesiew: hamowanie 1 mg deksametazonu na noc / dobowy kortyzol w moczu / kortyzol o północy. Potwierdzenie + ACTH do różnicowania.</dd></div>
+<div class="frow hy"><dt>Test TRH (TSH po TRH)<span class="tg tg-h">WAŻNE</span></dt><dd>paradoksalny/nadmierny wzrost TSH → <b>pierwotna niedoczynność tarczycy</b>; brak odpowiedzi → nadczynność.</dd></div>
+<div class="frow crit"><dt>TBG (białko wiążące hormony tarczycy)<span class="tg tg-c">KRYTYCZNE</span></dt><dd><b>estrogeny</b> (ciąża, antykoncepcja) ↑; <b>androgeny</b> ↓.</dd></div>
+</dl>
+    </section>
+<section class="chapter" id="ch08">
+      <div class="ch-head">
+        <span class="ch-num">08</span>
+        <div class="ch-titles"><h3>Cukrzyca i hipoglikemia</h3>
+        <p class="ch-scope">Kryteria rozpoznania, OGTT, HbA1c, ostre powikłania.</p></div>
+      </div>
+      <h4>Kryteria rozpoznania (glukoza w mg/dL)</h4>
+<table><caption>Progi diagnostyczne</caption><thead><tr>
+<th>Badanie</th>
+<th>Cukrzyca</th>
+<th>Stan przedcukrzycowy</th>
+</tr></thead><tbody>
+<tr><td>Glukoza na czczo</td><td>≥ 126 (potwierdzić)</td><td>IFG 100–125</td></tr>
+<tr><td>OGTT 2 h</td><td>≥ 200</td><td>IGT 140–199</td></tr>
+<tr><td>Glukoza przygodna</td><td>≥ 200 + objawy</td><td>—</td></tr>
+<tr><td>HbA1c</td><td>≥ 6,5%</td><td>5,7–6,4%</td></tr>
+</tbody></table>
+<dl class="facts">
+<div class="frow hy"><dt>Cukrzyca ciążowa<span class="tg tg-h">WAŻNE</span></dt><dd>na czczo ≥ 92; OGTT 1 h ≥ 180; 2 h ≥ 153 mg/dL.</dd></div>
+<div class="frow"><dt>HbA1c — warunek</dt><dd>analizator certyfikowany (NGSP/DCCT). Zafałszowana przy hemoglobinopatiach i niedokrwistości.</dd></div>
+<div class="frow hy"><dt>Cukrzyca typu 1<span class="tg tg-h">WAŻNE</span></dt><dd>przeciwciała (anty-GAD, anty-IA2, ICA, IAA), C-peptyd ↓, autoreaktywne limfocyty.</dd></div>
+</dl>
+<h4>Ostre powikłania i monitorowanie</h4>
+<dl class="facts">
+<div class="frow hy"><dt>Kwasica ketonowa (DKA)<span class="tg tg-h">WAŻNE</span></dt><dd>hiperglikemia + kwasica metaboliczna ze ↑luką + ketony (β-hydroksymaślan). Może wystąpić też w typie 2 (stres, infekcja, uraz).</dd></div>
+<div class="frow"><dt>Stan hiperglikemiczno-hipermolarny</dt><dd>glukoza bardzo wysoka, hiperosmolarność, bez istotnej kwasicy/ketozy.</dd></div>
+<div class="frow"><dt>Monitorowanie</dt><dd>HbA1c (2–3 mies.), fruktozamina (2–3 tyg.), mikroalbuminuria (nefropatia).</dd></div>
+</dl>
+    </section>
+<section class="chapter" id="ch09">
+      <div class="ch-head">
+        <span class="ch-num">09</span>
+        <div class="ch-titles"><h3>Równowaga kwasowo-zasadowa (RKZ)<span class="ch-crit">DZIAŁ KRYTYCZNY</span></h3>
+        <p class="ch-scope">Bufory, interpretacja gazometrii, luka anionowa.</p></div>
+      </div>
+      <h4>Wartości referencyjne</h4>
+<table><caption>Parametry RKZ krwi tętniczej</caption><thead><tr>
+<th>Parametr</th>
+<th>Norma</th>
+</tr></thead><tbody>
+<tr><td>pH</td><td>7,35–7,45</td></tr>
+<tr><td>pCO₂</td><td>35–45 mmHg</td></tr>
+<tr><td>HCO₃⁻</td><td>22–26 mmol/L</td></tr>
+<tr><td>BE (NZ)</td><td>±2 mmol/L</td></tr>
+</tbody></table>
+<dl class="facts">
+<div class="frow hy"><dt>Bufor wodorowęglanowy<span class="tg tg-h">WAŻNE</span></dt><dd>główny bufor pozakomórkowy; działa w układzie <b>otwartym</b> (kompensowany wentylacją), wykorzystuje dehydratację H₂CO₃ → CO₂.</dd></div>
+</dl>
+<div class="formula">Luka anionowa = [Na⁺] − ([Cl⁻] + [HCO₃⁻])   →   norma 8–16 mEq/L<small>Kluczowa do różnicowania kwasic metabolicznych.</small></div>
+<div class="callout crit"><div class=" co-h">⚠ <span>3-etapowa interpretacja</span></div><p>1) pH → kwasica (&lt;7,35) czy zasadowica (&gt;7,45). 2) Pierwotna przyczyna: oddechowa (pCO₂) czy metaboliczna (HCO₃⁻/BE). 3) Ocena kompensacji (częściowa / pełna / brak).</p></div>
+<table><caption>Kwasice metaboliczne wg luki anionowej</caption><thead><tr>
+<th>Z podwyższoną luką</th>
+<th>Z prawidłową luką (hiperchloremiczna)</th>
+</tr></thead><tbody>
+<tr><td>metanol, mocznik, DKA, mleczanowa, glikol, salicylany</td><td>biegunka, kwasica cewkowa (RTA)</td></tr>
+</tbody></table>
+<dl class="facts">
+<div class="frow crit"><dt>Salicylany<span class="tg tg-c">KRYTYCZNE</span></dt><dd>zaburzenie <b>mieszane</b>: zasadowica oddechowa (pobudzenie ośrodka) + kwasica metaboliczna ze ↑luką.</dd></div>
+<div class="frow"><dt>Próbka w kontakcie z powietrzem</dt><dd>ucieczka CO₂ → pCO₂ ↓, pH ↑, pO₂ ↑ (błąd przedanalityczny).</dd></div>
+</dl>
+    </section>
+<section class="chapter" id="ch10">
+      <div class="ch-head">
+        <span class="ch-num">10</span>
+        <div class="ch-titles"><h3>Gospodarka wodno-elektrolitowa<span class="ch-crit">DZIAŁ KRYTYCZNY</span></h3>
+        <p class="ch-scope">Woda, osmolalność, zaburzenia tonacji, ADH/aldosteron.</p></div>
+      </div>
+      <h4>Dystrybucja wody</h4>
+<dl class="facts">
+<div class="frow hy"><dt>Woda całkowita<span class="tg tg-h">WAŻNE</span></dt><dd>dorosły ~60% m.c. (kobiety ~50%). PWK (wewnątrzkomórkowa) 40% / PPK (zewnątrzkomórkowa) 20%.</dd></div>
+<div class="frow"><dt>PPK 20%</dt><dd>śródmiąższowa ~15% + wewnątrznaczyniowa ~5%.</dd></div>
+<div class="frow crit"><dt>Noworodek<span class="tg tg-c">KRYTYCZNE</span></dt><dd>woda całkowita 75–80% m.c.</dd></div>
+</dl>
+<h4>Osmolalność</h4>
+<div class="formula">Efektywna = 2×[Na⁺] + [glukoza]   |   Całkowita = 2×[Na⁺] + [glukoza] + [mocznik]<small>Norma całkowitej ≈ 289 (±8). Luka osmotyczna = zmierzona − obliczona = 0–10; rośnie w zatruciach (etanol, metanol, glikol, mannitol).</small></div>
+<h4>Zaburzenia tonacji (Na⁺)</h4>
+<table><caption>Klasyfikacja wg toniczności</caption><thead><tr>
+<th>Typ</th>
+<th>Na⁺ / osmolalność efektywna</th>
+</tr></thead><tbody>
+<tr><td>Hipotoniczne</td><td>Na &lt;135 / osm &lt;275 — utrata Na lub retencja wody</td></tr>
+<tr><td>Izotoniczne</td><td>Na 135–145 / osm 275–295</td></tr>
+<tr><td>Hipertoniczne</td><td>Na &gt;145 / osm &gt;295 — utrata wody lub retencja Na</td></tr>
+</tbody></table>
+<dl class="facts">
+<div class="frow hy"><dt>Odwodnienie hipertoniczne<span class="tg tg-h">WAŻNE</span></dt><dd>Na ↑, osm ↑; <b>hematokryt ↑</b> (zagęszczenie), zmniejszenie PPK i PWK.</dd></div>
+<div class="frow crit"><dt>ADH vs aldosteron<span class="tg tg-c">KRYTYCZNE</span></dt><dd>ADH → resorpcja <b>tylko wody</b> (kanaliki zbiorcze); aldosteron → resorpcja Na (i wtórnie wody).</dd></div>
+<div class="frow hy"><dt>SIADH<span class="tg tg-h">WAŻNE</span></dt><dd>ektopowy ADH (np. rak płuc) → hiponatremia, mocz zagęszczony, bez obrzęków.</dd></div>
+<div class="frow"><dt>Moczówka prosta</dt><dd>niedobór/oporność na ADH → wielomocz rozcieńczony.</dd></div>
+<div class="frow crit"><dt>Korekta ciężkiej hiponatremii<span class="tg tg-c">KRYTYCZNE</span></dt><dd><b>powolna</b> — ryzyko osmotycznej demielinizacji.</dd></div>
+</dl>
+    </section>
+<section class="chapter" id="ch11">
+      <div class="ch-head">
+        <span class="ch-num">11</span>
+        <div class="ch-titles"><h3>Gospodarka wapniowo-fosforanowo-magnezowa<span class="ch-crit">DZIAŁ KRYTYCZNY</span></h3>
+        <p class="ch-scope">Ca/PO4/Mg, PTH, witamina D, hiper- i hipokalcemia.</p></div>
+      </div>
+      <h4>Wapń i regulacja</h4>
+<dl class="facts">
+<div class="frow hy"><dt>Wapń całkowity / zjonizowany<span class="tg tg-h">WAŻNE</span></dt><dd>całkowity 2,25–2,75 mmol/L; zjonizowany 1,0–1,3 mmol/L (forma aktywna).</dd></div>
+<div class="frow hy"><dt>Wpływ pH<span class="tg tg-h">WAŻNE</span></dt><dd>kwasica → ↑ Ca zjonizowanego (mniej wiązania z albuminą); zasadowica → ↓ → tężyczka.</dd></div>
+</dl>
+<div class="formula">Wapń skorygowany [mmol/L] = Ca całkowity + 0,02 × (40 − albumina [g/L])<small>Korekcja konieczna przy hipoalbuminemii (inaczej fałszywa „hipokalcemia”). Np. 1,8 + 0,02×(40−20) = 2,2 → hipokalcemia.</small></div>
+<dl class="facts">
+<div class="frow hy"><dt>PTH<span class="tg tg-h">WAŻNE</span></dt><dd>↑ Ca (resorpcja kostna, reabsorpcja Ca w nerce, aktywacja wit. D), ↓ PO₄ (fosfaturia).</dd></div>
+<div class="frow crit"><dt>Witamina D — formy<span class="tg tg-c">KRYTYCZNE</span></dt><dd>25(OH)D₃ = zapasy (ocena niedoboru); <b>1,25(OH)₂D₃ = aktywna, nerkowa</b> (ocena zdolności nerek do produkcji).</dd></div>
+<div class="frow"><dt>Mutacja aktywująca CaSR</dt><dd>↓ PTH, hipokalcemia, hiperkalciuria.</dd></div>
+</dl>
+<h4>Zaburzenia stężenia wapnia</h4>
+<table><caption>Różnicowanie</caption><thead><tr>
+<th>Stan</th>
+<th>Ca</th>
+<th>PO₄</th>
+<th>PTH</th>
+</tr></thead><tbody>
+<tr><td>Pierwotna nadczynność przytarczyc (PNP)</td><td>↑</td><td>↓</td><td>↑</td></tr>
+<tr><td>Hiperkalcemia nowotworowa (PTHrP)</td><td>↑</td><td>zmienne</td><td>↓ (zahamowany)</td></tr>
+<tr><td>PChN → wtórna nadczynność przytarczyc</td><td>↓</td><td>↑</td><td>↑</td></tr>
+<tr><td>Niedobór witaminy D</td><td>↓</td><td>↓/N</td><td>↑</td></tr>
+</tbody></table>
+<div class="callout crit"><div class=" co-h">⚠ <span>PChN — klucz</span></div><p>Przewlekła choroba nerek: retencja PO₄ → <b>hiperfosfatemia → hipokalcemia → wtórna nadczynność przytarczyc</b> + niedobór 1,25(OH)₂D₃. Najczęstsza ogólnie przyczyna hiperkalcemii = PNP; u hospitalizowanych = nowotworowa.</p></div>
+<dl class="facts">
+<div class="frow"><dt>Magnez</dt><dd>hipomagnezemia → oporna hipokalcemia (zaburza wydzielanie i działanie PTH).</dd></div>
+</dl>
+    </section>
+<section class="chapter" id="ch12">
+      <div class="ch-head">
+        <span class="ch-num">12</span>
+        <div class="ch-titles"><h3>Diagnostyka hematologiczna</h3>
+        <p class="ch-scope">Morfologia, niedokrwistości, rozmaz, białaczki, czerwienica.</p></div>
+      </div>
+      <h4>Morfologia i rozmaz</h4>
+<div class="callout crit"><div class=" co-h">⚠ <span>Liczby względne vs bezwzględne</span></div><p>Procenty w rozmazie mylą — zawsze przelicz: <b>liczba bezwzględna = % × WBC</b>. Przy WBC 2,0 G/L i 45% limfocytów to NIE limfocytoza (0,9 G/L), a 50% segmentów = neutropenia (1,0 G/L).</p></div>
+<dl class="facts">
+<div class="frow"><dt>Przesunięcie w lewo</dt><dd>młode formy granulocytów (odmłodzenie) — zakażenie bakteryjne.</dd></div>
+<div class="frow"><dt>Przesunięcie w prawo</dt><dd>hipersegmentacja granulocytów — niedokrwistość megaloblastyczna.</dd></div>
+<div class="frow hy"><dt>Przerwa białaczkowa<span class="tg tg-h">WAŻNE</span></dt><dd>blasty + dojrzałe komórki, brak form pośrednich — ostra białaczka.</dd></div>
+</dl>
+<h4>Niedokrwistości</h4>
+<table><caption>Podział wg MCV</caption><thead><tr>
+<th>MCV</th>
+<th>Przyczyny</th>
+</tr></thead><tbody>
+<tr><td>Mikrocytowa</td><td>niedobór żelaza, talasemia, choroby przewlekłe</td></tr>
+<tr><td>Normocytowa</td><td>hemolityczna, aplastyczna, ostry krwotok</td></tr>
+<tr><td>Makrocytowa</td><td>niedobór B12 / kwasu foliowego (megaloblastyczna)</td></tr>
+</tbody></table>
+<dl class="facts">
+<div class="frow crit"><dt>Niedobór żelaza (zaawansowany)<span class="tg tg-c">KRYTYCZNE</span></dt><dd>ferrytyna ↓ (ale białko ostrej fazy → oznaczać z <b>CRP</b>), Fe ↓, TIBC ↑, wysycenie ↓, <b>sTfR ↑</b>, CHr ↓.</dd></div>
+</dl>
+<h4>Nowotwory krwi</h4>
+<dl class="facts">
+<div class="frow"><dt>AML</dt><dd>markery mieloidalne: CD13, CD33, MPO (mieloperoksydaza); pałeczki Auera.</dd></div>
+<div class="frow hy"><dt>B-CLL<span class="tg tg-h">WAŻNE</span></dt><dd>limfocytoza dojrzała, immunofenotyp CD19/CD20/CD23 + koekspresja CD5, cienie Gumprechta.</dd></div>
+<div class="frow"><dt>Szpiczak plazmocytowy</dt><dd>białko monoklonalne (najczęściej IgG), Bence-Jones, hiperkalcemia, niewydolność nerek, zmiany osteolityczne.</dd></div>
+<div class="frow crit"><dt>Czerwienica prawdziwa<span class="tg tg-c">KRYTYCZNE</span></dt><dd>mutacja <b>JAK2 V617F</b>, erytropoetyna (EPO) ↓.</dd></div>
+</dl>
+    </section>
+<section class="chapter" id="ch13">
+      <div class="ch-head">
+        <span class="ch-num">13</span>
+        <div class="ch-titles"><h3>Zaburzenia krzepnięcia (hemostaza)<span class="ch-crit">DZIAŁ KRYTYCZNY</span></h3>
+        <p class="ch-scope">PT/APTT, skazy, vWD, hemofilia, trombofilia, leki.</p></div>
+      </div>
+      <h4>Testy przesiewowe</h4>
+<table><caption>Co bada który test</caption><thead><tr>
+<th>Test</th>
+<th>Droga / co wykrywa</th>
+</tr></thead><tbody>
+<tr><td>PT (INR)</td><td>zewnątrzpochodna (cz. VII) + wspólna; VKA, niedobór wit. K, wątroba</td></tr>
+<tr><td>APTT</td><td>wewnątrzpochodna (XII, XI, IX, VIII) + wspólna; heparyna niefrakcjonowana, hemofilia, vWD</td></tr>
+<tr><td>TT (czas trombinowy)</td><td>fibrynogen, dabigatran</td></tr>
+<tr><td>Anty-Xa</td><td>HDCz, fondaparynuks, riwaroksaban</td></tr>
+<tr><td>Czas ekarynowy</td><td><b>dabigatran</b> (bezpośredni inhibitor trombiny)</td></tr>
+</tbody></table>
+<div class="callout crit"><div class=" co-h">⚠ <span>Wzorzec PT vs APTT</span></div><p>PT ↑ + APTT prawidłowe → <b>czynnik VII / wczesne VKA</b>. APTT ↑ + PT prawidłowe → VIII/IX/XI/XII (hemofilia, vWD, niedobór XII). Oba ↑ → droga wspólna, DIC, choroby wątroby, zaawansowany niedobór wit. K.</p></div>
+<dl class="facts">
+<div class="frow crit"><dt>Czynnik XII<span class="tg tg-c">KRYTYCZNE</span></dt><dd>niedobór → <b>APTT ↑ bez skłonności do krwawień</b>.</dd></div>
+<div class="frow hy"><dt>Próba korekcji<span class="tg tg-h">WAŻNE</span></dt><dd>koryguje się → niedobór czynnika; <b>nie koryguje</b> → obecny inhibitor (np. hemofilia nabyta).</dd></div>
+</dl>
+<h4>Skazy krwotoczne</h4>
+<dl class="facts">
+<div class="frow"><dt>Hemofilia A / B</dt><dd>niedobór VIII / IX; APTT ↑, dziedziczenie recesywne sprzężone z X.</dd></div>
+<div class="frow hy"><dt>Choroba von Willebranda<span class="tg tg-h">WAŻNE</span></dt><dd>typ 1 (ilościowy, najczęstszy 75–80%), typ 2 (jakościowy: 2A/2B/2N/2M), typ 3 (ciężki). Czas okluzji ↑, vWF:Ag, vWF:RCo, VIII ↓. Pobranie u kobiet w 1.–4. dniu cyklu.</dd></div>
+<div class="frow crit"><dt>Hemofilia nabyta A<span class="tg tg-c">KRYTYCZNE</span></dt><dd>inhibitor anty-VIII; osoby starsze / połóg; <b>próba korekcji ujemna</b>; o rozpoznaniu decyduje miano inhibitora.</dd></div>
+</dl>
+<h4>Zakrzepica i DIC</h4>
+<dl class="facts">
+<div class="frow hy"><dt>DIC<span class="tg tg-h">WAŻNE</span></dt><dd>D-dimer ↑, fibrynogen ↓, PT/APTT ↑, PLT ↓.</dd></div>
+<div class="frow"><dt>Trombofilia</dt><dd>czynnik V Leiden (oporność na APC), protrombina G20210A (×3 ryzyko ŻChZZ), niedobór AT / białka C / białka S, zespół antyfosfolipidowy.</dd></div>
+<div class="frow"><dt>Agregacja po ADP zaburzona</dt><dd>defekt receptora <b>P2Y₁₂</b> (lub działanie klopidogrelu). Glanzmann = GPIIb/IIIa; Bernard-Soulier = GPIb.</dd></div>
+</dl>
+    </section>
+<section class="chapter" id="ch14">
+      <div class="ch-head">
+        <span class="ch-num">14</span>
+        <div class="ch-titles"><h3>Zatrucia ostre</h3>
+        <p class="ch-scope">Paracetamol, salicylany, alkohole, glikol; luki diagnostyczne.</p></div>
+      </div>
+      <dl class="facts">
+<div class="frow crit"><dt>Paracetamol<span class="tg tg-c">KRYTYCZNE</span></dt><dd>wyczerpanie glutationu → NAPQI → martwica wątroby. Oznaczyć: <b>paracetamol (nomogram), AST, PT/INR</b>; odtrutka N-acetylocysteina.</dd></div>
+<div class="frow hy"><dt>Salicylany<span class="tg tg-h">WAŻNE</span></dt><dd>zasadowica oddechowa + kwasica metaboliczna (mieszane), hiperwentylacja.</dd></div>
+<div class="frow hy"><dt>Metanol<span class="tg tg-h">WAŻNE</span></dt><dd>→ kwas mrówkowy: kwasica metaboliczna ze ↑luką, uszkodzenie nerwu wzrokowego; ↑luka osmotyczna; odtrutka fomepizol/etanol.</dd></div>
+<div class="frow crit"><dt>Glikol etylenowy<span class="tg tg-c">KRYTYCZNE</span></dt><dd>→ kwas glikolowy i <b>szczawiowy</b> → kryształy szczawianu wapnia w moczu, hipokalcemia, ONN.</dd></div>
+<div class="frow"><dt>Narzędzia w zatruciach</dt><dd>luka osmotyczna ↑ (alkohole, glikole) i luka anionowa ↑ — ukierunkowują rozpoznanie.</dd></div>
+</dl>
+    </section>
+<section class="chapter" id="ch15">
+      <div class="ch-head">
+        <span class="ch-num">15</span>
+        <div class="ch-titles"><h3>Diagnostyka molekularna i onkologiczna</h3>
+        <p class="ch-scope">PCR, sekwencjonowanie, onkogeny, choroby genetyczne, biopsja płynna.</p></div>
+      </div>
+      <h4>Metody</h4>
+<dl class="facts">
+<div class="frow"><dt>PCR</dt><dd>amplifikacja DNA (denaturacja → annealing → elongacja).</dd></div>
+<div class="frow hy"><dt>Real-time PCR<span class="tg tg-h">WAŻNE</span></dt><dd>nowoczesna technika ilościowa z analizą <b>przyrostu ilości produktu DNA w czasie rzeczywistym</b> (sonda).</dd></div>
+<div class="frow hy"><dt>Pobranie do badań DNA/RNA<span class="tg tg-h">WAŻNE</span></dt><dd>DNA → EDTA/cytrynian (nie heparyna — hamuje PCR); RNA niestabilne, szybki transport / mrożenie.</dd></div>
+</dl>
+<h4>Onkogeny i markery genetyczne</h4>
+<dl class="facts">
+<div class="frow crit"><dt>KRAS (rak jelita grubego)<span class="tg tg-c">KRYTYCZNE</span></dt><dd><b>brak mutacji</b> → kwalifikacja do anty-EGFR (cetuksymab); <b>mutacja</b> → wyklucza tę terapię.</dd></div>
+<div class="frow crit"><dt>BCR-ABL / mutacja T315I<span class="tg tg-c">KRYTYCZNE</span></dt><dd>oporność na imatynib, <b>nilotynib i dazatynib</b> (mutacja „strażnika”).</dd></div>
+<div class="frow"><dt>BRCA1</dt><dd>~55% mutacji w eksonie 11; ↑ ryzyko raka piersi i jajnika.</dd></div>
+<div class="frow hy"><dt>HER2 (amplifikacja)<span class="tg tg-h">WAŻNE</span></dt><dd>agresywny, oporny na terapię hormonalną; podatny na <b>trastuzumab</b>.</dd></div>
+</dl>
+<h4>Choroby genetyczne i prenatalne</h4>
+<dl class="facts">
+<div class="frow"><dt>Zespół łamliwego chromosomu X</dt><dd>ekspansja powtórzeń CGG w genie <b>FMR1</b> (&gt;200 = pełna mutacja).</dd></div>
+<div class="frow hy"><dt>Becker / Duchenne<span class="tg tg-h">WAŻNE</span></dt><dd>gen DMD, dziedziczenie recesywne sprzężone z X; chory mężczyzna przekaże zmutowany gen wszystkim córkom (nosicielki).</dd></div>
+<div class="frow"><dt>SMA — przesiew</dt><dd>delecja eksonu 7 w obu allelach <b>SMN1</b> (czułość &gt;95%).</dd></div>
+<div class="frow"><dt>Mukowiscydoza</dt><dd>CFTR (ΔF508); przesiew noworodków: IRT → analiza genu CFTR.</dd></div>
+<div class="frow hy"><dt>NIPT<span class="tg tg-h">WAŻNE</span></dt><dd>wolne pozakomórkowe DNA płodu (cffDNA) z krwi matki od ~10. tygodnia.</dd></div>
+<div class="frow"><dt>Płynna biopsja</dt><dd>ctDNA, krążące komórki nowotworowe (CTC), egzosomy, płytki edukowane przez nowotwór (TEP).</dd></div>
+<div class="frow"><dt>ColoPrint</dt><dd>ocena ryzyka nawrotu raka jelita grubego (II–III stopień).</dd></div>
+</dl>
+    </section>
+<section class="chapter" id="ch16">
+      <div class="ch-head">
+        <span class="ch-num">16</span>
+        <div class="ch-titles"><h3>Markery nowotworowe</h3>
+        <p class="ch-scope">Zasady stosowania i najważniejsze markery narządowe.</p></div>
+      </div>
+      <div class="callout note"><div class=" co-h">› <span>Zasada</span></div><p>Markery nowotworowe służą głównie do <b>monitorowania leczenia i wykrywania nawrotu</b>, a nie do badań przesiewowych (poza nielicznymi wyjątkami).</p></div>
+<table><caption>Najważniejsze markery</caption><thead><tr>
+<th>Marker</th>
+<th>Nowotwór / zastosowanie</th>
+</tr></thead><tbody>
+<tr><td>AFP</td><td>wątroba (HCC), guzy zarodkowe jąder</td></tr>
+<tr><td>CEA</td><td>rak jelita grubego</td></tr>
+<tr><td>CA 19-9</td><td>trzustka, drogi żółciowe</td></tr>
+<tr><td>CA 125</td><td>jajnik</td></tr>
+<tr><td>CA 15-3</td><td>pierś</td></tr>
+<tr><td>PSA</td><td>prostata</td></tr>
+<tr><td>hCG</td><td>kosmówczak, guzy zarodkowe jąder</td></tr>
+<tr><td>Kalcytonina</td><td>rak rdzeniasty tarczycy</td></tr>
+<tr><td>Tyreoglobulina</td><td>zróżnicowany rak tarczycy (monitorowanie)</td></tr>
+<tr><td>Gastryna</td><td>zespół Zollingera-Ellisona</td></tr>
+<tr><td>TPS</td><td>marker proliferacji komórek nowotworowych</td></tr>
+</tbody></table>
+    </section>
+
+  <div class="divider" id="zal">
+    <div class="kk">Załącznik · pogłębione omówienie</div>
+    <h2>Trzy działy krytyczne — szczegółowo</h2>
+    <p>Mechanizmy, zasady kompensacji, wzory i przykłady liczbowe. Ujęcie kompensacji RKZ zgodne ze skryptem
+    GUMed 2017 (jakościowe — kierunek zmian pCO₂ / NZ).</p>
+  </div>
+
+  <section class="chapter" id="zal09">
+      <div class="ch-head"><span class="ch-num">09</span>
+      <div class="ch-titles"><h3>Równowaga kwasowo-zasadowa (RKZ)<span class="ch-crit">DZIAŁ KRYTYCZNY</span></h3></div></div>
+      <p class="prose">Organizm utrzymuje pH krwi w wąskim zakresie <b>7,35–7,45</b>, bo aktywność niemal wszystkich enzymów
+zależy od stężenia jonów wodorowych. Codziennie powstaje ogromna ilość kwasu lotnego (CO₂, ~15&nbsp;000 mmol/d, wydalanego
+przez płuca) i niewielka ilość kwasów nielotnych (~50–100 mmol/d, buforowanych i wydalanych przez nerki). Stabilność pH
+zapewniają trzy „linie obrony” działające w różnym tempie: <b>bufory</b> (sekundy) → <b>płuca</b> (minuty) → <b>nerki</b> (godziny–dni).</p>
+<h4>Układy buforowe</h4>
+<dl class="facts">
+<div class="frow crit"><dt>Bufor wodorowęglanowy<span class="tg tg-c">KRYTYCZNE</span></dt><dd>najważniejszy, w PPK; para H₂CO₃ / HCO₃⁻. Działa w układzie <b>otwartym</b> (CO₂ usuwany przez płuca), dzięki anhydrazie węglanowej H₂CO₃ ulega dehydratacji do CO₂.</dd></div>
+<div class="frow hy"><dt>Stosunek HCO₃⁻ / CO₂<span class="tg tg-h">WAŻNE</span></dt><dd>przy pH 7,4 wynosi <b>20:1</b> — to ten stosunek, a nie wartości bezwzględne, wyznacza pH.</dd></div>
+<div class="frow"><dt>Bufor fosforanowy</dt><dd>głównie wewnątrzkomórkowy i w moczu (kwasowość miareczkowa).</dd></div>
+<div class="frow"><dt>Bufor białczanowy / hemoglobinowy</dt><dd>hemoglobina = główny bufor wewnątrz erytrocytów.</dd></div>
+</dl>
+<div class="formula">pH = 6,1 + log( [HCO₃⁻] / (0,03 × pCO₂) )<small>Równanie Hendersona-Hasselbalcha. Składnik metaboliczny = HCO₃⁻ (nerki); składnik oddechowy = pCO₂ (płuca).</small></div>
+<h4>Regulacja: płuca i nerki</h4>
+<p class="prose">Płuca reagują w ciągu minut, zmieniając wentylację: hiperwentylacja usuwa CO₂ (pCO₂ ↓), hipowentylacja go zatrzymuje (pCO₂ ↑). Nerki działają wolno (godziny–dni), ale są jedyną drogą trwałego usuwania kwasów nielotnych i odtwarzania zasad.</p>
+<dl class="facts">
+<div class="frow hy"><dt>Nerki — 3 mechanizmy<span class="tg tg-h">WAŻNE</span></dt><dd>1) reabsorpcja przesączonego HCO₃⁻ (kanalik proksymalny); 2) regeneracja zasad zużytych do buforowania kwasów; 3) wydalanie H⁺ jako jon amonowy (NH₄⁺) i kwasowość miareczkowa (fosforany).</dd></div>
+<div class="frow"><dt>Tempo kompensacji nerkowej</dt><dd>rozwija się powoli — pełna adaptacja kanalików dystalnych po <b>2–3 dniach</b>. Dlatego kompensacja metaboliczna zaburzeń oddechowych jest opóźniona.</dd></div>
+</dl>
+<h4>Wartości referencyjne</h4>
+<table><caption>Parametry RKZ krwi tętniczej</caption><thead><tr>
+<th>Parametr</th>
+<th>Norma</th>
+<th>Znaczenie</th>
+</tr></thead><tbody>
+<tr><td>pH</td><td>7,35–7,45</td><td>wypadkowa równowagi</td></tr>
+<tr><td>pCO₂</td><td>35–45 mmHg</td><td>składnik <b>oddechowy</b> (płuca)</td></tr>
+<tr><td>HCO₃⁻</td><td>22–26 mmol/L</td><td>składnik <b>metaboliczny</b> (nerki)</td></tr>
+<tr><td>BE / NZ</td><td>±2 mmol/L</td><td>nadmiar/niedobór zasad — czysty wskaźnik metaboliczny</td></tr>
+<tr><td>pO₂</td><td>75–100 mmHg</td><td>utlenowanie</td></tr>
+<tr><td>SaO₂</td><td>95–98%</td><td>wysycenie hemoglobiny tlenem</td></tr>
+</tbody></table>
+<h4>Cztery zaburzenia pierwotne</h4>
+<table><caption>Pierwotna zmiana i przyczyny</caption><thead><tr>
+<th>Zaburzenie</th>
+<th>Pierwotna zmiana</th>
+<th>Typowe przyczyny</th>
+</tr></thead><tbody>
+<tr><td>Kwasica metaboliczna</td><td>HCO₃⁻ / NZ ↓</td><td>DKA, mleczanowa, biegunka, ONN, zatrucia</td></tr>
+<tr><td>Zasadowica metaboliczna</td><td>HCO₃⁻ / NZ ↑</td><td>wymioty (utrata HCl), diuretyki, hipokaliemia</td></tr>
+<tr><td>Kwasica oddechowa</td><td>pCO₂ ↑</td><td>hipowentylacja: POChP, depresja ośrodka, choroby nerwowo-mięśniowe</td></tr>
+<tr><td>Zasadowica oddechowa</td><td>pCO₂ ↓</td><td>hiperwentylacja: ból, lęk, gorączka, salicylany, hipoksja</td></tr>
+</tbody></table>
+<h4>Algorytm interpretacji — 3 etapy</h4>
+<div class="callout crit"><div class="co-h">⚠ <span>Trzy kroki (wg skryptu)</span></div><p><b>Etap I — pH:</b> &lt;7,35 = kwasica, &gt;7,45 = zasadowica. <b>Etap II — przyczyna pierwotna:</b> patrz, który składnik zmienił się „w stronę” pH — spadek NZ/HCO₃⁻ → metaboliczna, wzrost pCO₂ → oddechowa (analogicznie dla zasadowicy). <b>Etap III — kompensacja:</b> sprawdź drugi składnik.</p></div>
+<p class="prose">Kompensacja to zmiana <b>drugiego</b> parametru w <b>tym samym kierunku</b> co pierwotny, tak by przywrócić stosunek 20:1. Zaburzenia metaboliczne kompensuje oddech (zmiana pCO₂ zgodna z NZ): w kwasicy metabolicznej pCO₂ <b>spada</b>, w zasadowicy metabolicznej pCO₂ <b>rośnie</b>. Zaburzenia oddechowe kompensują nerki (zmiana NZ zgodna z pCO₂): w kwasicy oddechowej NZ <b>rośnie</b>, w zasadowicy oddechowej NZ <b>spada</b>.</p>
+<dl class="facts">
+<div class="frow"><dt>Niewyrównane</dt><dd>brak kompensacyjnej zmiany drugiego parametru.</dd></div>
+<div class="frow"><dt>Częściowo wyrównane</dt><dd>kompensacja obecna, ale pH nadal poza normą.</dd></div>
+<div class="frow"><dt>Całkowicie wyrównane</dt><dd>pH wróciło do zakresu referencyjnego mimo nieprawidłowych pCO₂ i NZ.</dd></div>
+</dl>
+<div class="callout note"><div class="co-h">› <span>Czas kompensacji</span></div><p>Kompensacja oddechowa zaburzeń metabolicznych jest <b>natychmiastowa</b>. Kompensacja nerkowa zaburzeń oddechowych rozwija się przez <b>3–5 dni</b> (kwasica) lub <b>1–3 dni</b> (zasadowica) — stąd „ostra” vs „przewlekła” kwasica oddechowa.</p></div>
+<h4>Luka anionowa — różnicowanie kwasic metabolicznych</h4>
+<div class="formula">Luka anionowa = [Na⁺] − ([Cl⁻] + [HCO₃⁻])   →   norma 8–16 mEq/L<small>Odzwierciedla niemierzone aniony. Korekta: przy hipoalbuminemii lukę trzeba zwiększyć (~2,5 mEq/L na każde 10 g/L spadku albuminy).</small></div>
+<p class="prose">W kwasicy metabolicznej luka mówi, co zastąpiło utracony HCO₃⁻. Jeśli ubytek HCO₃⁻ wyrównał <b>chlorek</b> — luka pozostaje prawidłowa (kwasica hiperchloremiczna). Jeśli zastąpił go <b>inny, niemierzony anion</b> (mleczan, ketokwasy, octany metabolitów) — luka rośnie.</p>
+<table><caption>Kwasice metaboliczne wg luki anionowej</caption><thead><tr>
+<th>Ze ZWIĘKSZONĄ luką</th>
+<th>Z PRAWIDŁOWĄ luką (hiperchloremiczna)</th>
+</tr></thead><tbody>
+<tr><td>metanol, mocznik (ONN), DKA, kwasica mleczanowa, glikol etylenowy, salicylany</td><td>biegunka, kwasica cewkowa nerkowa (RTA), podaż NaCl</td></tr>
+</tbody></table>
+<h4>Przykłady interpretacji gazometrii</h4>
+<div class="example"><div class="ex-h">PRZYKŁAD · Cukrzycowa kwasica ketonowa (DKA)</div><p class="ex-i">Pacjentka z cukrzycą typu 1: pH 6,78; pCO₂ 22,5 mmHg; NZ −32 mmol/L; glukoza 1200 mg/dl.</p><ol class="ex-steps"><li>Etap I: pH 6,78 &lt; 7,35 → <b>kwasica</b>.</li>
+<li>Etap II: NZ głęboko ujemne → przyczyna <b>metaboliczna</b> (HCO₃⁻ ↓).</li>
+<li>Etap III: pCO₂ obniżone (22,5) — kompensacja oddechowa obecna, ale pH wciąż skrajnie niskie → <b>częściowo wyrównana</b>.</li>
+<li>Luka anionowa duża (ketokwasy) → kwasica metaboliczna ze <b>zwiększoną luką</b>.</li></ol><p class="ex-c"><b>Wniosek:</b> Częściowo wyrównana kwasica metaboliczna ze zwiększoną luką anionową (kwasica ketonowa).</p></div>
+<div class="example"><div class="ex-h">PRZYKŁAD · Ciężka biegunka</div><p class="ex-i">pH 6,90; pCO₂ 40 mmHg; HCO₃⁻ 9 mmol/L; NZ −24; Na⁺ 138; Cl⁻ 116 mmol/L.</p><ol class="ex-steps"><li>Etap I: pH 6,90 → <b>kwasica</b>.</li>
+<li>Etap II: HCO₃⁻ 9 → <b>metaboliczna</b>.</li>
+<li>Etap III: pCO₂ 40 (norma) — <b>brak kompensacji oddechowej → niewyrównana</b>.</li>
+<li>Luka = 138 − (116 + 9) = <b>13 (prawidłowa)</b> → kwasica hiperchloremiczna z prawidłową luką.</li></ol><p class="ex-c"><b>Wniosek:</b> Niewyrównana kwasica metaboliczna z prawidłową luką anionową — typowa dla utraty HCO₃⁻ z przewodu pokarmowego.</p></div>
+<div class="example"><div class="ex-h">PRZYKŁAD · Przewlekła kwasica oddechowa (kompensowana)</div><p class="ex-i">Gazometria włośniczkowa: pH 7,33; pCO₂ 60 mmHg; NZ +2.</p><ol class="ex-steps"><li>Etap I: pH 7,33 → <b>kwasica</b> (granicznie).</li>
+<li>Etap II: pCO₂ 60 (podwyższone) → przyczyna <b>oddechowa</b>.</li>
+<li>Etap III: NZ lekko dodatnie (+2) — nerki zaczęły kompensować, pH prawie znormalizowane → <b>częściowo wyrównana</b>.</li></ol><p class="ex-c"><b>Wniosek:</b> Częściowo wyrównana kwasica oddechowa.</p></div>
+<h4>Tlen i hipoksja (uzupełnienie)</h4>
+<dl class="facts">
+<div class="frow"><dt>Hipoksemia vs hipoksja</dt><dd>hipoksemia = niskie pO₂ we krwi; hipoksja = niedobór tlenu w tkankach.</dd></div>
+<div class="frow"><dt>Przyczyny hipoksji</dt><dd>oddechowa (↓pO₂), anemiczna (↓Hb), krążeniowa (↓przepływ), histotoksyczna (blok oddychania komórkowego, np. cyjanki).</dd></div>
+</dl>
+    </section><section class="chapter" id="zal10">
+      <div class="ch-head"><span class="ch-num">10</span>
+      <div class="ch-titles"><h3>Gospodarka wodno-elektrolitowa<span class="ch-crit">DZIAŁ KRYTYCZNY</span></h3></div></div>
+      <p class="prose">Gospodarka wodno-elektrolitowa to dwa odrębnie regulowane problemy: <b>osmolalność</b> (sterowana przez ADH i pragnienie,
+czujnik = osmoreceptory podwzgórza) oraz <b>objętość/wolemia</b> (sterowana przez układ RAA i peptydy natriuretyczne,
+czujnik = baroreceptory). Sód i jego aniony decydują o osmolalności PPK, więc zaburzenia [Na⁺] to przede wszystkim zaburzenia
+gospodarki <b>wodnej</b>, a nie ilości sodu.</p>
+<h4>Przestrzenie wodne organizmu</h4>
+<dl class="facts">
+<div class="frow hy"><dt>Woda całkowita (TBW)<span class="tg tg-h">WAŻNE</span></dt><dd>dorosły mężczyzna ~<b>60%</b> m.c., kobieta ~50%, niemowlę większy udział.</dd></div>
+<div class="frow crit"><dt>Noworodek<span class="tg tg-c">KRYTYCZNE</span></dt><dd>woda całkowita <b>75–80%</b> m.c.</dd></div>
+<div class="frow crit"><dt>PWK (wewnątrzkomórkowa)<span class="tg tg-c">KRYTYCZNE</span></dt><dd>~<b>40%</b> m.c.; główny kation = <b>K⁺</b>.</dd></div>
+<div class="frow crit"><dt>PPK (zewnątrzkomórkowa)<span class="tg tg-c">KRYTYCZNE</span></dt><dd>~<b>20%</b> m.c.; główny kation = <b>Na⁺</b>. Dzieli się na śródmiąższową ~15% i wewnątrznaczyniową (osocze) ~5%.</dd></div>
+</dl>
+<table><caption>Orientacyjne objętości u osoby 70 kg</caption><thead><tr>
+<th>Przestrzeń</th>
+<th>% m.c.</th>
+<th>Objętość</th>
+</tr></thead><tbody>
+<tr><td>Woda całkowita</td><td>60%</td><td>~42 L</td></tr>
+<tr><td>Wewnątrzkomórkowa (PWK)</td><td>40%</td><td>~28 L</td></tr>
+<tr><td>Zewnątrzkomórkowa (PPK)</td><td>20%</td><td>~14 L</td></tr>
+<tr><td>— śródmiąższowa</td><td>15%</td><td>~10,5 L</td></tr>
+<tr><td>— osocze</td><td>5%</td><td>~3,5 L</td></tr>
+</tbody></table>
+<h4>Osmolalność i jej regulacja</h4>
+<div class="formula">Efektywna = 2×[Na⁺] + [glukoza]   |   Całkowita = 2×[Na⁺] + [glukoza] + [mocznik]<small>Norma całkowitej ≈ 289 mmol/L (±8). Mocznik swobodnie przenika błony → jest osmolem „nieefektywnym”.</small></div>
+<p class="prose">Wzrost osmolalności pobudza osmoreceptory → wydzielanie <b>ADH</b> (resorpcja wody przez akwaporyny w kanalikach zbiorczych) oraz uczucie pragnienia. Spadek objętości krwi krążącej pobudza <b>RAA</b> (renina → angiotensyna II → aldosteron → resorpcja Na⁺) oraz uwalnianie reniny; rozciągnięcie przedsionków uwalnia <b>peptydy natriuretyczne</b> (ANP/BNP) nasilające natriurezę.</p>
+<div class="formula">Luka osmotyczna = osmolalność zmierzona − obliczona   →   norma 0–10 mmol/L<small>Wzrost luki = obecność niemierzonych osmoli: etanol, metanol, glikol etylenowy, mannitol → ważne w diagnostyce zatruć.</small></div>
+<div class="callout crit"><div class="co-h">⚠ <span>ADH vs aldosteron</span></div><p><b>ADH</b> reguluje resorpcję <b>samej wody</b> (kanaliki zbiorcze, akwaporyny). <b>Aldosteron</b> reguluje resorpcję <b>sodu</b> (kanalik dystalny/zbiorczy), a woda podąża za sodem wtórnie. To rozróżnienie jest stałym punktem egzaminacyjnym.</p></div>
+<div class="example"><div class="ex-h">PRZYKŁAD · Osmolalność efektywna vs całkowita</div><p class="ex-i">Na⁺ 160; K⁺ 5; glukoza 6; mocznik 12 mmol/L.</p><ol class="ex-steps"><li>Efektywna = 2×160 + 6 = <b>326 mOsm/L</b> (K i mocznik pomijamy).</li>
+<li>Całkowita = 2×160 + 6 + 12 = <b>338 mOsm/L</b>.</li>
+<li>Różnica = mocznik (osmol nieefektywny).</li></ol><p class="ex-c"><b>Wniosek:</b> Jeśli pytanie dotyczy osmolalności <b>efektywnej</b> → 326; rozpraszacz 338 to wartość całkowita.</p></div>
+<h4>Zaburzenia gospodarki sodowej — macierz 6 typów</h4>
+<p class="prose">Każde zaburzenie klasyfikujemy w dwóch wymiarach: <b>toniczność</b> (hipo/izo/hiper, czyli [Na⁺] i osmolalność efektywna) oraz <b>kierunek</b> (odwodnienie = ubytek vs przewodnienie = nadmiar). Woda zawsze przechodzi do przestrzeni o wyższej osmolalności, co decyduje o losie PWK.</p>
+<table><caption>Sześć typów zaburzeń wodno-sodowych</caption><thead><tr>
+<th>Typ</th>
+<th>Na⁺</th>
+<th>Mechanizm / przykład</th>
+<th>PWK</th>
+</tr></thead><tbody>
+<tr><td>Odwodnienie hipertoniczne</td><td>↑</td><td>utrata wody &gt; Na (gorączka, moczówka, biegunka osmotyczna); Ht ↑</td><td>↓</td></tr>
+<tr><td>Odwodnienie izotoniczne</td><td>N</td><td>równomierna utrata wody i Na (krwotok, wymioty/biegunka izotoniczna)</td><td>N</td></tr>
+<tr><td>Odwodnienie hipotoniczne</td><td>↓</td><td>utrata Na &gt; woda + uzupełnianie płynami bezelektrolitowymi</td><td>↑</td></tr>
+<tr><td>Przewodnienie hipotoniczne</td><td>↓</td><td>nadmiar wody (SIADH, polidypsja, niewydolność nerek)</td><td>↑</td></tr>
+<tr><td>Przewodnienie izotoniczne</td><td>N</td><td>nadmiar płynu izotonicznego → obrzęki (niewydolność serca, nerczyca, marskość)</td><td>N</td></tr>
+<tr><td>Przewodnienie hipertoniczne</td><td>↑</td><td>nadmiar Na (hiperaldosteronizm, przetoczenie NaCl)</td><td>↓</td></tr>
+</tbody></table>
+<h4>Hiponatremia — podejście diagnostyczne</h4>
+<p class="prose">To najczęstsze zaburzenie elektrolitowe. Najpierw wyklucz <b>rzekomą</b> hiponatremię i hiponatremię <b>hipertoniczną</b>, potem oceniaj wolemię.</p>
+<dl class="facts">
+<div class="frow"><dt>Pseudohiponatremia</dt><dd>przy znacznej hiperlipidemii lub paraproteinemii — osmolalność <b>prawidłowa</b> (artefakt pomiaru).</dd></div>
+<div class="frow"><dt>Hiponatremia hipertoniczna</dt><dd>hiperglikemia „rozcieńcza” Na (woda wychodzi z komórek); osmolalność wysoka.</dd></div>
+<div class="frow hy"><dt>Prawdziwa (hipotoniczna)<span class="tg tg-h">WAŻNE</span></dt><dd>ocenić wolemię: hipo-, normo- (SIADH), hiperwolemiczna (obrzękowa).</dd></div>
+</dl>
+<div class="callout crit"><div class="co-h">⚠ <span>Korekta ciężkiej hiponatremii</span></div><p>Wyrównywać <b>powoli</b> — zbyt szybki wzrost [Na⁺] grozi osmotyczną demielinizacją (zespół centralnej mielinolizy mostu). U pacjenta pijącego płyny bezelektrolitowe przy istniejącej hiponatremii może rozwinąć się obrzęk mózgu.</p></div>
+<h4>Hormonalne podłoże zaburzeń</h4>
+<dl class="facts">
+<div class="frow hy"><dt>SIADH<span class="tg tg-h">WAŻNE</span></dt><dd>zespół nieadekwatnego wydzielania ADH (często ektopowy, np. rak płuc) → hiponatremia, mocz nieadekwatnie <b>zagęszczony</b>, brak obrzęków.</dd></div>
+<div class="frow"><dt>Moczówka prosta</dt><dd>niedobór ADH (centralna) lub oporność nerek (nerkowa) → <b>wielomocz rozcieńczony</b>, hipernatremia.</dd></div>
+<div class="frow"><dt>Hiperaldosteronizm</dt><dd>retencja Na, utrata K → przewodnienie hipertoniczne, hipokaliemia, zasadowica.</dd></div>
+</dl>
+<h4>Gospodarka potasowa</h4>
+<dl class="facts">
+<div class="frow"><dt>Hiperkaliemia</dt><dd>PChN, kwasica (K wychodzi z komórek), leki oszczędzające K, rozpad komórek (hemoliza, rabdomioliza).</dd></div>
+<div class="frow"><dt>Hipokaliemia</dt><dd>utrata przez przewód pokarmowy/nerki, diuretyki, zasadowica, hiperaldosteronizm.</dd></div>
+<div class="frow hy"><dt>Hiperkaliemia rzekoma<span class="tg tg-h">WAŻNE</span></dt><dd>hemoliza próbki, długa staza, opóźniony transport — artefakt przedanalityczny.</dd></div>
+</dl>
+<div class="callout note"><div class="co-h">› <span>Potas a RKZ</span></div><p>Kwasica → jony H⁺ wchodzą do komórek w zamian za K⁺ → <b>hiperkaliemia</b>. Zasadowica → odwrotnie → hipokaliemia. Zawsze interpretuj potas w kontekście pH.</p></div>
+    </section><section class="chapter" id="zal11">
+      <div class="ch-head"><span class="ch-num">11</span>
+      <div class="ch-titles"><h3>Gospodarka wapniowo-fosforanowo-magnezowa<span class="ch-crit">DZIAŁ KRYTYCZNY</span></h3></div></div>
+      <p class="prose">Wapń pełni funkcje strukturalne (kość) i sygnalizacyjne (skurcz mięśni, przewodnictwo nerwowe, krzepnięcie, wydzielanie).
+99% wapnia jest w kościach; w PPK występuje w trzech frakcjach. Stężenie reguluje triada: <b>PTH</b>, <b>witamina D</b> i <b>kalcytonina</b>,
+działające na kość, nerki i jelito.</p>
+<h4>Wapń — pule i frakcje w osoczu</h4>
+<dl class="facts">
+<div class="frow hy"><dt>Wapń całkowity<span class="tg tg-h">WAŻNE</span></dt><dd>2,25–2,75 mmol/L — suma trzech frakcji.</dd></div>
+<div class="frow crit"><dt>Zjonizowany (aktywny)<span class="tg tg-c">KRYTYCZNE</span></dt><dd>1,0–1,3 mmol/L (~50%) — frakcja biologicznie czynna.</dd></div>
+<div class="frow"><dt>Związany z albuminą</dt><dd>~40% — zależny od stężenia albuminy i pH.</dd></div>
+<div class="frow"><dt>Skompleksowany</dt><dd>~10% (z cytrynianem, fosforanem, wodorowęglanem).</dd></div>
+</dl>
+<div class="callout crit"><div class="co-h">⚠ <span>Wpływ pH na wapń zjonizowany</span></div><p><b>Kwasica</b>: H⁺ konkuruje z Ca²⁺ o albuminę → ↑ wapnia zjonizowanego. <b>Zasadowica</b>: ↓ wapnia zjonizowanego → objawy tężyczki mimo prawidłowego wapnia całkowitego (np. po hiperwentylacji).</p></div>
+<div class="formula">Wapń skorygowany [mmol/L] = Ca całkowity + 0,02 × (40 − albumina [g/L])<small>Pozwala odróżnić prawdziwą hipokalcemię od pozornej (wynikającej z hipoalbuminemii).</small></div>
+<div class="example"><div class="ex-h">PRZYKŁAD · Korekta wapnia względem albuminy</div><p class="ex-i">Ca całkowity 1,8 mmol/L; albumina 20 g/L (norma Ca 2,25–2,75).</p><ol class="ex-steps"><li>Korekta = 0,02 × (40 − 20) = +0,4 mmol/L.</li>
+<li>Ca skorygowany = 1,8 + 0,4 = <b>2,2 mmol/L</b>.</li>
+<li>2,2 nadal &lt; 2,25 → <b>hipokalcemia</b> (ale łagodniejsza niż sugerowałby wynik surowy).</li></ol><p class="ex-c"><b>Wniosek:</b> Ca skorygowany 2,2 mmol/L — hipokalcemia. Bez korekty przeszacowalibyśmy ciężkość.</p></div>
+<h4>Regulacja hormonalna</h4>
+<p class="prose">Spadek wapnia zjonizowanego jest wykrywany przez receptor wapniowy (CaSR) przytarczyc i pobudza wydzielanie PTH; wzrost wapnia działa odwrotnie.</p>
+<dl class="facts">
+<div class="frow crit"><dt>PTH — działanie wypadkowe<span class="tg tg-c">KRYTYCZNE</span></dt><dd>Ca ↑, PO₄ ↓. Kość: resorpcja (uwalnia Ca i PO₄). Nerka: reabsorpcja Ca, <b>fosfaturia</b> (PO₄ ↓), aktywacja 1α-hydroksylazy.</dd></div>
+<div class="frow crit"><dt>Witamina D — szlak<span class="tg tg-c">KRYTYCZNE</span></dt><dd>skóra (7-dehydrocholesterol → cholekalcyferol D₃) → wątroba (25-hydroksylaza → <b>25(OH)D₃</b>, zapasy) → nerka (1α-hydroksylaza → <b>1,25(OH)₂D₃</b>, aktywna). 1,25-D nasila wchłanianie Ca i PO₄ w jelicie.</dd></div>
+<div class="frow crit"><dt>Formy do oznaczania<span class="tg tg-c">KRYTYCZNE</span></dt><dd><b>25(OH)D₃</b> = ocena niedoboru/zapasów; <b>1,25(OH)₂D₃</b> = ocena zdolności nerek do produkcji aktywnej witaminy.</dd></div>
+<div class="frow"><dt>Kalcytonina</dt><dd>z komórek C tarczycy; obniża Ca (hamuje osteoklasty); marker raka rdzeniastego tarczycy.</dd></div>
+</dl>
+<h4>Hiperkalcemia — różnicowanie</h4>
+<table><caption>Profil Ca / PO₄ / PTH</caption><thead><tr>
+<th>Przyczyna</th>
+<th>Ca</th>
+<th>PO₄</th>
+<th>PTH</th>
+</tr></thead><tbody>
+<tr><td>Pierwotna nadczynność przytarczyc (PNP)</td><td>↑</td><td>↓</td><td>↑ (lub górna granica)</td></tr>
+<tr><td>Hiperkalcemia nowotworowa (PTHrP)</td><td>↑</td><td>zmienny</td><td>↓ (zahamowany)</td></tr>
+<tr><td>Nadmiar witaminy D</td><td>↑</td><td>↑</td><td>↓</td></tr>
+<tr><td>Mutacja CaSR / FHH</td><td>↑</td><td>N</td><td>N / ↓</td></tr>
+</tbody></table>
+<p class="prose">Najczęstsza przyczyna hiperkalcemii w populacji ogólnej to <b>PNP</b>; u pacjentów hospitalizowanych — <b>hiperkalcemia nowotworowa</b>. Klucz różnicujący PNP to triada: Ca ↑, PO₄ ↓ (fosfaturia z PTH), PTH wysokie/nieadekwatnie prawidłowe, często ALP ↑ i zmiany kostne.</p>
+<dl class="facts">
+<div class="frow hy"><dt>Objawy hiperkalcemii<span class="tg tg-h">WAŻNE</span></dt><dd>„kamienie, kości, brzuch i nastrój”: kamica nerkowa, bóle kostne i osteoliza, nudności/wymioty/zaparcia, osłabienie, poliuria, splątanie.</dd></div>
+</dl>
+<h4>Hipokalcemia — różnicowanie i PChN</h4>
+<table><caption>Profil Ca / PO₄ / PTH</caption><thead><tr>
+<th>Przyczyna</th>
+<th>Ca</th>
+<th>PO₄</th>
+<th>PTH</th>
+</tr></thead><tbody>
+<tr><td>Niedoczynność przytarczyc</td><td>↓</td><td>↑</td><td>↓</td></tr>
+<tr><td>Niedobór witaminy D</td><td>↓</td><td>↓ / N</td><td>↑ (wtórnie)</td></tr>
+<tr><td>Przewlekła choroba nerek (PChN)</td><td>↓</td><td>↑</td><td>↑ (wtórnie)</td></tr>
+<tr><td>Hipomagnezemia</td><td>↓</td><td>N</td><td>↓ / N (zahamowane działanie PTH)</td></tr>
+</tbody></table>
+<div class="callout crit"><div class="co-h">⚠ <span>PChN → wtórna nadczynność przytarczyc (CKD-MBD)</span></div><p>Mechanizm: spadek filtracji → <b>retencja fosforanów (hiperfosfatemia)</b> i upośledzona synteza <b>1,25(OH)₂D₃</b> w nerce → spadek wchłaniania Ca → <b>hipokalcemia</b> → przewlekła stymulacja przytarczyc → <b>wtórna nadczynność przytarczyc (PTH ↑)</b>. Przy utrzymywaniu się może przejść w trzeciorzędową (autonomiczną).</p></div>
+<dl class="facts">
+<div class="frow"><dt>Objawy hipokalcemii</dt><dd>tężyczka, parestezje, objaw Chvostka i Trousseau, drgawki, wydłużenie QT.</dd></div>
+<div class="frow hy"><dt>Terapia hipokalcemii w PChN<span class="tg tg-h">WAŻNE</span></dt><dd><b>kalcytriol (1,25(OH)₂D₃)</b> — pomija upośledzoną nerkową 1α-hydroksylację (cholekalcyferol byłby nieskuteczny).</dd></div>
+</dl>
+<h4>Fosfor i magnez</h4>
+<dl class="facts">
+<div class="frow"><dt>Regulacja fosforanów</dt><dd>PTH → fosfaturia (PO₄ ↓); FGF23 i 1,25-D modulują. Główna droga regulacji = wydalanie nerkowe.</dd></div>
+<div class="frow"><dt>Hiperfosfatemia</dt><dd>najczęściej PChN; sprzyja hipokalcemii i wtórnej nadczynności przytarczyc.</dd></div>
+<div class="frow crit"><dt>Hipomagnezemia<span class="tg tg-c">KRYTYCZNE</span></dt><dd>→ <b>oporna hipokalcemia</b>: upośledza wydzielanie i obwodowe działanie PTH; hipokalcemii nie da się wyrównać bez uzupełnienia Mg.</dd></div>
+<div class="frow"><dt>Hipermagnezemia</dt><dd>zwykle przy PChN lub podaży Mg; osłabienie odruchów, depresja oddechowa.</dd></div>
+</dl>
+    </section>
+
+  <footer>Opracowanie własne na podstawie zakresu skryptu „Diagnostyka laboratoryjna”, GUMed 2017
+  (red. H. Bielarczyk, A. Szutowicz, A. Raszeja-Specht). Materiał roboczy do nauki — graniczne wartości referencyjne
+  warto potwierdzić z normami swojej pracowni/wykładów.</footer>
+</div>
+
+<a class="backtop" href="#top">↑ góra</a>
+</body></html>
