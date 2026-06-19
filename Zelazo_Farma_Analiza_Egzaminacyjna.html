@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Żelazo Farma v2 — Analiza Egzaminacyjna</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface2: #1c2333;
+    --border: #30363d;
+    --accent: #00ff88;
+    --accent2: #ff6b6b;
+    --accent3: #ffd93d;
+    --accent4: #6bcbff;
+    --text: #e6edf3;
+    --text-muted: #8b949e;
+    --critical: #ff4757;
+    --warning: #ffa502;
+    --ok: #2ed573;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  .hero {
+    background: linear-gradient(135deg, #0d1117 0%, #1a1f2e 50%, #0d1117 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 40px 24px 32px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(ellipse at center, rgba(0,255,136,0.05) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .hero h1 {
+    font-size: 2.2em;
+    font-weight: 800;
+    background: linear-gradient(90deg, var(--accent), var(--accent4));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -0.5px;
+    margin-bottom: 8px;
+  }
+  .hero .subtitle { color: var(--text-muted); font-size: 1em; }
+  .stats-bar {
+    display: flex;
+    gap: 12px;
+    padding: 16px 24px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .stat-chip {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 6px 16px;
+    font-size: 0.85em;
+    font-weight: 600;
+  }
+  .stat-chip span { color: var(--accent); }
+  .container { max-width: 1200px; margin: 0 auto; padding: 24px; }
+  .toc {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 28px;
+  }
+  .toc h3 { color: var(--accent4); margin-bottom: 12px; font-size: 0.9em; text-transform: uppercase; letter-spacing: 1px; }
+  .toc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px,1fr)); gap: 6px; }
+  .toc a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.85em;
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .toc a:hover { color: var(--accent); background: rgba(0,255,136,0.08); }
+  .section {
+    margin-bottom: 32px;
+    scroll-margin-top: 20px;
+  }
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--border);
+  }
+  .section-num {
+    background: var(--accent);
+    color: #000;
+    font-weight: 900;
+    font-size: 0.8em;
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .section-header h2 { font-size: 1.3em; font-weight: 700; }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 12px;
+  }
+  .card-title {
+    font-size: 0.8em;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+    font-weight: 700;
+  }
+  /* Frequency bars */
+  .freq-grid { display: grid; gap: 8px; }
+  .freq-item { display: grid; grid-template-columns: 200px 1fr 60px; align-items: center; gap: 10px; }
+  .freq-item .label { font-size: 0.88em; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .freq-bar-wrap { background: var(--surface2); border-radius: 4px; height: 18px; overflow: hidden; }
+  .freq-bar { height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--accent), var(--accent4)); transition: width 0.3s; }
+  .freq-count { font-size: 0.85em; color: var(--accent); font-weight: 700; text-align: right; }
+  /* Fact boxes */
+  .fact { background: var(--surface2); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; padding: 10px 14px; margin-bottom: 8px; font-size: 0.9em; }
+  .fact-critical { border-left-color: var(--critical); }
+  .fact-warning { border-left-color: var(--warning); }
+  .fact-trap { border-left-color: #c084fc; }
+  .fact-exception { border-left-color: var(--accent3); }
+  .fact-label {
+    display: inline-block;
+    font-size: 0.7em;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-bottom: 4px;
+  }
+  .lbl-freq { background: rgba(0,255,136,0.15); color: var(--accent); }
+  .lbl-vfreq { background: rgba(0,255,136,0.3); color: var(--accent); }
+  .lbl-trap { background: rgba(192,132,252,0.2); color: #c084fc; }
+  .lbl-except { background: rgba(255,217,61,0.2); color: var(--accent3); }
+  .lbl-rare { background: rgba(255,107,107,0.2); color: var(--accent2); }
+  /* Drug cards */
+  .drug-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px,1fr)); gap: 12px; }
+  .drug-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+  }
+  .drug-name { font-size: 1em; font-weight: 800; color: var(--accent4); margin-bottom: 6px; }
+  .drug-section { margin-bottom: 4px; font-size: 0.85em; }
+  .drug-section strong { color: var(--text-muted); font-size: 0.8em; text-transform: uppercase; letter-spacing: 0.5px; display: block; }
+  .drug-section span { color: var(--text); }
+  /* Exception table */
+  table { width: 100%; border-collapse: collapse; font-size: 0.85em; }
+  th { background: var(--surface2); color: var(--accent4); padding: 10px 12px; text-align: left; font-size: 0.8em; text-transform: uppercase; letter-spacing: 0.5px; }
+  td { padding: 9px 12px; border-top: 1px solid var(--border); vertical-align: top; line-height: 1.5; }
+  tr:hover td { background: rgba(255,255,255,0.02); }
+  td:first-child { color: var(--text-muted); font-weight: 600; }
+  td:nth-child(2) { color: var(--accent3); }
+  td:nth-child(3) { color: var(--accent2); }
+  /* Trap boxes */
+  .trap-box {
+    background: rgba(192,132,252,0.05);
+    border: 1px solid rgba(192,132,252,0.3);
+    border-radius: 8px;
+    padding: 14px;
+    margin-bottom: 10px;
+  }
+  .trap-title { font-weight: 700; color: #c084fc; margin-bottom: 6px; font-size: 0.95em; }
+  .trap-detail { font-size: 0.88em; color: var(--text-muted); }
+  .trap-key { color: var(--accent3); font-weight: 600; }
+  /* Top 100 */
+  .top100 { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px,1fr)); gap: 8px; }
+  .top-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 8px 12px;
+    background: var(--surface2);
+    border-radius: 6px;
+    font-size: 0.85em;
+  }
+  .top-num { color: var(--accent); font-weight: 800; font-size: 0.9em; min-width: 28px; }
+  /* Ranking */
+  .rank-tier {
+    margin-bottom: 16px;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .rank-header {
+    padding: 10px 16px;
+    font-weight: 700;
+    font-size: 0.9em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .rank-t1 .rank-header { background: rgba(255,71,87,0.2); color: var(--critical); }
+  .rank-t2 .rank-header { background: rgba(255,165,2,0.2); color: var(--warning); }
+  .rank-t3 .rank-header { background: rgba(0,255,136,0.15); color: var(--accent); }
+  .rank-t4 .rank-header { background: rgba(107,203,255,0.15); color: var(--accent4); }
+  .rank-items { padding: 12px 16px; display: flex; flex-wrap: wrap; gap: 8px; }
+  .rank-tag {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 0.82em;
+    font-weight: 600;
+  }
+  /* Strategy */
+  .strategy-card {
+    background: linear-gradient(135deg, rgba(0,255,136,0.05), rgba(107,203,255,0.05));
+    border: 1px solid rgba(0,255,136,0.2);
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 12px;
+  }
+  .strategy-card h4 { color: var(--accent); margin-bottom: 8px; font-size: 0.95em; }
+  .strategy-card p, .strategy-card li { font-size: 0.88em; color: var(--text-muted); margin-bottom: 4px; }
+  .strategy-card li { margin-left: 16px; }
+  /* Pattern box */
+  .pattern {
+    background: rgba(255,217,61,0.08);
+    border: 1px solid rgba(255,217,61,0.3);
+    border-radius: 8px;
+    padding: 14px;
+    margin-bottom: 10px;
+  }
+  .pattern-emoji { font-size: 1.4em; }
+  .pattern-title { font-weight: 700; color: var(--accent3); margin-bottom: 6px; }
+  .pattern-text { font-size: 0.88em; color: var(--text); }
+  /* Answer distribution */
+  .ans-grid { display: flex; gap: 8px; flex-wrap: wrap; }
+  .ans-item {
+    background: var(--surface2);
+    border-radius: 8px;
+    padding: 12px 16px;
+    text-align: center;
+    min-width: 90px;
+  }
+  .ans-letter { font-size: 2em; font-weight: 900; color: var(--accent); }
+  .ans-count { font-size: 0.85em; color: var(--text-muted); }
+  .ans-pct { font-size: 0.9em; font-weight: 700; color: var(--accent3); }
+  .highlight { color: var(--accent); font-weight: 700; }
+  .badge {
+    display: inline-block;
+    font-size: 0.7em;
+    padding: 2px 7px;
+    border-radius: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    vertical-align: middle;
+    margin-left: 4px;
+  }
+  .badge-e { background: rgba(255,71,87,0.2); color: var(--critical); }
+  .badge-d { background: rgba(255,165,2,0.2); color: var(--warning); }
+  .scrolltop {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: var(--accent);
+    color: #000;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 1.2em;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+  }
+  @media (max-width: 600px) {
+    .freq-item { grid-template-columns: 140px 1fr 50px; }
+    .drug-grid { grid-template-columns: 1fr; }
+    .top100 { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>⚗️ Żelazo Farma v2 — Analiza Egzaminacyjna</h1>
+  <div class="subtitle">Baza pytań 2019–2023 · Analiza 1 144 podświetlonych odpowiedzi · ~1 100 pytań egzaminacyjnych</div>
+</div>
+
+<div class="stats-bar">
+  <div class="stat-chip">📄 Stron: <span>200</span></div>
+  <div class="stat-chip">❓ Pytań: <span>~1 100</span></div>
+  <div class="stat-chip">✅ Podświetlonych odpowiedzi: <span>1 144</span></div>
+  <div class="stat-chip">📅 Lata: <span>2019–2023</span></div>
+  <div class="stat-chip">📊 Działów: <span>26</span></div>
+  <div class="stat-chip">🏆 Najczęstszy typ odpowiedzi: <span>E (A,B,C) — 34,8%</span></div>
+</div>
+
+<div class="container">
+
+<!-- TOC -->
+<div class="toc">
+  <h3>📋 Spis treści</h3>
+  <div class="toc-grid">
+    <a href="#s1">📊 1. Analiza częstości</a>
+    <a href="#s2">💡 2. High-yield facts</a>
+    <a href="#s3">💊 3. Leki i skojarzenia</a>
+    <a href="#s4">⚖️ 4. Reguły vs Wyjątki</a>
+    <a href="#s5">🪤 5. Pułapki egzaminacyjne</a>
+    <a href="#s6">🔴 6. Rzadkie ale karzące</a>
+    <a href="#s7">🏅 7. TOP 100 faktów</a>
+    <a href="#s8">🏆 8. Ranking nauki</a>
+    <a href="#s9">🎯 9. Strategia egzaminacyjna</a>
+    <a href="#patterns">👉 Wzorce pytań</a>
+  </div>
+</div>
+
+<!-- ======================== SECTION 1 ======================== -->
+<div class="section" id="s1">
+  <div class="section-header">
+    <div class="section-num">1</div>
+    <h2>Analiza częstości — High-Yield Topics</h2>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📈 Liczba pytań per dział (ranking malejący)</div>
+    <div class="freq-grid">
+      <div class="freq-item"><div class="label">🔴 Układ adrenergiczny</div><div class="freq-bar-wrap"><div class="freq-bar" style="width:100%"></div></div><div class="freq-count">~81 pyt.</div></div>
+      <div class="freq-item"><div class="label">🔴 Przeciwgruźlicze/wirusowe/grzyb.</div><div class="freq-bar-wrap"><div class="freq-bar" style="width:85%"></div></div><div class="freq-count">~69 pyt.</div></div>
+      <div class="freq-item"><div class="label">🔴 Hormony kory nadnerczy/trzustki</div><div class="freq-bar-wrap"><div class="freq-bar" style="width:86%"></div></div><div class="freq-count">~70 pyt.</div></div>
+      <div class="freq-item"><div class="label">🟠 Aminoglikozydy/makrolidy/chinol.</div><div class="freq-bar-wrap"><div class="freq-bar" style="width:74%"></div></div><div class="freq-count">~60 pyt.</div></div>
+      <div class="freq-item"><div class="label">🟠 Nadciśnienie tętnicze</div><div class="freq-bar-wrap"><div class="freq-bar" style="width:72%"></div></div><div class="freq-count">~58 pyt.</div></div>
+      <div class="freq-item"><div class="label">🟠 Hemostaza</div><div class="freq-bar-wrap"><div class="freq-bar" style="width:72%"></div></div><div class="freq-count">~58 pyt.</div></div>
+      <div class="freq-item"><div class="label">🟠 NLPZ i opioidy</div><div class="freq-bar-wrap"><div class="freq-bar" style="width:63%"></div></div><div class="freq-count">~51 pyt.</div></div>
+      <div class="freq-item"><div class="label">🟠 Układ cholinergiczny</div><div class="freq-bar-wrap"><div class="freq-bar" style="width:58%"></div></div><div class="freq-count">~47 pyt.</div></div>
+      <div class="freq-item"><div class="label">🟠 Leki usp./nasenne/opioidy</div><div class="freq-bar-wrap"><div class="freq-bar" style="width:54%"></div></div><div class="freq-count">~44 pyt.</div></div>
+      <div class="freq-item"><div class="label">🟠 Układ oddechowy/antyhistam.</div><div class="freq-bar-wrap"><div class="freq-bar" style="width:54%"></div></div><div class="freq-count">~44 pyt.</div></div>
+      <div class="freq-item"><div class="label">🟡 Antybiotyki beta-laktamowe</div><div class="freq-bar-wrap"><div class="freq-bar" style="width:53%"></div></div><div class="freq-count">~43 pyt.</div></div>
+      <div class="freq-item"><div class="label">🟡 Leki przeciwdepresyjne/stabil.</div><div class="freq-bar-wrap"><div class="freq-bar" style="width:53%"></div></div><div class="freq-count">~43 pyt.</div></div>
+      <div class="freq-item"><div class="label">🟡 Leki przeciwnowotworowe</div><div class="freq-bar-wrap"><div class="freq-bar" style="width:53%"></div></div><div class="freq-count">~43 pyt.</div></div>
+      <div class="freq-item"><div class="label">🟡 Inne/wykłady (farmakokinetyka)</div><div class="freq-bar-wrap"><div class="freq-bar" style="width:54%"></div></div><div class="freq-count">~44 pyt.</div></div>
+      <div class="freq-item"><div class="label">🟡 Niewydolność serca</div><div class="freq-bar-wrap"><div class="freq-bar" style="width:58%"></div></div><div class="freq-count">~47 pyt.</div></div>
+      <div class="freq-item"><div class="label">🟡 Hormony tarczycy/wapń/HTZ</div><div class="freq-bar-wrap"><div class="freq-bar" style="width:48%"></div></div><div class="freq-count">~39 pyt.</div></div>
+      <div class="freq-item"><div class="label">🟡 Choroba niedokrwienna serca</div><div class="freq-bar-wrap"><div class="freq-bar" style="width:48%"></div></div><div class="freq-count">~39 pyt.</div></div>
+      <div class="freq-item"><div class="label">🟡 Choroba wrzodowa/refluks</div><div class="freq-bar-wrap"><div class="freq-bar" style="width:42%"></div></div><div class="freq-count">~34 pyt.</div></div>
+      <div class="freq-item"><div class="label">🟡 Przeciwbiegunkowe/p.wymiotne</div><div class="freq-bar-wrap"><div class="freq-bar" style="width:43%"></div></div><div class="freq-count">~35 pyt.</div></div>
+      <div class="freq-item"><div class="label">🟢 Leki przeciwpsychotyczne</div><div class="freq-bar-wrap"><div class="freq-bar" style="width:37%"></div></div><div class="freq-count">~30 pyt.</div></div>
+      <div class="freq-item"><div class="label">🟢 Leki przeciwarytmiczne</div><div class="freq-bar-wrap"><div class="freq-bar" style="width:36%"></div></div><div class="freq-count">~29 pyt.</div></div>
+      <div class="freq-item"><div class="label">🟢 Choroby reumatyczne</div><div class="freq-bar-wrap"><div class="freq-bar" style="width:25%"></div></div><div class="freq-count">~20 pyt.</div></div>
+      <div class="freq-item"><div class="label">🟢 Lipidy</div><div class="freq-bar-wrap"><div class="freq-bar" style="width:27%"></div></div><div class="freq-count">~22 pyt.</div></div>
+      <div class="freq-item"><div class="label">🟢 Znieczulenie ogólne</div><div class="freq-bar-wrap"><div class="freq-bar" style="width:26%"></div></div><div class="freq-count">~21 pyt.</div></div>
+      <div class="freq-item"><div class="label">🟢 Znieczulenie miejscowe</div><div class="freq-bar-wrap"><div class="freq-bar" style="width:21%"></div></div><div class="freq-count">~17 pyt.</div></div>
+      <div class="freq-item"><div class="label">🟢 Leki przeczyszczające</div><div class="freq-bar-wrap"><div class="freq-bar" style="width:16%"></div></div><div class="freq-count">~13 pyt.</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📊 Rozkład odpowiedzi (litera + typ kombinacji)</div>
+    <div class="ans-grid">
+      <div class="ans-item"><div class="ans-letter">E</div><div class="ans-pct">34,8%</div><div class="ans-count">212 razy</div></div>
+      <div class="ans-item"><div class="ans-letter">D</div><div class="ans-pct">26,4%</div><div class="ans-count">161 razy</div></div>
+      <div class="ans-item"><div class="ans-letter">A</div><div class="ans-pct">13,9%</div><div class="ans-count">85 razy</div></div>
+      <div class="ans-item"><div class="ans-letter">B</div><div class="ans-pct">13,4%</div><div class="ans-count">82 razy</div></div>
+      <div class="ans-item"><div class="ans-letter">C</div><div class="ans-pct">11,5%</div><div class="ans-count">70 razy</div></div>
+    </div>
+    <div style="margin-top:12px;padding:10px;background:var(--surface2);border-radius:8px;font-size:0.88em;color:var(--text-muted);">
+      ⚡ <strong style="color:var(--accent3)">Kluczowy wniosek:</strong> Odpowiedzi D i E (kombinacje) stanowią łącznie <strong style="color:var(--accent)">61,2%</strong> wszystkich poprawnych odpowiedzi. 
+      Typ "A, B i C są prawidłowe" (E) pojawia się w <strong>259</strong> pytaniach. 
+      "A i B prawidłowe" — <strong>112</strong>. "Żadna prawidłowa" — <strong>12</strong> (nie ignoruj!).
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🔑 Co jest najczęściej pytane w kluczowych działach</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;">
+      <div class="fact"><strong>Układ adrenergiczny</strong> — recepty na doksazosynę, selektywność β-blokerów, działania niepożądane (maskowanie hipoglikemii), wskazania w CHF, nebiwolol (β1+β3)</div>
+      <div class="fact"><strong>Hormony/trzustka</strong> — metformina (mechanizm: kinaza AMP), empagliflozyna (NS + nerki), insulina iv w kwasicy, kanagliflozyna PRZECIWWSKAZANA w GFR&lt;30</div>
+      <div class="fact"><strong>Hemostaza</strong> — monitorowanie (heparyna=aPTT, HDCz=NIE!, warfaryna=INR), antidota (idarucyzumab→dabigatran, wit.K→warfaryna)</div>
+      <div class="fact"><strong>Nadciśnienie</strong> — ACEI (obrzęk naczynioruchowy!), furosemid NIE w łagodnym NT, nitroprusydek iv, metyldopa w ciąży</div>
+      <div class="fact"><strong>Antybiotyki</strong> — mechanizm beta-laktamów (ściana komórkowa), amoksycylina (doustnie i iv!), imipenem (pseudomonas), aminoglikozydy (ototoksyczność, NIE beztlenowce)</div>
+      <div class="fact"><strong>Onkologia</strong> — winblastyna (dezpolimeryzacja tubuliny, faza M), paklitaksel (STABILIZUJE mikrotubule!), trastuzumab (HER2), bewacyzumab (VEGF)</div>
+    </div>
+  </div>
+</div>
+
+<!-- ======================== SECTION 2 ======================== -->
+<div class="section" id="s2">
+  <div class="section-header">
+    <div class="section-num">2</div>
+    <h2>Najważniejsze fakty — High-Yield Facts</h2>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🟢 UKŁAD CHOLINERGICZNY / ADRENERGICZNY</div>
+    <div class="fact"><span class="fact-label lbl-vfreq">BARDZO CZĘSTY</span> <strong>Pilokarpina</strong> = receptor M (stymulacja) = jaskra. Nie atropina!</div>
+    <div class="fact"><span class="fact-label lbl-vfreq">BARDZO CZĘSTY</span> <strong>Donepezil 5 mg przed snem</strong> — choroba Alzheimera (inhibitor AChE)</div>
+    <div class="fact"><span class="fact-label lbl-vfreq">BARDZO CZĘSTY</span> <strong>Leki przeciwmuskarynowe wskazane w:</strong> POChP, NetP moczu, astmie — NIE w jaskrze, NIE w ch. Alzheimera</div>
+    <div class="fact"><span class="fact-label lbl-vfreq">BARDZO CZĘSTY</span> <strong>Neostygmina</strong> = pooperacyjna atonia jelit i pęcherza moczowego; miastenia gravis</div>
+    <div class="fact"><span class="fact-label lbl-freq">CZĘSTY</span> <strong>Ipratropium</strong> = rozszerza oskrzela (blokada M) → POChP; NIE do oczu</div>
+    <div class="fact"><span class="fact-label lbl-freq">CZĘSTY</span> <strong>Atropina</strong> = zatrucie fosfoorganicznymi, rozszerzenie źrenicy (M3), tachykardia</div>
+    <div class="fact"><span class="fact-label lbl-freq">CZĘSTY</span> <strong>Atrakurium/wekuronium</strong> = niedepolaryzujące blokery NMJ (nie sukcynylocholina!)</div>
+    <div class="fact"><span class="fact-label lbl-freq">CZĘSTY</span> <strong>Doksazosyna/terazosyna</strong> = α1-blokery → nadciśnienie + przerost prostaty</div>
+    <div class="fact"><span class="fact-label lbl-vfreq">BARDZO CZĘSTY</span> <strong>Nebiwolol</strong> = receptor β1 (blokowanie) + działanie na β3 (wydzielanie NO)</div>
+    <div class="fact"><span class="fact-label lbl-freq">CZĘSTY</span> <strong>β-blokery</strong> → zmniejszają HR i wyrzut reniny; maskują objawy hipoglikemii (nieselektywne!)</div>
+    <div class="fact"><span class="fact-label lbl-freq">CZĘSTY</span> <strong>Tamsulosyna</strong> = selektywny α1A-bloker → BPH (nie nadciśnienie!)</div>
+    <div class="fact"><span class="fact-label lbl-freq">CZĘSTY</span> <strong>Biperyden</strong> = lek stosowany w chorobie Parkinsona (antymuskarynowy)</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🟠 HORMONY — TRZUSTKA / TARCZYCA / WAPŃ</div>
+    <div class="fact"><span class="fact-label lbl-vfreq">BARDZO CZĘSTY</span> <strong>Metformina</strong> — aktywuje kinazę AMP; lek pierwszego wyboru w DM2; NIE powoduje hipoglikemii</div>
+    <div class="fact"><span class="fact-label lbl-vfreq">BARDZO CZĘSTY</span> <strong>Empagliflozyna</strong> (SGLT2i) — ochrona sercowo-nerkowa; wskazana w NS; recepta: 10 mg 1×dz</div>
+    <div class="fact"><span class="fact-label lbl-freq">CZĘSTY</span> <strong>Glipizyd/Gliklazyd/Glimepiryd</strong> (sulfonylomoczniki) = zwiększają wydzielanie insuliny; hipoglikemia!</div>
+    <div class="fact"><span class="fact-label lbl-freq">CZĘSTY</span> <strong>Kanagliflozyna</strong> = SGLT2i, zwiększa glukozurię; PRZECIWWSKAZANA przy GFR &lt;30 ml/min</div>
+    <div class="fact"><span class="fact-label lbl-freq">CZĘSTY</span> <strong>Insulina</strong> = jedyna iv w cukrzycowej kwasicy ketonowej</div>
+    <div class="fact"><span class="fact-label lbl-freq">CZĘSTY</span> <strong>Akarboza</strong> = inhibitor α-glukozydazy (hamuje trawienie węglowodanów)</div>
+    <div class="fact"><span class="fact-label lbl-vfreq">BARDZO CZĘSTY</span> <strong>Lewotyroksyna</strong> = lek z wyboru w niedoczynności tarczycy; niska biodostępność doustna, przyjmować na czczo</div>
+    <div class="fact"><span class="fact-label lbl-freq">CZĘSTY</span> <strong>Tiamazol/PTU</strong> = hamują peroksydazę tarczycy; działania niepożądane: agranulocytoza</div>
+    <div class="fact"><span class="fact-label lbl-vfreq">BARDZO CZĘSTY</span> <strong>Alendronian/rizedronian</strong> = hamowanie osteoklastów; wskazanie: osteoporoza</div>
+    <div class="fact"><span class="fact-label lbl-freq">CZĘSTY</span> <strong>Raloksyfen</strong> = SERM (selektywny modulator receptora estrogenowego)</div>
+    <div class="fact"><span class="fact-label lbl-freq">CZĘSTY</span> <strong>HTZ</strong> = ryzyko żylnej choroby zakrzepowo-zatorowej + zawał serca</div>
+    <div class="fact"><span class="fact-label lbl-freq">CZĘSTY</span> <strong>Deksametazon</strong> = silny glikokortykosteroid (działanie mineralokortykoidowe minimalne)</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🔴 NLPZ — OPIOIDY</div>
+    <div class="fact"><span class="fact-label lbl-vfreq">BARDZO CZĘSTY</span> <strong>Paracetamol</strong> = BRAK działania przeciwzapalnego! Odtrutka: N-acetylocysteina + metionina</div>
+    <div class="fact"><span class="fact-label lbl-freq">CZĘSTY</span> <strong>Selektywne COX-2i (celekoksyb)</strong> = ↑ ryzyko zawału, zakrzepicy naczyniowej, NT</div>
+    <div class="fact"><span class="fact-label lbl-freq">CZĘSTY</span> <strong>Ketoprofen</strong> = NLPZ; można podawać dożylnie; penetruje do płynu stawowego</div>
+    <div class="fact"><span class="fact-label lbl-freq">CZĘSTY</span> <strong>Morfina</strong> → antidotum: nalokson; działania nep.: zaparcia, mioza, depresja oddechowa</div>
+    <div class="fact"><span class="fact-label lbl-freq">CZĘSTY</span> <strong>Fentanyl</strong> = przezskórnie (TTS) w bólu nowotworowym</div>
+    <div class="fact"><span class="fact-label lbl-freq">CZĘSTY</span> <strong>Opioidy</strong> → zaparcia (nie biegunka!); przedłużają poród; uzależnienie</div>
+    <div class="fact"><span class="fact-label lbl-freq">CZĘSTY</span> <strong>KAS (aspiryna)</strong> = hamuje COX-1 (nieodwracalnie); profilaktyka zawału</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">💙 KARDIOLOGIA — HEMOSTAZA</div>
+    <div class="fact"><span class="fact-label lbl-vfreq">BARDZO CZĘSTY</span> <strong>ACEI (ramipril, enalapryl)</strong> → działanie nep.: obrzęk naczynioruchowy, suchy kaszel; kontraindykacja: ciąża</div>
+    <div class="fact"><span class="fact-label lbl-freq">CZĘSTY</span> <strong>Furosemid</strong> = pętlowy diuretyk; NIE stosować w łagodnym niepowikłanym NT!</div>
+    <div class="fact"><span class="fact-label lbl-freq">CZĘSTY</span> <strong>Amiodaron</strong> (kl. III) = najczęściej pytany lek przeciwarytmiczny; wiele działań nep. (tarczyca, płuca, wątroba)</div>
+    <div class="fact"><span class="fact-label lbl-freq">CZĘSTY</span> <strong>Digoksyna</strong> = glikozydy naparstnicy; toksyczność: anoreksja, nudności, wymioty, biegunka, zaburzenia widzenia</div>
+    <div class="fact"><span class="fact-label lbl-vfreq">BARDZO CZĘSTY</span> <strong>Warfaryna</strong> = monitorowanie INR; antidotum: witamina K; wiele interakcji</div>
+    <div class="fact"><span class="fact-label lbl-freq">CZĘSTY</span> <strong>Heparyna niefrakcjonowana</strong> = wymaga monitorowania aPTT</div>
+    <div class="fact"><span class="fact-label lbl-vfreq">BARDZO CZĘSTY</span> <strong>HDCz (enoksaparyna)</strong> = NIE wymaga monitorowania aPTT!</div>
+    <div class="fact"><span class="fact-label lbl-freq">CZĘSTY</span> <strong>Dabigatran</strong> = bezpośredni inhibitor trombiny; antidotum: idarucyzumab</div>
+    <div class="fact"><span class="fact-label lbl-freq">CZĘSTY</span> <strong>Rywaroksaban/apiksaban</strong> = inhibitory Xa</div>
+    <div class="fact"><span class="fact-label lbl-freq">CZĘSTY</span> <strong>Cilostazol</strong> = chromanie przestankowe (PDE3i)</div>
+    <div class="fact"><span class="fact-label lbl-freq">CZĘSTY</span> <strong>Nitrogliceryna</strong> = rozszerza żyły już w najniższych dawkach; bóle głowy (działanie nep.)</div>
+    <div class="fact"><span class="fact-label lbl-freq">CZĘSTY</span> <strong>Iwabradyna</strong> = hamuje kanały If; wskazana w NS z wysokim HR; NIE ma działania inotropowego</div>
+    <div class="fact"><span class="fact-label lbl-freq">CZĘSTY</span> <strong>Empagliflozyna</strong> = wskazana w niewydolności serca (poza DM2)</div>
+    <div class="fact"><span class="fact-label lbl-freq">CZĘSTY</span> <strong>Eplerenon</strong> = antagonista aldosteronu; MNIEJ hormonalnych działań nep. niż spironolakton</div>
+    <div class="fact"><span class="fact-label lbl-freq">CZĘSTY</span> <strong>Cholestyramina</strong> = zaburza wchłanianie innych leków (żywica jonowymieniona)</div>
+    <div class="fact"><span class="fact-label lbl-freq">CZĘSTY</span> <strong>Ewolokumab</strong> = inhibitor PCSK9 → obniżanie LDL</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🫁 UKŁAD ODDECHOWY / GI / OUN</div>
+    <div class="fact"><span class="fact-label lbl-freq">CZĘSTY</span> <strong>Montelukast/zafirlukast</strong> = antagoniści receptora LTD4 (cysteinyl-leukotrien)</div>
+    <div class="fact"><span class="fact-label lbl-freq">CZĘSTY</span> <strong>Omalizumab</strong> = p/ciało monoklonalne anty-IgE → ciężka astma</div>
+    <div class="fact"><span class="fact-label lbl-freq">CZĘSTY</span> <strong>Teofilina</strong> = hamowanie PDE III (bronchodilatacja + dodatnie działanie inotropowe)</div>
+    <div class="fact"><span class="fact-label lbl-vfreq">BARDZO CZĘSTY</span> <strong>IPP (omeprazol 20 mg rano na czczo)</strong> = najefektywniejsze w chorobie wrzodowej i GERD</div>
+    <div class="fact"><span class="fact-label lbl-freq">CZĘSTY</span> <strong>Ranitydyna</strong> = blokada receptorów H2 (NIE M!)</div>
+    <div class="fact"><span class="fact-label lbl-freq">CZĘSTY</span> <strong>Ondansetron</strong> = antagonista 5-HT3 → wymioty po chemioterapii; dawka: 8 mg przed, powtórz po 12 h</div>
+    <div class="fact"><span class="fact-label lbl-freq">CZĘSTY</span> <strong>Loperamid</strong> = opioidowy lek p/biegunkowy (nie przekracza BBB)</div>
+    <div class="fact"><span class="fact-label lbl-freq">CZĘSTY</span> <strong>Diazepam/BDZ</strong> = zaburzenia snu, lęk; antidotum: flumazenil</div>
+    <div class="fact"><span class="fact-label lbl-vfreq">BARDZO CZĘSTY</span> <strong>Lit</strong> = stabilizator nastroju; NISKI indeks terapeutyczny!; wymaga monitorowania stężenia</div>
+    <div class="fact"><span class="fact-label lbl-freq">CZĘSTY</span> <strong>Citalopram 20 mg 1×dz</strong> = SSRI (najczęstsza recepta w bazie)</div>
+    <div class="fact"><span class="fact-label lbl-freq">CZĘSTY</span> <strong>Etosuksymid</strong> = TYLKO napady nieświadomości (absence)!</div>
+    <div class="fact"><span class="fact-label lbl-freq">CZĘSTY</span> <strong>Fenytoina</strong> = działania nep.: przerost dziąseł, oczopląs, hirsutyzm, niedobór wit. D</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🦠 ANTYBIOTYKI / LEKI PRZECIW-INF.</div>
+    <div class="fact"><span class="fact-label lbl-vfreq">BARDZO CZĘSTY</span> <strong>Beta-laktamy</strong> = hamowanie syntezy ściany komórkowej; bakteriobójcze, zależne od czasu</div>
+    <div class="fact"><span class="fact-label lbl-freq">CZĘSTY</span> <strong>Amoksycylina</strong> = penicylina o szerokim spektrum; doustnie I iv; 1000 mg 2×dz przez 7 dni</div>
+    <div class="fact"><span class="fact-label lbl-freq">CZĘSTY</span> <strong>Kloksacylina</strong> = oporna na beta-laktamazę (gronkowce MSSA)</div>
+    <div class="fact"><span class="fact-label lbl-freq">CZĘSTY</span> <strong>Imipenem</strong> = karbapenem; szerokie spektrum: G-, G+, anaeroby, P. aeruginosa</div>
+    <div class="fact"><span class="fact-label lbl-freq">CZĘSTY</span> <strong>Aminoglikozydy</strong> = ototoksyczność (uszkodzenie słuchu!) + nefrotoksyczność; NIE aktywne wobec beztlenowców</div>
+    <div class="fact"><span class="fact-label lbl-freq">CZĘSTY</span> <strong>Ciprofloksacyna 500 mg 2×dz</strong> = fluorochinolon najczęściej pytany w recepturze</div>
+    <div class="fact"><span class="fact-label lbl-vfreq">BARDZO CZĘSTY</span> <strong>Izoniazyd</strong> = I linia w gruźlicy; działania nep.: neuropatia obwodowa (zapobiegać wit. B6)</div>
+    <div class="fact"><span class="fact-label lbl-freq">CZĘSTY</span> <strong>5 leków p.gruźliczych</strong>: Izoniazyd + Ryfampicyna + Streptomycyna + Etambutol + Pyrazynamid</div>
+    <div class="fact"><span class="fact-label lbl-freq">CZĘSTY</span> <strong>Acyklowir</strong> = bardziej aktywny wobec HSV niż VZV!; 200 mg 3×dz</div>
+    <div class="fact"><span class="fact-label lbl-vfreq">BARDZO CZĘSTY</span> <strong>Flukonazol</strong> = kandydoza; NIE aspergilloza! (tu → worykonazol/itrakonazol)</div>
+    <div class="fact"><span class="fact-label lbl-freq">CZĘSTY</span> <strong>Terbinafina</strong> = grzybice skóry/paznokci; hamuje squalene epoxidase</div>
+    <div class="fact"><span class="fact-label lbl-freq">CZĘSTY</span> <strong>Artemeter</strong> = malaria; faza erytrocytarna</div>
+  </div>
+</div>
+
+<!-- ======================== SECTION 3 ======================== -->
+<div class="section" id="s3">
+  <div class="section-header">
+    <div class="section-num">3</div>
+    <h2>Leki i kluczowe skojarzenia (TOP 20 HIGH-YIELD)</h2>
+  </div>
+  <div class="drug-grid">
+
+    <div class="drug-card">
+      <div class="drug-name">AMIODARON <span class="badge badge-e">Kl. III</span></div>
+      <div class="drug-section"><strong>Mechanizm</strong><span>Blokada kanałów K⁺ + Na⁺ + Ca²⁺ + β-receptorów</span></div>
+      <div class="drug-section"><strong>Wskazania</strong><span>Migotanie przedsionków, VF, VT — szerokie spektrum</span></div>
+      <div class="drug-section"><strong>Działania nep.</strong><span>Zaburzenia tarczycy (hipo- i hipertyreoza), hepatotoksyczność, pneumotoksyczność, złogi rogówkowe, bradykardia</span></div>
+      <div class="drug-section"><strong>Recepta</strong><span>200 mg tab., 1×dz</span></div>
+    </div>
+
+    <div class="drug-card">
+      <div class="drug-name">METFORMINA <span class="badge badge-e">DM2</span></div>
+      <div class="drug-section"><strong>Mechanizm</strong><span>Aktywacja kinazy AMP → ↓ glukoneogenezy wątrobowej</span></div>
+      <div class="drug-section"><strong>Wskazania</strong><span>Cukrzyca typ 2 (lek 1. wyboru), otyłość</span></div>
+      <div class="drug-section"><strong>Działania nep.</strong><span>Zaburzenia GI; NIE powoduje hipoglikemii; kwasica mleczanowa (rzadka)</span></div>
+      <div class="drug-section"><strong>Recepta</strong><span>500 mg tabl., 3×dz 1 tabletka</span></div>
+    </div>
+
+    <div class="drug-card">
+      <div class="drug-name">EMPAGLIFLOZYNA <span class="badge badge-e">SGLT2i</span></div>
+      <div class="drug-section"><strong>Mechanizm</strong><span>Inhibicja kotransportera SGLT2 w nerce → glukozuria</span></div>
+      <div class="drug-section"><strong>Wskazania</strong><span>DM2, niewydolność serca, nefropatia cukrzycowa</span></div>
+      <div class="drug-section"><strong>Działania nep.</strong><span>Infekcje układu moczowo-płciowego, ketonemia</span></div>
+      <div class="drug-section"><strong>Recepta</strong><span>10 mg tab., 1×dz</span></div>
+    </div>
+
+    <div class="drug-card">
+      <div class="drug-name">DOKSAZOSYNA <span class="badge badge-e">α1-bloker</span></div>
+      <div class="drug-section"><strong>Mechanizm</strong><span>Selektywna blokada receptora α1 → rozszerzenie naczyń</span></div>
+      <div class="drug-section"><strong>Wskazania</strong><span>Nadciśnienie + BPH (dwie wskazania!)</span></div>
+      <div class="drug-section"><strong>Działania nep.</strong><span>Hipotonia ortostatyczna (pierwsza dawka!)</span></div>
+      <div class="drug-section"><strong>Recepta</strong><span>4 mg tab., 1×dz</span></div>
+    </div>
+
+    <div class="drug-card">
+      <div class="drug-name">WARFARYNA <span class="badge badge-e">p/zakrzepowy</span></div>
+      <div class="drug-section"><strong>Mechanizm</strong><span>Antagonista wit. K → ↓ synteza cz. II, VII, IX, X + białka C i S</span></div>
+      <div class="drug-section"><strong>Wskazania</strong><span>Migotanie przedsionków, DVT, zatorowość płucna</span></div>
+      <div class="drug-section"><strong>Działania nep.</strong><span>Krwawienia; antidotum: witamina K (i.v.)</span></div>
+      <div class="drug-section"><strong>Monitorowanie</strong><span>INR — recepta: "Przyjmuj zgodnie z wynikiem INR"</span></div>
+    </div>
+
+    <div class="drug-card">
+      <div class="drug-name">WINBLASTYNA <span class="badge badge-e">Onkol.</span></div>
+      <div class="drug-section"><strong>Mechanizm</strong><span>Zahamowanie polimeryzacji tubuliny → blokada fazy M</span></div>
+      <div class="drug-section"><strong>Wskazania</strong><span>Chłoniaki Hodgkina, ziarnica, rak jądra</span></div>
+      <div class="drug-section"><strong>PUŁAPKA</strong><span>Paklitaksel STABILIZUJE mikrotubule (odwrotny mechanizm!)</span></div>
+      <div class="drug-section"><strong>Działania nep.</strong><span>Mielosupresja, neuropatia obwodowa</span></div>
+    </div>
+
+    <div class="drug-card">
+      <div class="drug-name">FLUKONAZOL <span class="badge badge-e">Grzyb.</span></div>
+      <div class="drug-section"><strong>Mechanizm</strong><span>Inhibitor 14α-demetylazy → ↓ syntezy ergosterolu</span></div>
+      <div class="drug-section"><strong>Wskazania</strong><span>Kandydoza (doustna, pochwy, układowa); kryptokokoza</span></div>
+      <div class="drug-section"><strong>PUŁAPKA</strong><span>NIE stosować w aspergilozie! (→ worykonazol)</span></div>
+      <div class="drug-section"><strong>Recepta</strong><span>100 mg tab., 1 raz dziennie</span></div>
+    </div>
+
+    <div class="drug-card">
+      <div class="drug-name">LIT <span class="badge badge-e">Psych.</span></div>
+      <div class="drug-section"><strong>Mechanizm</strong><span>Modulacja sygnalizacji InsP3 i kinazy GSK-3</span></div>
+      <div class="drug-section"><strong>Wskazania</strong><span>Choroba afektywna dwubiegunowa, maniakalna</span></div>
+      <div class="drug-section"><strong>Działania nep.</strong><span>Drżenia, wielomocz, niedoczynność tarczycy; toksyczność neurologiczna</span></div>
+      <div class="drug-section"><strong>WAŻNE</strong><span>NISKI indeks terapeutyczny — wymaga monitorowania stężenia!</span></div>
+    </div>
+
+    <div class="drug-card">
+      <div class="drug-name">IZONIAZYD <span class="badge badge-e">TB</span></div>
+      <div class="drug-section"><strong>Mechanizm</strong><span>Inhibitor syntazy kwasów mykolowych (InhA)</span></div>
+      <div class="drug-section"><strong>Wskazania</strong><span>Gruźlica (I linia, zawsze w schemacie)</span></div>
+      <div class="drug-section"><strong>Działania nep.</strong><span>Neuropatia obwodowa (profilaktyka: wit. B6); hepatotoksyczność</span></div>
+      <div class="drug-section"><strong>Ważne</strong><span>Szybcy vs wolni acetylatorzy — różna dawka!</span></div>
+    </div>
+
+    <div class="drug-card">
+      <div class="drug-name">ACYKLOWIR <span class="badge badge-e">Wirusy</span></div>
+      <div class="drug-section"><strong>Mechanizm</strong><span>Analog guanozyny → inhibitor polimerazy DNA wirusowej</span></div>
+      <div class="drug-section"><strong>Wskazania</strong><span>HSV (opryszczka), VZV (ospa wietrzna, półpasiec)</span></div>
+      <div class="drug-section"><strong>PUŁAPKA</strong><span>Bardziej aktywny wobec HSV niż VZV!</span></div>
+      <div class="drug-section"><strong>Recepta</strong><span>200 mg tab., 3× dziennie</span></div>
+    </div>
+
+    <div class="drug-card">
+      <div class="drug-name">DIGOKSYNA <span class="badge badge-e">NS/AF</span></div>
+      <div class="drug-section"><strong>Mechanizm</strong><span>Inhibicja pompy Na⁺/K⁺-ATPazy → ↑ Ca²⁺ → inotropia (+)</span></div>
+      <div class="drug-section"><strong>Wskazania</strong><span>Niewydolność serca + AF z szybką czynnością komór</span></div>
+      <div class="drug-section"><strong>Toksyczność</strong><span>Anoreksja, nudności, wymioty, biegunka; zaburzenia widzenia (żółty odcień)</span></div>
+      <div class="drug-section"><strong>WAŻNE</strong><span>Niski indeks terapeutyczny; ↓ K → ↑ toksyczność</span></div>
+    </div>
+
+    <div class="drug-card">
+      <div class="drug-name">OMEPRAZOL/PANTOPRAZOL <span class="badge badge-e">IPP</span></div>
+      <div class="drug-section"><strong>Mechanizm</strong><span>Nieodwracalny inhibitor H⁺/K⁺-ATPazy żołądkowej</span></div>
+      <div class="drug-section"><strong>Wskazania</strong><span>GERD, choroba wrzodowa, eradykacja H. pylori</span></div>
+      <div class="drug-section"><strong>WAŻNE</strong><span>Najbardziej efektywne leki w chorobie wrzodowej</span></div>
+      <div class="drug-section"><strong>Recepta</strong><span>Omeprazol 20 mg tab., rano na czczo; Pantoprazol 20 mg, 1×dz</span></div>
+    </div>
+
+    <div class="drug-card">
+      <div class="drug-name">PAKLITAKSEL <span class="badge badge-e">Onkol.</span></div>
+      <div class="drug-section"><strong>Mechanizm</strong><span>STABILIZUJE mikrotubule (NIE depolimeryzacja!) → blokada mitozy</span></div>
+      <div class="drug-section"><strong>Wskazania</strong><span>Rak piersi, jajnika, płuca</span></div>
+      <div class="drug-section"><strong>PUŁAPKA</strong><span>Odwrotny mechanizm niż winblastyna/winkrystyna!</span></div>
+      <div class="drug-section"><strong>Działania nep.</strong><span>Neuropatia, mielosupresja, alopecia</span></div>
+    </div>
+
+    <div class="drug-card">
+      <div class="drug-name">DONEPEZIL <span class="badge badge-e">Alzheimer</span></div>
+      <div class="drug-section"><strong>Mechanizm</strong><span>Odwracalny inhibitor acetylocholinesterazy (AChE)</span></div>
+      <div class="drug-section"><strong>Wskazania</strong><span>Choroba Alzheimera (5–10 mg)</span></div>
+      <div class="drug-section"><strong>WAŻNE</strong><span>Przyjmować przed snem! (nie na czczo)</span></div>
+      <div class="drug-section"><strong>Recepta</strong><span>Donepezil 5 mg Tab., 1× dziennie przed snem</span></div>
+    </div>
+
+    <div class="drug-card">
+      <div class="drug-name">ALENDRONIAN <span class="badge badge-e">Kości</span></div>
+      <div class="drug-section"><strong>Mechanizm</strong><span>Inhibitor farnesylopirofosfatazy syntazy → hamowanie osteoklastów</span></div>
+      <div class="drug-section"><strong>Wskazania</strong><span>Osteoporoza</span></div>
+      <div class="drug-section"><strong>Działania nep.</strong><span>Adynamiczna choroba kości (długotrwałe stosowanie!); erozja przełyku</span></div>
+      <div class="drug-section"><strong>WAŻNE</strong><span>Bisfosfoniany mają bardzo niską biodostępność doustną</span></div>
+    </div>
+
+    <div class="drug-card">
+      <div class="drug-name">TERBINAFINA <span class="badge badge-e">Grzyb.</span></div>
+      <div class="drug-section"><strong>Mechanizm</strong><span>Inhibitor epoksydazy skwalenowej → ↓ synteza ergosterolu</span></div>
+      <div class="drug-section"><strong>Wskazania</strong><span>Grzybice skóry, paznokci (dermatomykozy)</span></div>
+      <div class="drug-section"><strong>PUŁAPKA</strong><span>Inny mechanizm niż azole (nie 14α-demetylaza, lecz squalene epoxidase)</span></div>
+      <div class="drug-section"><strong>Ważne</strong><span>Fungistatyczny wobec Candida, fungicydowy wobec dermatofitów</span></div>
+    </div>
+
+    <div class="drug-card">
+      <div class="drug-name">ETOSUKSYMID <span class="badge badge-e">Padaczka</span></div>
+      <div class="drug-section"><strong>Mechanizm</strong><span>Blokada kanałów Ca²⁺ typu T</span></div>
+      <div class="drug-section"><strong>Wskazania</strong><span>WYŁĄCZNIE napady nieświadomości (absence)!</span></div>
+      <div class="drug-section"><strong>PUŁAPKA</strong><span>Bezużyteczny w napadach toniczno-klonicznych!</span></div>
+      <div class="drug-section"><strong>Działania nep.</strong><span>Nudności, bóle głowy, letarg</span></div>
+    </div>
+
+    <div class="drug-card">
+      <div class="drug-name">DABIGATRAN <span class="badge badge-e">NOAC</span></div>
+      <div class="drug-section"><strong>Mechanizm</strong><span>Bezpośredni inhibitor trombiny (IIa)</span></div>
+      <div class="drug-section"><strong>Wskazania</strong><span>Profilaktyka zakrzepicy, migotanie przedsionków</span></div>
+      <div class="drug-section"><strong>Antidotum</strong><span>Idarucyzumab (NIE witamina K!)</span></div>
+      <div class="drug-section"><strong>PUŁAPKA</strong><span>Antidotum na warfarynę = wit. K; na dabigatran = idarucyzumab</span></div>
+    </div>
+
+    <div class="drug-card">
+      <div class="drug-name">KARWEDILOL <span class="badge badge-e">NS/NT</span></div>
+      <div class="drug-section"><strong>Mechanizm</strong><span>Nieselektywny β-bloker + α1-bloker</span></div>
+      <div class="drug-section"><strong>Wskazania</strong><span>Niewydolność serca, nadciśnienie</span></div>
+      <div class="drug-section"><strong>PUŁAPKA</strong><span>Blokuje α i β — w odróżnieniu od czystych β-blokerów</span></div>
+      <div class="drug-section"><strong>Ważne</strong><span>Stosować w NS (redukuje śmiertelność)</span></div>
+    </div>
+
+    <div class="drug-card">
+      <div class="drug-name">CITALOPRAM <span class="badge badge-e">SSRI</span></div>
+      <div class="drug-section"><strong>Mechanizm</strong><span>Selektywny inhibitor wychwytu zwrotnego serotoniny (SERT)</span></div>
+      <div class="drug-section"><strong>Wskazania</strong><span>Depresja, zaburzenia lękowe, OCD</span></div>
+      <div class="drug-section"><strong>Działania nep.</strong><span>Nudności, bezsenność, dysfunkcja seksualna; wydłużenie QT przy dużych dawkach</span></div>
+      <div class="drug-section"><strong>Recepta</strong><span>20 mg tab., 1×dz</span></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ======================== SECTION 4 ======================== -->
+<div class="section" id="s4">
+  <div class="section-header">
+    <div class="section-num">4</div>
+    <h2>Reguły vs Wyjątki — Kluczowe tabele</h2>
+  </div>
+
+  <div class="card">
+    <div class="card-title">⚖️ ANTYBIOTYKI</div>
+    <table>
+      <tr><th>REGUŁA OGÓLNA</th><th>WYJĄTEK</th><th>JAK PYTANE</th></tr>
+      <tr><td>Beta-laktamy = bakteriobójcze</td><td>Tetracykliny, makrolidy = bakteriostatyczne</td><td>"Które działają bakteriostatycznie?" → tetracykliny/makrolidy</td></tr>
+      <tr><td>Aminoglikozydy = aktywne wobec G-</td><td>NIE aktywne wobec beztlenowców!</td><td>"Który aminoglikozyd stosować w infekcji beztlenowej?" → żaden!</td></tr>
+      <tr><td>Fluorochinolony = szerokie spektrum</td><td>Moksyfloksacyna = NIE stosować w zakażeniach dróg moczowych (nie wydalana przez nerki)</td><td>"Który chinolon w UTI?" → cyprofloksacyna, nie moksi</td></tr>
+      <tr><td>Amoksycylina = penicylina doustna</td><td>Amoksycylina może być podana DOŻYLNIE</td><td>"Penicyliny można podawać tylko doustnie?" → FAŁSZ</td></tr>
+      <tr><td>Azole = hamowanie 14α-demetylazy</td><td>Terbinafina = hamowanie squalene epoxidase (inny cel!)</td><td>"Mechanizm terbinainy?" → NIE demetylaza, lecz epoksydaza skwalenowa</td></tr>
+      <tr><td>Flukonazol = leczenie grzybic</td><td>Flukonazol NIE działa w aspergilozie!</td><td>"Lek na aspergilozę?" → worykonazol/itrakonazol</td></tr>
+      <tr><td>Acyklowir = lek na HSV i VZV</td><td>Bardziej aktywny wobec HSV niż VZV</td><td>"Acyklowir a HSV vs VZV?" → HSV silniej</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="card-title">⚖️ UKŁAD SERCOWO-NACZYNIOWY</div>
+    <table>
+      <tr><th>REGUŁA OGÓLNA</th><th>WYJĄTEK</th><th>JAK PYTANE</th></tr>
+      <tr><td>β-blokery zmniejszają śmiertelność w CHF</td><td>NIE wszystkie β-blokery! Udowodnione tylko bisoprolol, karwedilol, nebiwolol (metoprolol sukc.)</td><td>"Które stwierdzenie jest NIEPRAWDZIWE?" → "Wszystkie β-blokery zmniejszają śmiertelność"</td></tr>
+      <tr><td>ACEI = kaszel jako działanie nep.</td><td>Sartany (ARB) = brak kaszlu, ale też obrzęk naczynioruchowy możliwy</td><td>"Alternatywa dla ACEI przy kaszlu?" → sartan</td></tr>
+      <tr><td>Furosemid = leczenie obrzęków/NS</td><td>NIE stosuje się w łagodnym niepowikłanym nadciśnieniu tętniczym!</td><td>"Furosemid w łagodnym NT?" → FAŁSZ (tam tiazyd lub indapamid)</td></tr>
+      <tr><td>Heparyna = monitorowanie aPTT</td><td>HDCz (enoksaparyna) NIE wymaga monitorowania aPTT!</td><td>"Który lek wymaga monitorowania aPTT?" → tylko UFH, nie HDCz</td></tr>
+      <tr><td>Spironolakton = antagonista aldosteronu</td><td>Eplerenon = mniej hormonalnych działań nep. (ginekomastia) niż spironolakton</td><td>"Który blokuje aldosteron z mniejszą ilością d.nep.?" → eplerenon</td></tr>
+      <tr><td>Nitroprusydek = rozszerza naczynia</td><td>Jedyny lek podawany i.v. w nagłych stanach NT + fenoldopam</td><td>"Nagłe nadciśnienie i.v.?" → nitroprusydek lub fenoldopam</td></tr>
+      <tr><td>Rywaroksaban = inhibitor Xa</td><td>Dabigatran = inhibitor trombiny (IIa), nie Xa</td><td>"Antidotum na dabigatran vs rywaroksaban?" → inne antidota!</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="card-title">⚖️ UKŁAD NERWOWY / HORMONY / ONKOLOGIA</div>
+    <table>
+      <tr><th>REGUŁA OGÓLNA</th><th>WYJĄTEK</th><th>JAK PYTANE</th></tr>
+      <tr><td>NLPZ = działanie p/bólowe + p/zapalne + p/gorączkowe</td><td>Paracetamol = BRAK działania przeciwzapalnego!</td><td>"Który lek nie ma działania p/zapalnego?" → paracetamol</td></tr>
+      <tr><td>Opioidy → zaparcia</td><td>Loperamid = opioid stosowany właśnie DLA EFEKTU zaparcia (p/biegunkowy)</td><td>"Opioid stosowany w biegunce?" → loperamid</td></tr>
+      <tr><td>Benzodiazepiny = leki nasenne i anksjolityczne</td><td>Zolpidem = SELEKTYWNY agonista BZ miejsca (tylko α1) — nie benzodiazepina!</td><td>"Zolpidem vs BDZ — różnica?" → selektywność α1</td></tr>
+      <tr><td>Sulfonylomoczniki = zwiększają wydzielanie insuliny</td><td>Metformina = NIE zwiększa wydzielania insuliny; NIE powoduje hipoglikemii</td><td>"Który lek p/cukrzycowy nie powoduje hipoglikemii?" → metformina</td></tr>
+      <tr><td>SGLT2i = chronią nerki</td><td>Kanagliflozyna PRZECIWWSKAZANA przy GFR &lt;30!</td><td>"Który SGLT2i przy niewydolności nerek?" → NOT kanagliflozyna</td></tr>
+      <tr><td>Etosuksymid = lek na padaczkę</td><td>Etosuksymid = TYLKO w napadach absence! Nieużyteczny w innych typach</td><td>"Padaczka toniczno-kloniczna → etosuksymid?" → NIE!</td></tr>
+      <tr><td>Taksany i vinka-alkaloidy = leki na mikrotubule</td><td>Winblastyna: dezpolimeryzacja; Paklitaksel: STABILIZACJA (odwrotny efekt!)</td><td>"Paklitaksel vs winblastyna — mechanizm?" → odwrotne!</td></tr>
+      <tr><td>Trastuzumab = p/ciało monoklonalne</td><td>Trastuzumab = anty-HER2, NIE anty-VEGF (to bewacyzumab)</td><td>"Trastuzumab = anty-VEGF?" → NIE! To bewacyzumab</td></tr>
+      <tr><td>Flukonazol hamuje syntezę ergosterolu</td><td>Terbinafina = hamuje INNY enzym niż azole!</td><td>"Terbinafina vs flukonazol — mechanizm?" → różne enzymy</td></tr>
+      <tr><td>Lewotyroksyna = T4 (prohormon)</td><td>Bardziej stabilna niż trijodotyronina (T3); niska biodostępność, wchłanianie na czczo</td><td>"Czynnik modyfikujący wchłanianie lewotyroksyny?" → jedzenie, leki, pH, flora jelitowa</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- ======================== SECTION 5 ======================== -->
+<div class="section" id="s5">
+  <div class="section-header">
+    <div class="section-num">5</div>
+    <h2>Pułapki egzaminacyjne 🪤</h2>
+  </div>
+
+  <div class="trap-box">
+    <div class="trap-title">🪤 PUŁAPKA #1 — "Wszystkie β-blokery zmniejszają śmiertelność w CHF"</div>
+    <div class="trap-detail">Zdanie <span class="trap-key">FAŁSZYWE</span> — pytane wielokrotnie (2022, 2021). Odpowiedź "które stwierdzenie jest NIEPRAWIDŁOWE?" → wskazuj to zdanie. Tylko wybrane β-blokery (bisoprolol, karwedilol, nebiwolol) mają udowodnione działanie. <br>⏱ Rozpoznaj w 3 sek.: słowo "wszystkie" + β-blokery + CHF = pułapka.</div>
+  </div>
+
+  <div class="trap-box">
+    <div class="trap-title">🪤 PUŁAPKA #2 — Jaskra: atropina czy pilokarpina?</div>
+    <div class="trap-detail">Atropina = <span class="trap-key">PRZECIWWSKAZANA</span> w jaskrze (poszerza źrenicę → blokada kąta przesączania). Pilokarpina = <span class="trap-key">WSKAZANA</span> (zwęża źrenicę → otwiera kąt). Pytają o "lek na jaskrę" i oferują atropinę — nie daj się nabrać!</div>
+  </div>
+
+  <div class="trap-box">
+    <div class="trap-title">🪤 PUŁAPKA #3 — Paracetamol nie ma działania przeciwzapalnego</div>
+    <div class="trap-detail">Pytania sprawdzają czy wiesz, że paracetamol to <span class="trap-key">NIE NLPZ</span>. Nie hamuje COX obwodowo, brak działania p/zapalnego. Działa centralnie. ⏱ W pytaniu "które NLPZ stosować w reumatoidalnym zapaleniu stawów" — paracetamol to ZŁA odpowiedź.</div>
+  </div>
+
+  <div class="trap-box">
+    <div class="trap-title">🪤 PUŁAPKA #4 — Winblastyna vs Paklitaksel</div>
+    <div class="trap-detail">Oba działają na mikrotubule, ale <span class="trap-key">ODWROTNIE</span>: Winblastyna = hamuje polimeryzację (dezpolimeryzacja), Paklitaksel = <span class="trap-key">STABILIZUJE</span> mikrotubule. Pytają o mechanizm jednego z nich — zapamiętaj: Paklitaksel paradoksalnie "zamarza" tubulinę.</div>
+  </div>
+
+  <div class="trap-box">
+    <div class="trap-title">🪤 PUŁAPKA #5 — Flukonazol NIE działa w aspergilozie</div>
+    <div class="trap-detail">Flukonazol = kandydoza. Aspergilloza = <span class="trap-key">worykonazol lub itrakonazol</span>. Egzaminator oferuje flukonazol jako odpowiedź na aspergilozę — zdecydowanie NIE. ⏱ Słowo "aspergilloza" → automatycznie worykonazol.</div>
+  </div>
+
+  <div class="trap-box">
+    <div class="trap-title">🪤 PUŁAPKA #6 — Ranitydyna blokuje H2, NIE M</div>
+    <div class="trap-detail">Poprawna odpowiedź "ranitydyna – blokada receptorów <span class="trap-key">H2</span>" pojawia się w bazie jako podświetlona. W opcjach często podstawia się "blokada M" (to ipratropium, atropina). ⏱ H2-blokery = ranitydyna, famotydyna; M-blokery = atropina, ipratropium.</div>
+  </div>
+
+  <div class="trap-box">
+    <div class="trap-title">🪤 PUŁAPKA #7 — Donepezil: "przed snem", nie "na pusty żołądek"</div>
+    <div class="trap-detail">Recepta na donepezil = <span class="trap-key">"5 mg Tab., 1× dziennie przed snem"</span>. W bazie pojawia się błędna opcja "na pusty żołądek" — specjalnie mylona. ⏱ Alzheimer + przed snem → donepezil.</div>
+  </div>
+
+  <div class="trap-box">
+    <div class="trap-title">🪤 PUŁAPKA #8 — Furosemid w nadciśnieniu tętniczym</div>
+    <div class="trap-detail">Zdanie "<span class="trap-key">Furosemid jest lekiem pierwszego wyboru w łagodnym NT</span>" = <span class="trap-key">FAŁSZYWE</span>. Furosemid stosujemy w ciężkim NT, NS i obrzękach. W łagodnym NT → tiazyd lub indapamid. Poprawna odpowiedź w bazie: "furosemid NIE jest wskazany w łagodnym NT".</div>
+  </div>
+
+  <div class="trap-box">
+    <div class="trap-title">🪤 PUŁAPKA #9 — HDCz nie wymaga monitorowania aPTT!</div>
+    <div class="trap-detail">Heparyna niefrakcjonowana = wymaga aPTT. HDCz (enoksaparyna) = <span class="trap-key">NIE wymaga monitorowania aPTT</span> (jest to wyjątek od reguły dla heparyn). Pytanie "Pacjenci otrzymujący HDCz wymagają monitorowania aPTT" = FAŁSZYWE.</div>
+  </div>
+
+  <div class="trap-box">
+    <div class="trap-title">🪤 PUŁAPKA #10 — Trastuzumab vs Bewacyzumab</div>
+    <div class="trap-detail">Trastuzumab = anty-HER2 (rak piersi HER2+). Bewacyzumab = anty-VEGF. <span class="trap-key">Nie mylić!</span> Pytania często podają "Trastuzumab wiąże się z VEGF" = FAŁSZ. ⏱ Trastuzumab → HER2; Bewacyzumab → VEGF.</div>
+  </div>
+
+  <div class="trap-box">
+    <div class="trap-title">🪤 PUŁAPKA #11 — Etosuksymid TYLKO w absence</div>
+    <div class="trap-detail">Etosuksymid = <span class="trap-key">WYŁĄCZNIE napady nieświadomości</span>. W padaczce toniczno-klonicznej = BEZUŻYTECZNY. Pytanie "Co stosujesz w napadzie absence?" — etosuksymid. Pytanie "W uogólnionej?" — NIE etosuksymid. ⏱ Absence = etosuksymid. Generalization = kwas walproinowy/lamotrygina.</div>
+  </div>
+
+  <div class="trap-box">
+    <div class="trap-title">🪤 PUŁAPKA #12 — Kanagliflozyna w niewydolności nerek</div>
+    <div class="trap-detail">Kanagliflozyna = <span class="trap-key">PRZECIWWSKAZANA przy GFR &lt;30 ml/min</span> (bo działa w nerce!). Empagliflozyna ma wydłużone wskazania nerkowe. ⏱ "SGLT2i w NS z GFR 25?" → empagliflozyna (lub dapagliflozyna), NIE kanagliflozyna.</div>
+  </div>
+</div>
+
+<!-- ======================== SECTION 6 ======================== -->
+<div class="section" id="s6">
+  <div class="section-header">
+    <div class="section-num">6</div>
+    <h2>Rzadkie, ale wysoko karzące informacje 🔴</h2>
+  </div>
+
+  <div class="fact fact-critical"><span class="fact-label lbl-rare">RZADKIE</span> <strong>Alendronian → adynamiczna choroba kości</strong> — długotrwałe stosowanie bisfosfonianów paradoksalnie może powodować zahamowanie metabolizmu kości</div>
+  <div class="fact fact-critical"><span class="fact-label lbl-rare">RZADKIE</span> <strong>Teofilina hamuje PDE III</strong> (nie PDE IV!). PDE IV hamują np. roflumilast (POChP)</div>
+  <div class="fact fact-critical"><span class="fact-label lbl-rare">RZADKIE</span> <strong>Nebiwolol działa na β3</strong> (uwalnianie NO) — jedyny β-bloker z tym mechanizmem; wymieniony w kluczu odpowiedzi</div>
+  <div class="fact fact-critical"><span class="fact-label lbl-rare">RZADKIE</span> <strong>Amantadyna</strong> = pobudza receptory D, zwiększa uwalnianie dopaminy, blokuje receptory NMDA — wszystkie trzy mechanizmy naraz</div>
+  <div class="fact fact-critical"><span class="fact-label lbl-rare">RZADKIE</span> <strong>Fenytoina jest prolekiem</strong> → fosfenytoina jest prolekiem fenytoiny</div>
+  <div class="fact fact-critical"><span class="fact-label lbl-rare">RZADKIE</span> <strong>PEG (glikol polietylenowy)</strong> = powoduje skurcze jelit i gromadzenie gazów — pytane jako negatywna cecha</div>
+  <div class="fact fact-critical"><span class="fact-label lbl-rare">RZADKIE</span> <strong>Raloksyfen</strong> = SERM; zmniejsza ryzyko raka piersi, ale zwiększa ryzyko zakrzepicy żylnej</div>
+  <div class="fact fact-critical"><span class="fact-label lbl-rare">RZADKIE</span> <strong>Cilostazol</strong> = inhibitor PDE3 → chromanie przestankowe (jedyny lek tej grupy!)</div>
+  <div class="fact fact-critical"><span class="fact-label lbl-rare">RZADKIE</span> <strong>Etambutol</strong> = toksyczność oczna (neuritis nerwu wzrokowego) — specyficzne dla etambutolu w gruźlicy</div>
+  <div class="fact fact-critical"><span class="fact-label lbl-rare">RZADKIE</span> <strong>Iwabradyna = inhibitor prądu If</strong>, a nie blokada Ca czy Na; jedyny taki mechanizm</div>
+  <div class="fact fact-critical"><span class="fact-label lbl-rare">RZADKIE</span> <strong>Ranolazyna = hamuje późny prąd Na⁺</strong> w sercu (dławica); Trimetazydyna = inhibitor pFOX (oksydacja kwasów tłuszczowych) — nie mylić!</div>
+  <div class="fact fact-critical"><span class="fact-label lbl-rare">RZADKIE</span> <strong>Abakawir i lamiwudyna</strong> (NRTI) mogą być stosowane w ciąży!</div>
+  <div class="fact fact-critical"><span class="fact-label lbl-rare">RZADKIE</span> <strong>Artemeter</strong> = działa na erytrocytarny etap malarii (NIE wątrobowy)</div>
+  <div class="fact fact-critical"><span class="fact-label lbl-rare">RZADKIE</span> <strong>Flucytozyna</strong> = synergizm z amfoterycyną B; stosowana w kombinacji, nie w monoterapii</div>
+  <div class="fact fact-critical"><span class="fact-label lbl-rare">RZADKIE</span> <strong>Mupirocyna</strong> = miejscowo w liszajcu (nie ogólnoustrojowo)</div>
+  <div class="fact fact-critical"><span class="fact-label lbl-rare">RZADKIE</span> <strong>Leflunomid</strong> = inhibitor dehydrogenazy dihydroorotanowej → hamuje proliferację limfocytów T</div>
+  <div class="fact fact-critical"><span class="fact-label lbl-rare">RZADKIE</span> <strong>Ketamina</strong> = dysocjacyjny anestetyk; zachowuje odruchy ochronne; analgezja + amnezja</div>
+  <div class="fact fact-critical"><span class="fact-label lbl-rare">RZADKIE</span> <strong>Etomidat</strong> = kardiostabilny anestetyk (wybór u niestabilnych hemodynamicznie)</div>
+  <div class="fact fact-critical"><span class="fact-label lbl-rare">RZADKIE</span> <strong>Lewamizol (Levamisol)</strong> = lek przeciwpasożytniczy stosowany adjuwantowo</div>
+  <div class="fact fact-critical"><span class="fact-label lbl-rare">RZADKIE</span> <strong>Malarone (atowakwon + proguanil)</strong> = profilaktyka malarii; schemat: 1 tabletka 1×dz</div>
+  <div class="fact fact-critical"><span class="fact-label lbl-rare">RZADKIE</span> <strong>Bisfosfoniany mają bardzo niską biodostępność doustną</strong> — pytane w kontekście farmakokinetyki</div>
+  <div class="fact fact-critical"><span class="fact-label lbl-rare">RZADKIE</span> <strong>Objętość dystrybucji 3 l/70 kg</strong> = osocze (nie tkankowe, nie całkowite)</div>
+</div>
+
+<!-- ======================== SECTION 7 ======================== -->
+<div class="section" id="s7">
+  <div class="section-header">
+    <div class="section-num">7</div>
+    <h2>TOP 100 faktów do egzaminu 🏅</h2>
+  </div>
+  <div class="top100">
+    <div class="top-item"><div class="top-num">1</div><div><span class="fact-label lbl-vfreq">BCZ</span> Leki p/muskarynowe → POChP, NetP moczu, astma — NIE jaskra, NIE Alzheimer</div></div>
+    <div class="top-item"><div class="top-num">2</div><div><span class="fact-label lbl-vfreq">BCZ</span> Donepezil 5 mg przed snem = choroba Alzheimera (inhibitor AChE)</div></div>
+    <div class="top-item"><div class="top-num">3</div><div><span class="fact-label lbl-trap">PUŁ</span> "Wszystkie β-blokery zmniejszają śmiertelność w CHF" = FAŁSZ!</div></div>
+    <div class="top-item"><div class="top-num">4</div><div><span class="fact-label lbl-vfreq">BCZ</span> Amiodaron = najczęstszy lek przeciwarytmiczny w bazie; 200 mg 1×dz</div></div>
+    <div class="top-item"><div class="top-num">5</div><div><span class="fact-label lbl-vfreq">BCZ</span> Metformina = aktywuje kinazę AMP; brak hipoglikemii; lek 1. wyboru w DM2</div></div>
+    <div class="top-item"><div class="top-num">6</div><div><span class="fact-label lbl-vfreq">BCZ</span> Empagliflozyna = SGLT2i; ochrona sercowo-nerkowa; 10 mg 1×dz</div></div>
+    <div class="top-item"><div class="top-num">7</div><div><span class="fact-label lbl-trap">PUŁ</span> Paracetamol = BRAK działania p/zapalnego! Odtrutka: N-acetylocysteina</div></div>
+    <div class="top-item"><div class="top-num">8</div><div><span class="fact-label lbl-vfreq">BCZ</span> ACEI → obrzęk naczynioruchowy (działanie niepożądane)</div></div>
+    <div class="top-item"><div class="top-num">9</div><div><span class="fact-label lbl-vfreq">BCZ</span> Warfaryna → monitorowanie INR; antidotum = wit. K</div></div>
+    <div class="top-item"><div class="top-num">10</div><div><span class="fact-label lbl-vfreq">BCZ</span> HDCz (enoksaparyna) = NIE wymaga monitorowania aPTT</div></div>
+    <div class="top-item"><div class="top-num">11</div><div><span class="fact-label lbl-trap">PUŁ</span> Winblastyna = dezpolimeryzacja; Paklitaksel = STABILIZACJA mikrotubul</div></div>
+    <div class="top-item"><div class="top-num">12</div><div><span class="fact-label lbl-trap">PUŁ</span> Flukonazol = kandydoza; NIE aspergilloza (→ worykonazol)</div></div>
+    <div class="top-item"><div class="top-num">13</div><div><span class="fact-label lbl-vfreq">BCZ</span> Doksazosyna 4 mg 1×dz = α1-bloker; NT + BPH</div></div>
+    <div class="top-item"><div class="top-num">14</div><div><span class="fact-label lbl-vfreq">BCZ</span> Nebiwolol = β1-bloker + β3 (wydzielanie NO)</div></div>
+    <div class="top-item"><div class="top-num">15</div><div><span class="fact-label lbl-vfreq">BCZ</span> Beta-laktamy = hamowanie syntezy ściany komórkowej; bakteriobójcze</div></div>
+    <div class="top-item"><div class="top-num">16</div><div><span class="fact-label lbl-freq">CZ</span> Aminoglikozydy = ototoksyczność; NIE aktywne wobec beztlenowców</div></div>
+    <div class="top-item"><div class="top-num">17</div><div><span class="fact-label lbl-vfreq">BCZ</span> Alendronian = hamowanie osteoklastów → osteoporoza</div></div>
+    <div class="top-item"><div class="top-num">18</div><div><span class="fact-label lbl-freq">CZ</span> Digoksyna = anoreksja, nudności, wymioty, biegunka (toksyczność)</div></div>
+    <div class="top-item"><div class="top-num">19</div><div><span class="fact-label lbl-vfreq">BCZ</span> IPP (omeprazol 20 mg rano na czczo) = najefektywniejsze w chorobie wrzodowej</div></div>
+    <div class="top-item"><div class="top-num">20</div><div><span class="fact-label lbl-freq">CZ</span> Ciprofloksacyna 500 mg 2×dz = fluorochinolon (najczęstsza recepta)</div></div>
+    <div class="top-item"><div class="top-num">21</div><div><span class="fact-label lbl-vfreq">BCZ</span> Izoniazyd = gruźlica (I linia); neuropatia obwodowa → profilaktycznie wit. B6</div></div>
+    <div class="top-item"><div class="top-num">22</div><div><span class="fact-label lbl-trap">PUŁ</span> Acyklowir = bardziej aktywny wobec HSV niż VZV!</div></div>
+    <div class="top-item"><div class="top-num">23</div><div><span class="fact-label lbl-freq">CZ</span> Morfina → nalokson (antidotum); zaparcia, mioza</div></div>
+    <div class="top-item"><div class="top-num">24</div><div><span class="fact-label lbl-freq">CZ</span> Fentanyl = przezskórnie (TTS) → ból nowotworowy</div></div>
+    <div class="top-item"><div class="top-num">25</div><div><span class="fact-label lbl-freq">CZ</span> Pilokarpina = receptor M (stymulacja) → jaskra</div></div>
+    <div class="top-item"><div class="top-num">26</div><div><span class="fact-label lbl-freq">CZ</span> Neostygmina = pooperacyjna atonia jelit i pęcherza</div></div>
+    <div class="top-item"><div class="top-num">27</div><div><span class="fact-label lbl-freq">CZ</span> Atrakurium = niedepolaryzujący bloker NMJ (nie sukcynylocholina!)</div></div>
+    <div class="top-item"><div class="top-num">28</div><div><span class="fact-label lbl-freq">CZ</span> Lit = stabilizator nastroju; NISKI indeks terapeutyczny!</div></div>
+    <div class="top-item"><div class="top-num">29</div><div><span class="fact-label lbl-freq">CZ</span> Citalopram 20 mg 1×dz = najczęstsza recepta na SSRI w bazie</div></div>
+    <div class="top-item"><div class="top-num">30</div><div><span class="fact-label lbl-trap">PUŁ</span> Etosuksymid = TYLKO napady absence; nie działa w toniczno-klonicznych</div></div>
+    <div class="top-item"><div class="top-num">31</div><div><span class="fact-label lbl-freq">CZ</span> Montelukast/zafirlukast = antagoniści LTD4 (astma, alergiczny nieżyt nosa)</div></div>
+    <div class="top-item"><div class="top-num">32</div><div><span class="fact-label lbl-freq">CZ</span> Omalizumab = anty-IgE → ciężka astma oskrzelowa</div></div>
+    <div class="top-item"><div class="top-num">33</div><div><span class="fact-label lbl-freq">CZ</span> Ondansetron 8 mg = antagonista 5-HT3 → wymioty po chemioterapii</div></div>
+    <div class="top-item"><div class="top-num">34</div><div><span class="fact-label lbl-freq">CZ</span> Loperamid = opioidowy lek p/biegunkowy (nie przekracza BBB)</div></div>
+    <div class="top-item"><div class="top-num">35</div><div><span class="fact-label lbl-trap">PUŁ</span> Ranitydyna = blokada H2, NIE blokada M!</div></div>
+    <div class="top-item"><div class="top-num">36</div><div><span class="fact-label lbl-freq">CZ</span> Teofilina = hamowanie PDE III (nie PDE IV)</div></div>
+    <div class="top-item"><div class="top-num">37</div><div><span class="fact-label lbl-freq">CZ</span> Dabigatran = bezpośredni inhibitor trombiny; antidotum = idarucyzumab</div></div>
+    <div class="top-item"><div class="top-num">38</div><div><span class="fact-label lbl-freq">CZ</span> Rywaroksaban/apiksaban = inhibitory Xa</div></div>
+    <div class="top-item"><div class="top-num">39</div><div><span class="fact-label lbl-freq">CZ</span> Nitrogliceryna = rozszerza żyły nawet przy najniższych dawkach</div></div>
+    <div class="top-item"><div class="top-num">40</div><div><span class="fact-label lbl-rare">RZ</span> Iwabradyna = inhibitor prądu If; wskazana w NS z wysokim HR</div></div>
+    <div class="top-item"><div class="top-num">41</div><div><span class="fact-label lbl-trap">PUŁ</span> Furosemid NIE jest wskazany w łagodnym niepowikłanym nadciśnieniu!</div></div>
+    <div class="top-item"><div class="top-num">42</div><div><span class="fact-label lbl-freq">CZ</span> Eplerenon = mniej hormonalnych działań nep. niż spironolakton</div></div>
+    <div class="top-item"><div class="top-num">43</div><div><span class="fact-label lbl-freq">CZ</span> Cholestyramina = zaburza wchłanianie innych leków (żywica)</div></div>
+    <div class="top-item"><div class="top-num">44</div><div><span class="fact-label lbl-freq">CZ</span> Ewolokumab = inhibitor PCSK9 → silne obniżanie LDL</div></div>
+    <div class="top-item"><div class="top-num">45</div><div><span class="fact-label lbl-vfreq">BCZ</span> Lewotyroksyna = lek z wyboru w niedoczynności tarczycy; na czczo!</div></div>
+    <div class="top-item"><div class="top-num">46</div><div><span class="fact-label lbl-freq">CZ</span> Tiamazol = hamuje peroksydazę tarczycy (leczenie nadczynności)</div></div>
+    <div class="top-item"><div class="top-num">47</div><div><span class="fact-label lbl-rare">RZ</span> HTZ = ryzyko żylnej choroby zakrzepowo-zatorowej + zawał serca</div></div>
+    <div class="top-item"><div class="top-num">48</div><div><span class="fact-label lbl-freq">CZ</span> Celekoksyb (COX-2i) = ↑ ryzyko zawału, NT, zakrzepicy</div></div>
+    <div class="top-item"><div class="top-num">49</div><div><span class="fact-label lbl-freq">CZ</span> Tamsulosyna = selektywny α1A → BPH (nie NT)</div></div>
+    <div class="top-item"><div class="top-num">50</div><div><span class="fact-label lbl-freq">CZ</span> Heparyna niefrakcjonowana = wymaga monitorowania aPTT</div></div>
+    <div class="top-item"><div class="top-num">51</div><div><span class="fact-label lbl-freq">CZ</span> Imipenem = karbapenem; G-, G+, anaeroby, P. aeruginosa</div></div>
+    <div class="top-item"><div class="top-num">52</div><div><span class="fact-label lbl-trap">PUŁ</span> Amoksycylina można podawać i.v.! (nie tylko doustnie)</div></div>
+    <div class="top-item"><div class="top-num">53</div><div><span class="fact-label lbl-freq">CZ</span> Kloksacylina = oporna na beta-laktamazę (gronkowce MSSA)</div></div>
+    <div class="top-item"><div class="top-num">54</div><div><span class="fact-label lbl-freq">CZ</span> 5 leków gruźlicy: Izoniazyd + Rifampicyna + Streptomycyna + Etambutol + Pyrazynamid</div></div>
+    <div class="top-item"><div class="top-num">55</div><div><span class="fact-label lbl-rare">RZ</span> Abakawir i lamiwudyna = NRTI stosowane w ciąży</div></div>
+    <div class="top-item"><div class="top-num">56</div><div><span class="fact-label lbl-rare">RZ</span> Artemeter = malaria; faza erytrocytarna</div></div>
+    <div class="top-item"><div class="top-num">57</div><div><span class="fact-label lbl-freq">CZ</span> Terbinafina = inhibitor squalene epoxidase (NIE 14α-demetylazy!)</div></div>
+    <div class="top-item"><div class="top-num">58</div><div><span class="fact-label lbl-freq">CZ</span> Acyklowir 200 mg 3×dz = recepta na zakażenie HSV</div></div>
+    <div class="top-item"><div class="top-num">59</div><div><span class="fact-label lbl-freq">CZ</span> Olanzapina 10 mg 1×dz = atypowy neuroleptyk (najczęstsza recepta w bazie)</div></div>
+    <div class="top-item"><div class="top-num">60</div><div><span class="fact-label lbl-freq">CZ</span> Haloperydol = klasyczny neuroleptyk; objawy pozapiramidowe!</div></div>
+    <div class="top-item"><div class="top-num">61</div><div><span class="fact-label lbl-freq">CZ</span> Zolpidem = selektywny agonista α1-GABAA (NIE BDZ!)</div></div>
+    <div class="top-item"><div class="top-num">62</div><div><span class="fact-label lbl-freq">CZ</span> Flumazenil = antidotum na benzodiazepiny</div></div>
+    <div class="top-item"><div class="top-num">63</div><div><span class="fact-label lbl-trap">PUŁ</span> Trastuzumab = anty-HER2; Bewacyzumab = anty-VEGF (nie mylić!)</div></div>
+    <div class="top-item"><div class="top-num">64</div><div><span class="fact-label lbl-freq">CZ</span> Fenytoina = przerost dziąseł, oczopląs, hirsutyzm, niedobór wit. D</div></div>
+    <div class="top-item"><div class="top-num">65</div><div><span class="fact-label lbl-rare">RZ</span> Amantadyna = D-agonizm + ↑ uwalnianie DA + blokada NMDA</div></div>
+    <div class="top-item"><div class="top-num">66</div><div><span class="fact-label lbl-freq">CZ</span> Biperyden = choroba Parkinsona (antymuskarynowy)</div></div>
+    <div class="top-item"><div class="top-num">67</div><div><span class="fact-label lbl-rare">RZ</span> Etomidat = kardiostabilny anestetyk ogólny</div></div>
+    <div class="top-item"><div class="top-num">68</div><div><span class="fact-label lbl-freq">CZ</span> Ketamina = dysocjacyjny anestetyk; zachowuje odruchy</div></div>
+    <div class="top-item"><div class="top-num">69</div><div><span class="fact-label lbl-rare">RZ</span> Cilostazol = PDE3i → chromanie przestankowe</div></div>
+    <div class="top-item"><div class="top-num">70</div><div><span class="fact-label lbl-rare">RZ</span> Nebiwolol działa na β3 — jedyny β-bloker z tym mechanizmem</div></div>
+    <div class="top-item"><div class="top-num">71</div><div><span class="fact-label lbl-freq">CZ</span> Hydroksyzyna = anksjolityk + antyhistaminika I gen</div></div>
+    <div class="top-item"><div class="top-num">72</div><div><span class="fact-label lbl-freq">CZ</span> Dimenhydrynat = choroba lokomocyjna</div></div>
+    <div class="top-item"><div class="top-num">73</div><div><span class="fact-label lbl-freq">CZ</span> Oseltamiwir = inhibitor neuraminidazy → grypa</div></div>
+    <div class="top-item"><div class="top-num">74</div><div><span class="fact-label lbl-rare">RZ</span> Ranolazyna = hamuje późny prąd Na⁺ w sercu (angina)</div></div>
+    <div class="top-item"><div class="top-num">75</div><div><span class="fact-label lbl-rare">RZ</span> Alendronian może powodować adynamiczną chorobę kości!</div></div>
+    <div class="top-item"><div class="top-num">76</div><div><span class="fact-label lbl-freq">CZ</span> Raloksyfen = SERM (rak piersi ↓, zakrzepica ↑)</div></div>
+    <div class="top-item"><div class="top-num">77</div><div><span class="fact-label lbl-rare">RZ</span> Flucytozyna = synergizm z amfoterycyną B</div></div>
+    <div class="top-item"><div class="top-num">78</div><div><span class="fact-label lbl-freq">CZ</span> Sukralfat = może powodować ciemne zabarwienie stolca</div></div>
+    <div class="top-item"><div class="top-num">79</div><div><span class="fact-label lbl-freq">CZ</span> Atropina = antidotum w zatruciu fosfoorganicznymi (pestycydy)</div></div>
+    <div class="top-item"><div class="top-num">80</div><div><span class="fact-label lbl-rare">RZ</span> Kanagliflozyna PRZECIWWSKAZANA przy GFR &lt;30 ml/min</div></div>
+    <div class="top-item"><div class="top-num">81</div><div><span class="fact-label lbl-freq">CZ</span> Akarboza = inhibitor α-glukozydazy → hamuje trawienie cukrów</div></div>
+    <div class="top-item"><div class="top-num">82</div><div><span class="fact-label lbl-freq">CZ</span> Glipizyd/Gliklazyd/Glimepiryd = sulfonylomoczniki → ↑ wydzielania insuliny</div></div>
+    <div class="top-item"><div class="top-num">83</div><div><span class="fact-label lbl-freq">CZ</span> Aspiryna (KAS) = nieodwracalna inhibicja COX-1 → profilaktyka zawału</div></div>
+    <div class="top-item"><div class="top-num">84</div><div><span class="fact-label lbl-freq">CZ</span> Klopidogrel/Prasugrel = inhibitory P2Y12 (antagoniści ADP)</div></div>
+    <div class="top-item"><div class="top-num">85</div><div><span class="fact-label lbl-rare">RZ</span> Bisfosfoniany = bardzo niska biodostępność doustna (farmakokinetyka!)</div></div>
+    <div class="top-item"><div class="top-num">86</div><div><span class="fact-label lbl-rare">RZ</span> Objętość dystrybucji 3 l/70 kg = przedział osoczowy</div></div>
+    <div class="top-item"><div class="top-num">87</div><div><span class="fact-label lbl-freq">CZ</span> i.v. = najszybszy początek działania leku</div></div>
+    <div class="top-item"><div class="top-num">88</div><div><span class="fact-label lbl-rare">RZ</span> Częściowy agonista = mniejsza odpowiedź max niż pełny agonista; wiąże ten sam receptor</div></div>
+    <div class="top-item"><div class="top-num">89</div><div><span class="fact-label lbl-freq">CZ</span> Efekt pierwszego przejścia = zmniejszenie biodostępności leków doustnych</div></div>
+    <div class="top-item"><div class="top-num">90</div><div><span class="fact-label lbl-rare">RZ</span> Leki podawane i.v. = nigdy nie ulegają efektowi 1. przejścia</div></div>
+    <div class="top-item"><div class="top-num">91</div><div><span class="fact-label lbl-rare">RZ</span> Mupirocyna = miejscowo w liszajcu</div></div>
+    <div class="top-item"><div class="top-num">92</div><div><span class="fact-label lbl-rare">RZ</span> Etambutol = neuritis nerwu wzrokowego (unikalna toksyczność)</div></div>
+    <div class="top-item"><div class="top-num">93</div><div><span class="fact-label lbl-freq">CZ</span> Metyldopa = stymulacja α2 (agonizm centralny) → nadciśnienie w ciąży</div></div>
+    <div class="top-item"><div class="top-num">94</div><div><span class="fact-label lbl-freq">CZ</span> Nitroprusydek sodu + fenoldopam = nagłe stany nadciśnieniowe (i.v.)</div></div>
+    <div class="top-item"><div class="top-num">95</div><div><span class="fact-label lbl-freq">CZ</span> Infliksymab = p/ciało chimeryczne anty-TNFα → RZS, ch. Leśniowskiego-Crohna</div></div>
+    <div class="top-item"><div class="top-num">96</div><div><span class="fact-label lbl-rare">RZ</span> Leflunomid = inhibitor DHODH → hamuje proliferację limfocytów T (RZS)</div></div>
+    <div class="top-item"><div class="top-num">97</div><div><span class="fact-label lbl-trap">PUŁ</span> Ipratropium = lek rozszerzający oskrzela (blokuje M), NIE lek na oko</div></div>
+    <div class="top-item"><div class="top-num">98</div><div><span class="fact-label lbl-freq">CZ</span> Tiotropium 18 µg/dawkę 1×dz = długodziałający antymuskarynowy (POChP)</div></div>
+    <div class="top-item"><div class="top-num">99</div><div><span class="fact-label lbl-freq">CZ</span> Duloksetyna/wenlafaksyna = SNRI; bupropion = inhibitor wychwytu DA+NA</div></div>
+    <div class="top-item"><div class="top-num">100</div><div><span class="fact-label lbl-rare">RZ</span> Malarone (atowakwon/proguanil) = profilaktyka malarii; 1 tab. 1×dz</div></div>
+  </div>
+</div>
+
+<!-- ======================== SECTION 8 ======================== -->
+<div class="section" id="s8">
+  <div class="section-header">
+    <div class="section-num">8</div>
+    <h2>Ranking nauki 🏆</h2>
+  </div>
+
+  <div class="rank-tier rank-t1">
+    <div class="rank-header">🔴 KRYTYCZNE — naucz się tego NAJPIERW</div>
+    <div class="rank-items">
+      <div class="rank-tag">Układ adrenergiczny (~81 pyt.)</div>
+      <div class="rank-tag">Hormony kory nadnerczy/trzustki (~70 pyt.)</div>
+      <div class="rank-tag">Leki p/gruźlicze/wirusowe/grzybicze (~69 pyt.)</div>
+      <div class="rank-tag">Aminoglikozydy/chinoliny/makrolidy (~60 pyt.)</div>
+      <div class="rank-tag">Nadciśnienie tętnicze (~58 pyt.)</div>
+      <div class="rank-tag">Hemostaza (~58 pyt.)</div>
+    </div>
+  </div>
+
+  <div class="rank-tier rank-t2">
+    <div class="rank-header">🟠 BARDZO WAŻNE — druga kolejność</div>
+    <div class="rank-items">
+      <div class="rank-tag">NLPZ i opioidy (~51 pyt.)</div>
+      <div class="rank-tag">Leki p/depresyjne/stabilizatory (~43 pyt.)</div>
+      <div class="rank-tag">Antybiotyki beta-laktamowe (~43 pyt.)</div>
+      <div class="rank-tag">Leki p/nowotworowe (~43 pyt.)</div>
+      <div class="rank-tag">Farmakokinetyka/inne (~44 pyt.)</div>
+      <div class="rank-tag">Układ oddechowy/antyhistam. (~44 pyt.)</div>
+      <div class="rank-tag">Leki usp./nasenne/opioidy (~44 pyt.)</div>
+      <div class="rank-tag">Układ cholinergiczny (~47 pyt.)</div>
+      <div class="rank-tag">Niewydolność serca (~47 pyt.)</div>
+    </div>
+  </div>
+
+  <div class="rank-tier rank-t3">
+    <div class="rank-header">🟡 WAŻNE — trzecia kolejność</div>
+    <div class="rank-items">
+      <div class="rank-tag">Hormony tarczycy/wapń/HTZ (~39 pyt.)</div>
+      <div class="rank-tag">Choroba niedokrwienna serca (~39 pyt.)</div>
+      <div class="rank-tag">Choroba wrzodowa/refluks (~34 pyt.)</div>
+      <div class="rank-tag">Przeciwbiegunkowe/p.wymiotne (~35 pyt.)</div>
+      <div class="rank-tag">Leki p/arytmiczne (~29 pyt.)</div>
+      <div class="rank-tag">Leki p/psycjotyczne (~30 pyt.)</div>
+    </div>
+  </div>
+
+  <div class="rank-tier rank-t4">
+    <div class="rank-header">🔵 RZADKIE, ALE EGZAMINACYJNE — nie ignoruj wyjątków!</div>
+    <div class="rank-items">
+      <div class="rank-tag">Choroby reumatyczne (~20 pyt.) — wyjątki kluczowe!</div>
+      <div class="rank-tag">Lipidy (~22 pyt.) — szczególnie mechanizmy</div>
+      <div class="rank-tag">Znieczulenie ogólne (~21 pyt.) — ketamina, etomidat</div>
+      <div class="rank-tag">Znieczulenie miejscowe (~17 pyt.) — lidokaina, kardiotoksyczność</div>
+      <div class="rank-tag">Leki przeczyszczające (~13 pyt.) — mechanizmy</div>
+    </div>
+  </div>
+</div>
+
+<!-- ======================== SECTION 9 ======================== -->
+<div class="section" id="s9">
+  <div class="section-header">
+    <div class="section-num">9</div>
+    <h2>Strategia egzaminacyjna 🎯</h2>
+  </div>
+
+  <div class="strategy-card">
+    <h4>⚡ Błyskawiczne rozpoznanie pytania (3-5 sekund)</h4>
+    <ul>
+      <li>Pytanie zawiera "nieprawidłowe/fałszywe" → szukaj ewidentnej pomyłki w zestawie (zwykle jest JEDNA nieprawidłowa teza)</li>
+      <li>Pytanie zawiera "wskaż prawidłowe zestawienie" → porównuj każdą parę; jedna błędna para dyskwalifikuje całość</li>
+      <li>Pytanie zawiera "recepta" → sprawdź: dawkę, formę, drогę podania, częstotliwość</li>
+      <li>Pytanie zawiera "wszystkie" → to bardzo często pułapka; jeśli choć jeden element jest fałszywy, całość fałszywa</li>
+    </ul>
+  </div>
+
+  <div class="strategy-card">
+    <h4>🔑 Słowa-klucze wskazujące odpowiedź</h4>
+    <ul>
+      <li><strong>"Choroba Alzheimera"</strong> → donepezil/rywastygmina (inhibitory AChE), 5 mg przed snem</li>
+      <li><strong>"Nadczynność tarczycy" / "tyreostatyk"</strong> → tiamazol, PTU (hamowanie peroksydazy)</li>
+      <li><strong>"Lek z wyboru w DM2"</strong> → metformina</li>
+      <li><strong>"Ochrona sercowo-nerkowa, DM2"</strong> → empagliflozyna/dapagliflozyna (SGLT2i)</li>
+      <li><strong>"Łagodny rozrost prostaty + NT"</strong> → doksazosyna/terazosyna (α1); tamsulosyna (TYLKO BPH)</li>
+      <li><strong>"Nieodwracalna inhibicja COX-1"</strong> → aspiryna</li>
+      <li><strong>"Antagonista ADP"</strong> → klopidogrel, prasugrel, tikagrelor</li>
+      <li><strong>"Lek na ostre zatrzymanie moczu / atonia jelit"</strong> → neostygmina</li>
+      <li><strong>"Choroba lokomocyjna"</strong> → dimenhydrynat (skopolamina)</li>
+      <li><strong>"Nagłe nadciśnienie tętnicze i.v."</strong> → nitroprusydek sodu</li>
+      <li><strong>"Kandydoza"</strong> → flukonazol; "Aspergilloza" → worykonazol</li>
+      <li><strong>"Absence (napady nieświadomości)"</strong> → WYŁĄCZNIE etosuksymid</li>
+    </ul>
+  </div>
+
+  <div class="strategy-card">
+    <h4>🪤 Najczęstsze typy pułapek w tej bazie</h4>
+    <ul>
+      <li><strong>Typ 1 — Fałszywy uogólnik:</strong> "Wszystkie β-blokery…", "Wszystkie aminoglikozydy…" — szukaj JEDNEGO wyjątku</li>
+      <li><strong>Typ 2 — Odwrócony mechanizm:</strong> Winblastyna vs Paklitaksel; Flukonazol vs Terbinafina</li>
+      <li><strong>Typ 3 — Błędna recepta:</strong> Donepezil "na czczo" zamiast "przed snem"; zła dawka omeprazolu</li>
+      <li><strong>Typ 4 — Fałszywe wskazanie:</strong> Furosemid w łagodnym NT; Flukonazol w aspergilozie; Etosuksymid w dużych napadach</li>
+      <li><strong>Typ 5 — Błędne antidotum:</strong> Dabigatran → idarucyzumab (nie wit. K!); morfina → nalokson (nie neostygmina)</li>
+      <li><strong>Typ 6 — Mylące monitorowanie:</strong> HDCz NIE wymaga aPTT (w odróżnieniu od UFH)</li>
+    </ul>
+  </div>
+
+  <div class="strategy-card">
+    <h4>📊 Rozkład statystyczny — jak to wykorzystać?</h4>
+    <p>Odpowiedź E (A,B,C prawidłowe) pojawia się w 34,8% pytań, D w 26,4%. Łącznie >61% odpowiedzi to kombinacje.</p>
+    <p>→ Jeśli wiesz, że dwie opcje są prawidłowe, prawdopodobnie trzecia też jest. Sprawdź zamiast odrzucać.</p>
+    <p>→ "Żadna prawidłowa" pojawia się w ~12 pytaniach — NIE ignoruj tej opcji! Sprawdź każdą opcję zanim odrzucisz tę odpowiedź.</p>
+    <p>→ Pojedyncze odpowiedzi A/B/C łącznie: ~39% — wciąż istotna grupa.</p>
+  </div>
+
+  <div class="strategy-card">
+    <h4>⏱ Plan nauki na 48 godzin przed egzaminem</h4>
+    <ul>
+      <li><strong>Dzień 1 (bloki po 2 h):</strong> Adrenergiczny → Trzustka/hormony → Antybiotyki beta-lakt. → Aminoglikozydy/chinolony → Hemostaza → Nadciśnienie</li>
+      <li><strong>Dzień 1 wieczór:</strong> Przejrzyj receptury (donepezil, empagliflozyna, ciprofloksacyna, warfaryna, omeprazol, amoksycylina)</li>
+      <li><strong>Dzień 2:</strong> Gruźlica/wirusowe/grzybicze → NLPZ → Onkologia → NS/arytmia → Depresja/padaczka → Farmakokintyka</li>
+      <li><strong>Dzień 2 wieczór:</strong> Wszystkie 12 pułapek + tabele reguł vs wyjątki</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ======================== PATTERNS ======================== -->
+<div class="section" id="patterns">
+  <div class="section-header">
+    <div class="section-num">👉</div>
+    <h2>Egzaminacyjne wzorce konstrukcji pytań</h2>
+  </div>
+
+  <div class="pattern">
+    <div class="pattern-emoji">🔁</div>
+    <div class="pattern-title">WZORZEC 1 — "Wskaż właściwy zestaw: lek–mechanizm–wskazanie"</div>
+    <div class="pattern-text">Triplet: nazwa leku + mechanizm + wskazanie. Jeden z elementów jest celowo błędny. Strategia: najpierw zidentyfikuj lek (to wiesz najlepiej), potem sprawdź mechanizm, na końcu wskazanie. Przykłady: Nebiwolol–β1–NT ✓; Pantoprazol–H2–GERD ✗ (to inhibitor pompy!)</div>
+  </div>
+
+  <div class="pattern">
+    <div class="pattern-emoji">🔁</div>
+    <div class="pattern-title">WZORZEC 2 — "Wskaż stwierdzenie NIEPRAWIDŁOWE"</div>
+    <div class="pattern-text">Odwrócona logika — szukasz JEDNEJ nieprawdy wśród 4-5 prawdziwych zdań. Najczęściej nieprawdziwe stwierdzenia dotyczą: "wszystkie leki z grupy…", "furosemid w NT", "β-blokery wszystkie w CHF", "flukonazol w aspergilozie".</div>
+  </div>
+
+  <div class="pattern">
+    <div class="pattern-emoji">🔁</div>
+    <div class="pattern-title">WZORZEC 3 — "Wskaż właściwą receptę na lek na [schorzenie]"</div>
+    <div class="pattern-text">Sprawdza: (1) właściwy lek, (2) właściwą dawkę, (3) właściwą drogę podania, (4) właściwy schemat. Najczęstsze recepty: Donepezil 5 mg Tab. 1×dz PRZED SNEM · Omeprazol 20 mg rano na czczo · Empagliflozyna 10 mg 1×dz · Ciprofloksacyna 500 mg 2×dz · Doksazosyna 4 mg 1×dz · Amoksycylina 1000 mg 2×dz przez 7 dni · Warfaryna 5 mg wg INR · Amiodaron 200 mg 1×dz</div>
+  </div>
+
+  <div class="pattern">
+    <div class="pattern-emoji">🔁</div>
+    <div class="pattern-title">WZORZEC 4 — "Jedyny lek z grupy który…"</div>
+    <div class="pattern-text">Pyta o wyjątek w klasie leków. Przykłady: "Jedyny β-bloker działający na β3?" → Nebiwolol · "Jedyny NLPZ bez działania p/zapalnego?" → Paracetamol (nie-NLPZ!) · "Jedyna sulfonylomocznik z innym mechanizmem?" · "Jedyny lek na absence?" → Etosuksymid</div>
+  </div>
+
+  <div class="pattern">
+    <div class="pattern-emoji">🔁</div>
+    <div class="pattern-title">WZORZEC 5 — "Wskaż właściwe antidotum"</div>
+    <div class="pattern-text">Pary antidotów do zapamiętania: Morfina → Nalokson · Benzodiazepiny → Flumazenil · Warfaryna → Wit. K · Dabigatran → Idarucyzumab · Paracetamol → N-acetylocysteina + metionina · Zatrucie fosforganic. → Atropina (NIE neostygmina!) · Atropina → Neostygmina (odwrotnie)</div>
+  </div>
+
+  <div class="pattern">
+    <div class="pattern-emoji">🔁</div>
+    <div class="pattern-title">WZORZEC 6 — "A i C są prawidłowe" jako odpowiedź D</div>
+    <div class="pattern-text">W bazie bardzo często poprawna odpowiedź to D (A i C są prawidłowe) — 161 wystąpień. To sugeruje, że zdanie B jest najczęściej "pułapkowym" fałszem, który eliminuje się jako pierwsze. Jeśli A i C wyglądają prawidłowo, D jest Twoim przyjacielem.</div>
+  </div>
+
+  <div class="pattern">
+    <div class="pattern-emoji">🔁</div>
+    <div class="pattern-title">WZORZEC 7 — Pytanie z frazą "które stwierdzenie o lekach stosowanych w CHF jest nieprawidłowe"</div>
+    <div class="pattern-text">Sformułowanie "nieprawidłowe" + CHF → szukaj zdania o "wszystkich β-blokerach". Egzaminator lubi tu podstawiać "Wszystkie β-adrenolityki zmniejszają śmiertelność" jako odpowiedź — co jest FAŁSZEM. Pytanie powtórzyło się wielokrotnie (2022, 2021, 2020).</div>
+  </div>
+
+  <div class="pattern">
+    <div class="pattern-emoji">🔁</div>
+    <div class="pattern-title">WZORZEC 8 — Farmakokinetyka (sekcja "Inne/wykłady")</div>
+    <div class="pattern-text">Pytania o Vd, klirens, biodostępność, efekt 1. przejścia. Klucze: i.v. = najszybszy początek · Leki i.v. nie ulegają efektowi 1. przejścia · Bisfosfoniany = niska biodostępność doustna · Vd 3 l/70 kg = osocze · Częściowy agonista = mniejsza odpowiedź max</div>
+  </div>
+
+</div>
+
+</div><!-- /container -->
+
+<button class="scrolltop" id="scrolltop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+  const btn = document.getElementById('scrolltop');
+  window.addEventListener('scroll', () => {
+    btn.style.display = window.scrollY > 500 ? 'flex' : 'none';
+  });
+</script>
+
+</body>
+</html>
