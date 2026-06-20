@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Powtórka turbo — Blok 1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#EAEDEF;--panel:#FBFCFD;--panel-2:#F1F4F6;
+    --ink:#16222B;--muted:#566570;--faint:#8794A0;
+    --line:#D2D9DE;--line-2:#E1E7EB;
+    --accent:#1F6FA0;--accent-soft:#D8E8F2;--accent-ink:#0F4865;
+    --warn:#A6492C;--gold:#92701A;--gold-soft:#EFE7CD;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:"Space Grotesk",system-ui,sans-serif;-webkit-font-smoothing:antialiased;line-height:1.5}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 22px}
+
+  header.hero{padding:46px 0 26px;border-bottom:1px solid var(--line)}
+  .backlink{display:inline-block;font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--muted);text-decoration:none;margin-bottom:14px;letter-spacing:.03em;transition:color .15s}
+  .backlink:hover{color:var(--accent)}
+  .eyebrow{font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);margin:0 0 14px}
+  h1{font-family:"Newsreader",serif;font-weight:500;font-size:clamp(28px,4.8vw,48px);line-height:1.05;margin:0;letter-spacing:-.015em}
+  h1 em{font-style:italic;color:var(--accent)}
+  .lede{font-family:"Newsreader",serif;font-size:17px;color:var(--muted);max-width:64ch;margin:15px 0 0;line-height:1.45}
+
+  /* MODBAR (dynamiczne przyciski modułów) */
+  .modbar{position:sticky;top:0;z-index:40;background:rgba(234,237,239,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);transition:padding .16s}
+  .modbar-inner{display:flex;flex-wrap:wrap;gap:8px;padding:12px 22px}
+  .modbtn{flex:1 1 auto;min-width:120px;font-family:"Space Grotesk",sans-serif;font-size:14px;font-weight:600;border:1px solid var(--line);background:var(--panel);color:var(--muted);padding:11px 15px;border-radius:11px;cursor:pointer;transition:all .16s;display:flex;flex-direction:column;align-items:flex-start;gap:1px;text-align:left}
+  .modbtn .sub{font-family:"IBM Plex Mono",monospace;font-size:10.5px;font-weight:400;letter-spacing:.04em}
+  .modbtn.on{background:var(--accent);border-color:var(--accent);color:#fff}
+  .modbtn.on .sub{color:rgba(255,255,255,.82)}
+  .modbtn:not(.on):hover{border-color:var(--accent)}
+  .scrolled .modbtn{flex-direction:row;align-items:center;gap:7px;padding:7px 13px;font-size:13px}
+  .scrolled .modbtn .sub{display:none}
+  .scrolled .modbar-inner{padding:7px 22px}
+
+  /* CONTROLS */
+  .controls{position:sticky;top:var(--modbar-h,64px);z-index:30;background:rgba(234,237,239,.93);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);border-top:1px solid var(--line);padding:13px 0}
+  .controls-inner{display:flex;flex-wrap:wrap;gap:11px;align-items:center}
+  .viewseg{display:inline-flex;background:var(--panel-2);border:1px solid var(--line);border-radius:10px;padding:3px;gap:3px;flex:none}
+  .viewseg button{font-family:"Space Grotesk",sans-serif;font-size:12.5px;font-weight:600;border:none;background:none;color:var(--muted);padding:7px 14px;border-radius:7px;cursor:pointer;transition:all .15s}
+  .viewseg button.on{background:var(--ink);color:#EAEDEF}
+  .filterbtn{font-family:"Space Grotesk",sans-serif;font-size:12.5px;font-weight:600;border:1px solid var(--line);background:var(--panel);color:var(--muted);padding:7px 13px;border-radius:999px;cursor:pointer;display:inline-flex;align-items:center;gap:7px;white-space:nowrap}
+  .filterbtn:hover{border-color:var(--accent);color:var(--accent-ink)}
+  .filterbtn .caret{display:inline-block;transition:transform .15s;font-size:11px}
+  .filterbtn.collapsed .caret{transform:rotate(-90deg)}
+  .count-note{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--faint);margin-left:auto;white-space:nowrap}
+  .filtercluster{display:flex;flex-wrap:wrap;gap:11px;align-items:center;flex:1 1 100%}
+  .filtercluster.hidden{display:none}
+  .search{flex:1 1 220px;display:flex;align-items:center;gap:9px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:9px 13px}
+  .search input{border:none;background:none;outline:none;font:inherit;font-size:14px;width:100%;color:var(--ink)}
+  .search svg{flex:none;stroke:var(--faint)}
+  .chips{display:flex;flex-wrap:wrap;gap:7px}
+  .cards-view .chips{flex:1 1 100%;flex-wrap:nowrap;overflow-x:auto;padding-bottom:3px;scrollbar-width:thin}
+  .cards-view .chips::-webkit-scrollbar{height:5px}
+  .cards-view .chips::-webkit-scrollbar-thumb{background:var(--line);border-radius:3px}
+  .chip{font-family:"Space Grotesk",sans-serif;font-size:12.5px;font-weight:500;border:1px solid var(--line);background:var(--panel);color:var(--muted);padding:6px 12px;border-radius:999px;cursor:pointer;transition:all .15s;white-space:nowrap}
+  .chip:hover{border-color:var(--accent);color:var(--accent-ink)}
+  .chip.on{background:var(--ink);border-color:var(--ink);color:#EAEDEF}
+  .cards-view .legend,.cards-view #note{display:none}
+
+  /* LIST CARDS */
+  .grp-label{font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.13em;text-transform:uppercase;color:var(--accent);margin:30px 0 13px;padding-bottom:7px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:end}
+  .grp-label span.c{color:var(--faint);letter-spacing:.04em}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:15px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 17px 14px;display:flex;flex-direction:column;transition:box-shadow .18s,transform .18s,border-color .18s}
+  .card:hover{box-shadow:0 8px 26px -16px rgba(16,40,55,.4);transform:translateY(-2px)}
+  .drug{font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:17px;letter-spacing:-.01em;line-height:1.15}
+  .kl{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--accent-ink);background:var(--accent-soft);display:inline-block;padding:3px 9px;border-radius:6px;margin:7px 0 11px;width:fit-content}
+  .row{display:flex;gap:9px;font-size:13px;margin:6px 0;line-height:1.44}
+  .row .ic{flex:none;width:14px;text-align:center;color:var(--faint);font-family:"IBM Plex Mono",monospace;margin-top:1px}
+  .row.use .ic{color:var(--accent)}
+  .keybox{margin-top:auto;padding-top:11px}
+  .keybox .inner{background:var(--gold-soft);border-left:3px solid var(--gold);border-radius:0 8px 8px 0;padding:9px 12px;font-size:12.5px;color:#5f4c12;line-height:1.45}
+  .keybox b.h{color:var(--gold);font-weight:600;font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:3px}
+  .empty{text-align:center;color:var(--faint);padding:46px 0;font-size:15px;display:none}
+
+  /* FLASHCARDS */
+  #flashview{padding:8px 0 0}
+  .flashstage{max-width:560px;margin:18px auto 0;display:flex;flex-direction:column;align-items:center;gap:18px}
+  .flashcard{width:100%;height:min(62vh,480px);perspective:1600px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+  .flip-inner{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .5s cubic-bezier(.4,.1,.2,1)}
+  .flashcard.flipped .flip-inner{transform:rotateY(180deg)}
+  .flip-face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border:1px solid var(--line);border-radius:18px;background:var(--panel);padding:26px;display:flex;flex-direction:column;box-shadow:0 10px 30px -20px rgba(16,40,55,.5)}
+  .flip-front{align-items:center;justify-content:center;text-align:center;gap:12px}
+  .fc-name{font-family:"Newsreader",serif;font-weight:500;font-size:clamp(25px,5.6vw,38px);line-height:1.12;letter-spacing:-.01em}
+  .fc-hint{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--faint);margin-top:6px}
+  .flip-back{transform:rotateY(180deg);overflow-y:auto;gap:2px}
+  .flip-back .bk-name{font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:18px;margin-bottom:2px}
+  .flashnav{display:flex;gap:9px;width:100%;justify-content:center;align-items:center;flex-wrap:wrap}
+  .flashnav button{font-family:"Space Grotesk",sans-serif;font-size:13.5px;font-weight:600;border:1px solid var(--line);background:var(--panel);color:var(--ink);padding:10px 16px;border-radius:10px;cursor:pointer;transition:all .15s}
+  .flashnav button:hover{border-color:var(--accent)}
+  .flashnav .flip-btn{background:var(--ink);color:#EAEDEF;border-color:var(--ink);flex:1;max-width:200px}
+  .flashmeta{display:flex;gap:14px;align-items:center;font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--muted)}
+  .flashmeta button{font:inherit;border:none;background:none;color:var(--accent);cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+  .flash-empty{text-align:center;color:var(--faint);padding:50px 0;font-size:15px}
+
+  .legend{display:flex;flex-wrap:wrap;gap:16px;align-items:center;padding:16px 0 0;font-size:12.5px;color:var(--muted)}
+  #note{background:var(--panel-2);border:1px solid var(--line);border-radius:14px;padding:16px 18px;font-size:13.5px;color:var(--muted);line-height:1.55;margin-top:6px}
+  #note b{color:var(--ink)}
+  footer{padding:36px 0 56px;border-top:1px solid var(--line);margin-top:18px;font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--faint);letter-spacing:.03em}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+  @media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}.flip-inner{transition:none}}
+  .hidden{display:none!important}
+  /* === postępy: umiem / do nauki === */
+  .card{position:relative}
+  .drug{padding-right:96px}
+  .mark{position:absolute;top:13px;right:14px;font-family:"IBM Plex Mono",monospace;font-size:11px;border:1px solid var(--line);background:var(--panel);color:var(--faint);padding:4px 9px;border-radius:999px;cursor:pointer;transition:all .15s;white-space:nowrap;z-index:2}
+  .mark:hover{border-color:#1E6F3A;color:#1E6F3A}
+  .mark.on{background:#1E6F3A;border-color:#1E6F3A;color:#fff}
+  .card.known{opacity:.6}
+  .card.known:hover{opacity:1}
+  .learnbar{display:flex;gap:10px 14px;align-items:center;justify-content:center;flex-wrap:wrap;font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--muted);width:100%;padding-bottom:2px}
+  .learnseg{display:inline-flex;background:var(--panel-2);border:1px solid var(--line);border-radius:9px;padding:3px;gap:3px}
+  .learnseg button{font-family:"Space Grotesk",sans-serif;font-size:12px;font-weight:600;border:none;background:none;color:var(--muted);padding:5px 11px;border-radius:6px;cursor:pointer;transition:all .15s}
+  .learnseg button.on{background:var(--ink);color:#EAEDEF}
+  .mstats{display:inline-flex;gap:7px;align-items:center;flex-wrap:wrap}
+  .mstats .ok{color:#1E6F3A;font-weight:600}
+  .mstats b{color:var(--accent-ink)}
+  .linkbtn{font-family:"IBM Plex Mono",monospace;font-size:11.5px;border:none;background:none;color:var(--muted);cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+  .linkbtn:hover{color:var(--warn)}
+  .markbtns{display:flex;gap:9px;width:100%;justify-content:center}
+  .markbtns button{font-family:"Space Grotesk",sans-serif;font-size:13.5px;font-weight:600;border:1px solid var(--line);background:var(--panel);color:var(--ink);padding:10px 16px;border-radius:10px;cursor:pointer;flex:1;max-width:210px;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+  .markbtns button:hover{border-color:var(--accent)}
+  .markbtns .know{background:#1E6F3A;border-color:#1E6F3A;color:#fff}
+  .markbtns .know:hover{border-color:#15602F}
+  .kbd{font-family:"IBM Plex Mono",monospace;font-size:10px;border:1px solid currentColor;border-radius:4px;padding:1px 5px;opacity:.7}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <a href="index.html" class="backlink">← Strona główna</a>
+    <p class="eyebrow">Powtórka turbo · Blok 1</p>
+    <h1>Blok 1 — <em>powtórka turbo</em></h1>
+    <p class="lede">Blok 1: cholinergiki, adrenergiki, leki przeciwcukrzycowe, kortykosteroidy, mineralna gospodarka kości, tarczyca i hormony gonadowe. Haczyki „często pytane” / „PUŁAPKA” pochodzą z analizy bazy egzaminacyjnej Żelazo Farma.</p>
+  </div>
+</header>
+
+<div class="modbar"><div class="wrap modbar-inner" id="modbar"></div></div>
+
+<div class="wrap">
+  <div class="legend"><div>Każda karta: <b style="color:var(--ink)">klasa → mechanizm → zastosowanie → „Zapamiętaj”</b> (najważniejsza toksyczność lub haczyk egzaminacyjny).</div></div>
+</div>
+
+<div class="controls">
+  <div class="wrap controls-inner">
+    <div class="viewseg" id="viewseg">
+      <button data-view="list" class="on">Lista</button>
+      <button data-view="cards">Fiszki</button>
+    </div>
+    <button class="filterbtn collapsed" id="filterToggle" aria-expanded="false"><span class="caret">▾</span>Filtry</button>
+    <span class="count-note" id="countNote"></span>
+    <div class="filtercluster hidden" id="filterCluster">
+      <label class="search">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input id="search" type="search" placeholder="Szukaj: nazwa, klasa, zastosowanie…" aria-label="Szukaj leku">
+      </label>
+      <div class="chips" id="chips"></div>
+    </div>
+  </div>
+</div>
+
+<main class="wrap">
+  <div id="list"></div>
+  <div class="empty" id="empty">Brak leków dla tego filtra.</div>
+  <div id="flashview"></div>
+  <div id="note" style="margin-top:34px"><b>Zakres.</b> Antybiotyki (z przeciwgruźliczymi), leki przeciwwirusowe, przeciwgrzybicze i przeciwpierwotniakowe — blok „IV kolokwium”. Karty oznaczone „często pytane” / „PUŁAPKA” odpowiadają faktom i pułapkom z analizy bazy egzaminacyjnej Żelazo Farma (2019–2023) — warto je zweryfikować z ujęciem prowadzącego.</div>
+  <footer>Powtórka turbo · układ: klasa → mechanizm → zastosowanie → zapamiętaj · materiał skrótowy do szybkiej powtórki</footer>
+</main>
+
+<script>
+const MODULES=[
+  {id:"chol",label:"Cholinergiki"},
+  {id:"adr",label:"Adrenergiki"},
+  {id:"diab",label:"Przeciwcukrzycowe"},
+  {id:"kort",label:"Kortykosteroidy"},
+  {id:"kosc",label:"Mineralna gospodarka kości"},
+  {id:"tarcz",label:"Tarczyca"},
+  {id:"gonad",label:"Hormony gonadowe"}
+];
+const GROUPS={
+  chol:[["wszystkie","Wszystkie"],["agonisci","Cholinomimetyki bezpośrednie"],["achei","Inhibitory AChE"],["antymusk","Antymuskarynowe"],["nmj","Blokery płytki nerwowo-mięśniowej"]],
+  adr:[["wszystkie","Wszystkie"],["agon_dir","Agoniści bezpośredni"],["agon_indir","Agoniści pośredni / mieszani"],["alfa_blok","α-blokery"],["beta_blok","β-blokery"]],
+  diab:[["wszystkie","Wszystkie"],["insulina","Insuliny"],["biguanid","Biguanid"],["sulfony","Sulfonylomoczniki / glinidy"],["wraz","Inkretyny (DPP-4 / GLP-1)"],["sglt2","Inhibitory SGLT2"],["inne_diab","Inne"]],
+  kort:[["wszystkie","Wszystkie"],["gks","Glikokortykosteroidy"],["mineralo","Mineralokortykoidy"],["inhib","Inhibitory / antagoniści"]],
+  kosc:[["wszystkie","Wszystkie"],["wapn_d","Wapń / wit. D / PTH"],["antyresorp","Antyresorpcyjne"],["inne_kosc","Inne"]],
+  tarcz:[["wszystkie","Wszystkie"],["niedoczynnosc","W niedoczynności"],["nadczynnosc","W nadczynności"]],
+  gonad:[["wszystkie","Wszystkie"],["estr_prog","Estrogeny i progestageny"],["serm_anti_e","SERM / antyestrogeny"],["androg","Androgeny i antyandrogeny"],["gnrh","Analogi GnRH"]]
+};
+const DRUGS=[
+/* ===================== CHOLINERGIKI ===================== */
+{n:"Acetylocholina",mod:"chol",grp:"agonisci",g:"Cholinomimetyki bezpośrednie",kl:"agonista M+N",mech:"Pobudza receptory muskarynowe i nikotynowe.",use:"Okulistyka (śródoperacyjne zwężenie źrenicy)",key:"Bardzo krótkie działanie (szybko rozkładana przez AChE)."},
+{n:"Karbachol",mod:"chol",grp:"agonisci",g:"Cholinomimetyki bezpośrednie",kl:"agonista M+N (oporny na AChE)",mech:"Pobudza receptory M i N.",use:"Jaskra, śródoperacyjne zwężenie źrenicy",key:"Oporny na acetylocholinoesterazę."},
+{n:"Betanechol",mod:"chol",grp:"agonisci",g:"Cholinomimetyki bezpośrednie",kl:"agonista muskarynowy",mech:"Pobudza receptory M (oporny na AChE).",use:"Pooperacyjna atonia pęcherza i jelit",key:"Wybiórczo na przewód pokarmowy i pęcherz."},
+{n:"Pilokarpina",mod:"chol",grp:"agonisci",g:"Cholinomimetyki bezpośrednie",kl:"agonista muskarynowy",mech:"Pobudza receptory M → zwęża źrenicę, ↑ odpływu cieczy wodnistej.",use:"Jaskra; suchość w ustach (zespół Sjögrena)",key:"Często pytane: lek na jaskrę (NIE atropina!); zwęża źrenicę → otwiera kąt przesączania."},
+{n:"Neostygmina",mod:"chol",grp:"achei",g:"Inhibitory AChE",kl:"odwracalny inhibitor AChE",mech:"Hamuje rozkład acetylocholiny.",use:"Miastenia, pooperacyjna atonia jelit/pęcherza, odwracanie blokady niedepolaryzującej",key:"Często pytane: pooperacyjna atonia jelit i pęcherza; miastenia gravis."},
+{n:"Pirydostygmina",mod:"chol",grp:"achei",g:"Inhibitory AChE",kl:"odwracalny inhibitor AChE",mech:"Hamuje AChE.",use:"Miastenia (leczenie przewlekłe)",key:"Dłuższe działanie niż neostygmina."},
+{n:"Fizostygmina",mod:"chol",grp:"achei",g:"Inhibitory AChE",kl:"odwracalny inhibitor AChE (przenika BBB)",mech:"Hamuje AChE również w OUN.",use:"Odtrutka w zatruciu antycholinergicznym (np. atropiną)",key:"Przechodzi do OUN — działa ośrodkowo."},
+{n:"Edrofonium",mod:"chol",grp:"achei",g:"Inhibitory AChE",kl:"krótkodziałający inhibitor AChE",mech:"Hamuje AChE.",use:"Diagnostyka miastenii (historycznie)",key:"Bardzo krótkie działanie."},
+{n:"Donepezil",mod:"chol",grp:"achei",g:"Inhibitory AChE",kl:"ośrodkowy inhibitor AChE",mech:"Odwracalnie hamuje AChE w OUN.",use:"Choroba Alzheimera",key:"Często pytane: recepta 5 mg 1×dz PRZED SNEM (NIE „na czczo”)."},
+{n:"Riwastygmina",mod:"chol",grp:"achei",g:"Inhibitory AChE",kl:"inhibitor AChE i butyrylocholinoesterazy",mech:"Hamuje cholinoesterazy.",use:"Alzheimer, otępienie w chorobie Parkinsona",key:"Dostępna w postaci plastra."},
+{n:"Atropina",mod:"chol",grp:"antymusk",g:"Antymuskarynowe",kl:"antagonista muskarynowy",mech:"Blokuje receptory M.",use:"Bradykardia, zatrucie fosfoorganiczne, rozszerzenie źrenicy, premedykacja",key:"PUŁAPKA: PRZECIWWSKAZANA w jaskrze (rozszerza źrenicę → zamyka kąt); odtrutka w zatruciu fosfoorganicznym."},
+{n:"Skopolamina",mod:"chol",grp:"antymusk",g:"Antymuskarynowe",kl:"antagonista muskarynowy (OUN)",mech:"Blokuje receptory M, silnie ośrodkowo.",use:"Choroba lokomocyjna (plaster), premedykacja",key:"Sedacja, amnezja (działanie ośrodkowe)."},
+{n:"Ipratropium",mod:"chol",grp:"antymusk",g:"Antymuskarynowe",kl:"antymuskarynowy wziewny",mech:"Blokuje receptory M w oskrzelach.",use:"POChP, astma (dodatek)",key:"Często pytane: rozszerza oskrzela → POChP; antymuskarynowe: POChP/astma/NTM — NIE jaskra/Alzheimer."},
+{n:"Tropikamid",mod:"chol",grp:"antymusk",g:"Antymuskarynowe",kl:"antymuskarynowy (okulistyczny)",mech:"Blokuje M w oku.",use:"Rozszerzenie źrenicy do badania dna oka",key:"Krótkodziałający mydriatyk."},
+{n:"Biperyden",mod:"chol",grp:"antymusk",g:"Antymuskarynowe",kl:"antymuskarynowy ośrodkowy",mech:"Blokuje receptory M w OUN.",use:"Choroba Parkinsona, polekowe objawy pozapiramidowe",key:"Często pytane: lek antymuskarynowy stosowany w chorobie Parkinsona."},
+{n:"Oksybutynina",mod:"chol",grp:"antymusk",g:"Antymuskarynowe",kl:"antymuskarynowy (pęcherz)",mech:"Blokuje M3 pęcherza moczowego.",use:"Pęcherz nadreaktywny, nietrzymanie moczu",key:"Suchość w ustach, zaparcia, zaburzenia widzenia."},
+{n:"Sukcynylocholina",mod:"chol",grp:"nmj",g:"Blokery płytki nerwowo-mięśniowej",kl:"depolaryzujący bloker NMJ",mech:"Trwała depolaryzacja płytki (agonista N → desensytyzacja).",use:"Szybka intubacja",key:"Hipertermia złośliwa, hiperkaliemia; bardzo krótkie działanie."},
+{n:"Tubokuraryna",mod:"chol",grp:"nmj",g:"Blokery płytki nerwowo-mięśniowej",kl:"niedepolaryzujący bloker NMJ",mech:"Kompetycyjny antagonista receptora N płytki.",use:"Zwiotczenie (historycznie)",key:"Uwalnia histaminę; odwracana neostygminą."},
+{n:"Atrakurium",mod:"chol",grp:"nmj",g:"Blokery płytki nerwowo-mięśniowej",kl:"niedepolaryzujący bloker NMJ",mech:"Kompetycyjny antagonista receptora N.",use:"Zwiotczenie śródoperacyjne",key:"Często pytane: niedepolaryzujący (nie sukcynylocholina!); rozkład Hofmanna — niezależny od nerek/wątroby."},
+{n:"Wekuronium",mod:"chol",grp:"nmj",g:"Blokery płytki nerwowo-mięśniowej",kl:"niedepolaryzujący bloker NMJ",mech:"Kompetycyjny antagonista receptora N.",use:"Zwiotczenie śródoperacyjne",key:"Często pytane: niedepolaryzujący; odwracany neostygminą / sugammadeksem."},
+{n:"Pankuronium",mod:"chol",grp:"nmj",g:"Blokery płytki nerwowo-mięśniowej",kl:"niedepolaryzujący bloker NMJ (długi)",mech:"Kompetycyjny antagonista receptora N.",use:"Długie zwiotczenie",key:"Tachykardia (działanie wagolityczne)."},
+/* ===================== ADRENERGIKI ===================== */
+{n:"Adrenalina (epinefryna)",mod:"adr",grp:"agon_dir",g:"Agoniści bezpośredni",kl:"agonista α/β",mech:"Pobudza α1, β1 i β2.",use:"Anafilaksja, zatrzymanie krążenia, z anestetykiem miejscowym",key:"Lek z wyboru w anafilaksji."},
+{n:"Noradrenalina",mod:"adr",grp:"agon_dir",g:"Agoniści bezpośredni",kl:"agonista α1/β1 (wazopresor)",mech:"Głównie α1 → obkurczenie naczyń.",use:"Wstrząs (zwł. septyczny)",key:"Wazopresor pierwszego wyboru we wstrząsie septycznym."},
+{n:"Izoprenalina",mod:"adr",grp:"agon_dir",g:"Agoniści bezpośredni",kl:"agonista β1/β2",mech:"Pobudza receptory β (bez α).",use:"Bradykardia, blok serca (historycznie)",key:"Czysty β-agonista."},
+{n:"Dobutamina",mod:"adr",grp:"agon_dir",g:"Agoniści bezpośredni",kl:"agonista β1",mech:"↑ kurczliwości serca.",use:"Ostra niewydolność serca",key:"Inotrop dodatni; krótkotrwale i.v."},
+{n:"Fenylefryna",mod:"adr",grp:"agon_dir",g:"Agoniści bezpośredni",kl:"agonista α1",mech:"Obkurcza naczynia.",use:"Obrzęk błony nosa, hipotonia, rozszerzenie źrenicy",key:"Odruchowa bradykardia; ↑ ciśnienia."},
+{n:"Klonidyna",mod:"adr",grp:"agon_dir",g:"Agoniści bezpośredni",kl:"agonista α2 (ośrodkowy)",mech:"↓ napędu współczulnego z OUN.",use:"NT oporne, objawy odstawienne, ADHD",key:"Nadciśnienie z odbicia po nagłym odstawieniu."},
+{n:"Salbutamol",mod:"adr",grp:"agon_dir",g:"Agoniści bezpośredni",kl:"agonista β2",mech:"Rozkurcz oskrzeli.",use:"Astma (ratunkowo)",key:"Drżenie, tachykardia, hipokaliemia."},
+{n:"Dopamina",mod:"adr",grp:"agon_dir",g:"Agoniści bezpośredni",kl:"agonista zależny od dawki",mech:"Małe dawki — D, średnie — β1, duże — α.",use:"Wstrząs",key:"Efekt zależny od dawki."},
+{n:"Efedryna",mod:"adr",grp:"agon_indir",g:"Agoniści pośredni / mieszani",kl:"sympatykomimetyk mieszany",mech:"Uwalnia noradrenalinę + bezpośrednio pobudza receptory.",use:"Hipotonia (np. w znieczuleniu), obrzęk nosa",key:"Działanie ośrodkowe; tachyfilaksja."},
+{n:"Pseudoefedryna",mod:"adr",grp:"agon_indir",g:"Agoniści pośredni / mieszani",kl:"sympatykomimetyk pośredni",mech:"Uwalnia noradrenalinę.",use:"Obrzęk błony śluzowej nosa (zmniejszenie przekrwienia)",key:"↑ ciśnienia, bezsenność."},
+{n:"Amfetamina",mod:"adr",grp:"agon_indir",g:"Agoniści pośredni / mieszani",kl:"sympatykomimetyk pośredni (OUN)",mech:"Uwalnia noradrenalinę i dopaminę.",use:"ADHD, narkolepsja",key:"Duży potencjał uzależnienia."},
+{n:"Fenoksybenzamina",mod:"adr",grp:"alfa_blok",g:"α-blokery",kl:"nieodwracalny α-bloker (nieselektywny)",mech:"Trwale blokuje α1 i α2.",use:"Guz chromochłonny (przygotowanie do operacji)",key:"Często pytane: w pheochromocytoma; odruchowa tachykardia."},
+{n:"Fentolamina",mod:"adr",grp:"alfa_blok",g:"α-blokery",kl:"odwracalny α-bloker (nieselektywny)",mech:"Blokuje α1 i α2.",use:"Przełom w pheochromocytoma, wynaczynienie katecholamin",key:"Krótkodziałający."},
+{n:"Doksazosyna",mod:"adr",grp:"alfa_blok",g:"α-blokery",kl:"α1-bloker (selektywny)",mech:"Blokuje receptory α1.",use:"NT, przerost prostaty (BPH)",key:"Często pytane: NT + BPH; recepta 4 mg 1×dz; hipotonia pierwszej dawki."},
+{n:"Terazosyna",mod:"adr",grp:"alfa_blok",g:"α-blokery",kl:"α1-bloker",mech:"Blokuje α1.",use:"NT, BPH",key:"Hipotonia pierwszej dawki."},
+{n:"Tamsulozyna",mod:"adr",grp:"alfa_blok",g:"α-blokery",kl:"α1A-bloker (uroselektywny)",mech:"Blokuje α1A w prostacie.",use:"Przerost prostaty (BPH)",key:"Mała hipotonia (uroselektywny); zaburzenia ejakulacji."},
+{n:"Propranolol",mod:"adr",grp:"beta_blok",g:"β-blokery",kl:"β-bloker nieselektywny",mech:"Blokuje β1 i β2.",use:"NT, dławica, drżenie, nadczynność tarczycy, migrena",key:"Często pytane: maskuje objawy hipoglikemii; skurcz oskrzeli (astma!)."},
+{n:"Metoprolol",mod:"adr",grp:"beta_blok",g:"β-blokery",kl:"β1-bloker selektywny",mech:"Blokuje β1.",use:"NT, NS, po zawale",key:"Kardioselektywny (β1)."},
+{n:"Bisoprolol",mod:"adr",grp:"beta_blok",g:"β-blokery",kl:"β1-bloker selektywny",mech:"Blokuje β1.",use:"NT, NS",key:"↓ śmiertelności w niewydolności serca."},
+{n:"Atenolol",mod:"adr",grp:"beta_blok",g:"β-blokery",kl:"β1-bloker",mech:"Blokuje β1.",use:"NT, dławica",key:"Hydrofilny, wydalany nerkowo."},
+{n:"Nebiwolol",mod:"adr",grp:"beta_blok",g:"β-blokery",kl:"β1-bloker + β3 (NO)",mech:"Blokuje β1, pobudza β3 → uwalnianie NO.",use:"NT, NS",key:"Często pytane: jedyny β-bloker działający na β3 (NO)."},
+{n:"Karwedilol",mod:"adr",grp:"beta_blok",g:"β-blokery",kl:"β-bloker nieselektywny + α1",mech:"Blokuje receptory β oraz α1.",use:"NS, NT",key:"Często pytane: blokuje α i β (w odróżnieniu od czystych β-blokerów)."},
+{n:"Esmolol",mod:"adr",grp:"beta_blok",g:"β-blokery",kl:"β1-bloker ultrakrótki (i.v.)",mech:"Blokuje β1.",use:"Ostra kontrola częstości/ciśnienia",key:"Bardzo krótki t½ — łatwo sterować."},
+/* ===================== PRZECIWCUKRZYCOWE ===================== */
+{n:"Insulina szybkodziałająca (lispro/aspart)",mod:"diab",grp:"insulina",g:"Insuliny",kl:"analog szybkodziałający",mech:"Agonista receptora insulinowego → wychwyt glukozy.",use:"Kontrola poposiłkowa",key:"Szybki początek; podawana tuż przed posiłkiem."},
+{n:"Insulina krótkodziałająca (regular)",mod:"diab",grp:"insulina",g:"Insuliny",kl:"insulina ludzka",mech:"Agonista receptora insulinowego.",use:"Kwasica ketonowa (i.v.), kontrola poposiłkowa",key:"Często pytane: jedyna podawana i.v. w cukrzycowej kwasicy ketonowej (DKA)."},
+{n:"Insulina NPH",mod:"diab",grp:"insulina",g:"Insuliny",kl:"insulina o pośrednim czasie",mech:"Agonista receptora insulinowego.",use:"Insulina podstawowa",key:"Działanie o pośrednim czasie."},
+{n:"Insulina długodziałająca (glargina/detemir)",mod:"diab",grp:"insulina",g:"Insuliny",kl:"analog długodziałający",mech:"Agonista receptora insulinowego.",use:"Podstawowa kontrola glikemii",key:"Stałe stężenie, raz na dobę, bez szczytu."},
+{n:"Metformina",mod:"diab",grp:"biguanid",g:"Biguanid",kl:"biguanid",mech:"Aktywuje kinazę AMP → ↓ glukoneogenezy wątrobowej.",use:"DM2 — lek pierwszego wyboru",key:"Często pytane: NIE powoduje hipoglikemii; kwasica mleczanowa (uwaga na GFR); ↓ B12."},
+{n:"Gliklazyd",mod:"diab",grp:"sulfony",g:"Sulfonylomoczniki / glinidy",kl:"sulfonylomocznik",mech:"Zamyka kanał K-ATP komórki β → ↑ wydzielania insuliny.",use:"DM2",key:"Często pytane: hipoglikemia; przyrost masy ciała."},
+{n:"Glimepiryd",mod:"diab",grp:"sulfony",g:"Sulfonylomoczniki / glinidy",kl:"sulfonylomocznik",mech:"↑ wydzielania insuliny.",use:"DM2",key:"Hipoglikemia."},
+{n:"Glibenklamid",mod:"diab",grp:"sulfony",g:"Sulfonylomoczniki / glinidy",kl:"sulfonylomocznik (długi)",mech:"↑ wydzielania insuliny.",use:"DM2",key:"Wysokie ryzyko hipoglikemii (zwł. u starszych)."},
+{n:"Repaglinid",mod:"diab",grp:"sulfony",g:"Sulfonylomoczniki / glinidy",kl:"glinid (meglitynid)",mech:"↑ wydzielania insuliny krótko, okołoposiłkowo.",use:"DM2 (kontrola poposiłkowa)",key:"Krótkie działanie; ryzyko hipoglikemii."},
+{n:"Sitagliptyna",mod:"diab",grp:"wraz",g:"Inkretyny (DPP-4 / GLP-1)",kl:"inhibitor DPP-4 (gliptyna)",mech:"Hamuje rozkład inkretyn (GLP-1) → ↑ insuliny zależnie od glukozy.",use:"DM2",key:"Neutralna dla masy; mało hipoglikemii."},
+{n:"Liraglutyd",mod:"diab",grp:"wraz",g:"Inkretyny (DPP-4 / GLP-1)",kl:"agonista receptora GLP-1",mech:"Naśladuje GLP-1 → ↑ insuliny, ↓ glukagonu, ↓ apetytu.",use:"DM2, otyłość",key:"↓ masy ciała; nudności; korzyść sercowo-naczyniowa."},
+{n:"Semaglutyd",mod:"diab",grp:"wraz",g:"Inkretyny (DPP-4 / GLP-1)",kl:"agonista receptora GLP-1",mech:"Jak liraglutyd (długodziałający).",use:"DM2, otyłość",key:"Raz w tygodniu s.c. lub doustnie; ↓ masy ciała."},
+{n:"Empagliflozyna",mod:"diab",grp:"sglt2",g:"Inhibitory SGLT2",kl:"inhibitor SGLT2",mech:"Hamuje wchłanianie zwrotne glukozy w nerce → glukozuria.",use:"DM2, niewydolność serca, nefroprotekcja",key:"Często pytane: ochrona sercowo-nerkowa; 10 mg 1×dz."},
+{n:"Dapagliflozyna",mod:"diab",grp:"sglt2",g:"Inhibitory SGLT2",kl:"inhibitor SGLT2",mech:"Glukozuria.",use:"DM2, NS, choroba nerek",key:"Ochrona sercowo-nerkowa."},
+{n:"Kanagliflozyna",mod:"diab",grp:"sglt2",g:"Inhibitory SGLT2",kl:"inhibitor SGLT2",mech:"Glukozuria.",use:"DM2",key:"PUŁAPKA: PRZECIWWSKAZANA przy GFR <30 ml/min; zakażenia narządów płciowych."},
+{n:"Pioglitazon",mod:"diab",grp:"inne_diab",g:"Inne",kl:"tiazolidynedion (agonista PPAR-γ)",mech:"↑ wrażliwości tkanek na insulinę.",use:"DM2",key:"Zatrzymanie płynów (NS), złamania, przyrost masy."},
+{n:"Akarboza",mod:"diab",grp:"inne_diab",g:"Inne",kl:"inhibitor α-glukozydazy",mech:"Hamuje trawienie węglowodanów w jelicie.",use:"DM2 (kontrola poposiłkowa)",key:"Często pytane: inhibitor α-glukozydazy; wzdęcia, biegunka."},
+/* ===================== KORTYKOSTEROIDY ===================== */
+{n:"Hydrokortyzon",mod:"kort",grp:"gks",g:"Glikokortykosteroidy",kl:"glikokortykosteroid (krótki)",mech:"Działanie przeciwzapalne + mineralokortykoidowe.",use:"Niedoczynność nadnerczy, wstrząs, zapalenia",key:"Ma istotne działanie mineralokortykoidowe."},
+{n:"Prednizon",mod:"kort",grp:"gks",g:"Glikokortykosteroidy",kl:"glikokortykosteroid (pośredni)",mech:"Przeciwzapalny/immunosupresyjny (prolek → prednizolon).",use:"Choroby zapalne i autoimmunologiczne",key:"Doustny; nagłe odstawienie → przełom nadnerczowy."},
+{n:"Metyloprednizolon",mod:"kort",grp:"gks",g:"Glikokortykosteroidy",kl:"glikokortykosteroid (pośredni)",mech:"Działanie przeciwzapalne.",use:"Ciężkie zaostrzenia, pulsy i.v.",key:"Stosowany i.v. w ciężkich stanach."},
+{n:"Deksametazon",mod:"kort",grp:"gks",g:"Glikokortykosteroidy",kl:"glikokortykosteroid (silny, długi)",mech:"Silne działanie przeciwzapalne.",use:"Obrzęk mózgu, przeciwwymiotnie, dojrzewanie płuc płodu",key:"Często pytane: silny GKS o MINIMALNYM działaniu mineralokortykoidowym."},
+{n:"Triamcynolon",mod:"kort",grp:"gks",g:"Glikokortykosteroidy",kl:"glikokortykosteroid",mech:"Działanie przeciwzapalne.",use:"Iniekcje dostawowe, donosowo, skóra",key:"Często stosowany miejscowo/dostawowo."},
+{n:"Budezonid",mod:"kort",grp:"gks",g:"Glikokortykosteroidy",kl:"glikokortykosteroid (miejscowy)",mech:"Działanie przeciwzapalne.",use:"Astma, choroba Crohna",key:"Duży efekt pierwszego przejścia → mało działań układowych."},
+{n:"Fludrokortyzon",mod:"kort",grp:"mineralo",g:"Mineralokortykoidy",kl:"mineralokortykoid",mech:"Silne działanie mineralokortykoidowe (retencja sodu).",use:"Choroba Addisona, hipotonia ortostatyczna",key:"Zatrzymanie sodu i wody, utrata potasu."},
+{n:"Aldosteron",mod:"kort",grp:"mineralo",g:"Mineralokortykoidy",kl:"endogenny mineralokortykoid",mech:"↑ reabsorpcji Na i ↑ wydalania K w nerce.",use:"Odniesienie fizjologiczne",key:"Hormon kory nadnerczy regulujący gospodarkę Na/K."},
+{n:"Ketokonazol",mod:"kort",grp:"inhib",g:"Inhibitory / antagoniści",kl:"inhibitor steroidogenezy",mech:"Hamuje syntezę kortyzolu (i androgenów).",use:"Zespół Cushinga",key:"Hamuje też syntezę hormonów płciowych; hepatotoksyczność."},
+{n:"Metyrapon",mod:"kort",grp:"inhib",g:"Inhibitory / antagoniści",kl:"inhibitor 11-β-hydroksylazy",mech:"Hamuje syntezę kortyzolu.",use:"Diagnostyka i leczenie zespołu Cushinga",key:"Wykorzystywany w teście czynności osi."},
+{n:"Spironolakton",mod:"kort",grp:"inhib",g:"Inhibitory / antagoniści",kl:"antagonista receptora mineralokortykoidowego",mech:"Blokuje działanie aldosteronu.",use:"Hiperaldosteronizm, NS, marskość",key:"Ginekomastia, hiperkaliemia."},
+{n:"Mifepriston",mod:"kort",grp:"inhib",g:"Inhibitory / antagoniści",kl:"antagonista receptora glukokortykoidowego (i progesteronowego)",mech:"Blokuje receptor GR i PR.",use:"Hiperglikemia w zespole Cushinga",key:"Antagonista GR oraz progesteronu."},
+/* ===================== MINERALNA GOSPODARKA KOŚCI ===================== */
+{n:"Wapń (preparaty)",mod:"kosc",grp:"wapn_d",g:"Wapń / wit. D / PTH",kl:"suplement wapnia",mech:"Substrat mineralizacji kości.",use:"Osteoporoza (uzupełnienie), hipokalcemia",key:"Z witaminą D; zaparcia, ryzyko kamicy nerkowej."},
+{n:"Cholekalcyferol (wit. D3)",mod:"kosc",grp:"wapn_d",g:"Wapń / wit. D / PTH",kl:"witamina D",mech:"↑ wchłaniania wapnia i fosforanów w jelicie.",use:"Niedobór wit. D, osteoporoza, krzywica",key:"Aktywowana w wątrobie i nerce do kalcytriolu."},
+{n:"Kalcytriol",mod:"kosc",grp:"wapn_d",g:"Wapń / wit. D / PTH",kl:"aktywna witamina D (1,25-OH₂-D₃)",mech:"↑ wchłaniania wapnia (postać aktywna).",use:"Przewlekła choroba nerek, hipokalcemia",key:"Działa bez aktywacji nerkowej (postać aktywna)."},
+{n:"Teryparatyd",mod:"kosc",grp:"wapn_d",g:"Wapń / wit. D / PTH",kl:"rekombinowany PTH (1-34)",mech:"Przerywana stymulacja PTH → ↑ tworzenia kości.",use:"Ciężka osteoporoza",key:"Często pytane: ANABOLICZNY (buduje kość) — pulsacyjnie pobudza osteoblasty."},
+{n:"Alendronian",mod:"kosc",grp:"antyresorp",g:"Antyresorpcyjne",kl:"bisfosfonian",mech:"Hamuje osteoklasty.",use:"Osteoporoza",key:"Często pytane: bardzo niska biodostępność doustna — na czczo, popić wodą, pozostać w pionie; zapalenie przełyku, martwica żuchwy."},
+{n:"Rizedronian",mod:"kosc",grp:"antyresorp",g:"Antyresorpcyjne",kl:"bisfosfonian",mech:"Hamuje osteoklasty.",use:"Osteoporoza",key:"Niska biodostępność doustna (jak alendronian)."},
+{n:"Kwas zoledronowy",mod:"kosc",grp:"antyresorp",g:"Antyresorpcyjne",kl:"bisfosfonian i.v.",mech:"Hamuje osteoklasty.",use:"Osteoporoza, hiperkalcemia nowotworowa, przerzuty do kości",key:"Podawany i.v. raz w roku; martwica żuchwy."},
+{n:"Denosumab",mod:"kosc",grp:"antyresorp",g:"Antyresorpcyjne",kl:"przeciwciało anty-RANKL",mech:"Hamuje różnicowanie i aktywność osteoklastów.",use:"Osteoporoza, przerzuty do kości",key:"Często pytane: anty-RANKL; hipokalcemia; martwica żuchwy."},
+{n:"Kalcytonina",mod:"kosc",grp:"antyresorp",g:"Antyresorpcyjne",kl:"hormon przeciwosteoklastyczny",mech:"Hamuje osteoklasty, ↓ wapnia.",use:"Hiperkalcemia, choroba Pageta",key:"Szybkie, ale słabe i przejściowe działanie."},
+{n:"Raloksyfen",mod:"kosc",grp:"antyresorp",g:"Antyresorpcyjne",kl:"SERM",mech:"Agonista receptora estrogenowego w kości, antagonista w piersi.",use:"Osteoporoza po menopauzie",key:"Często pytane: ↓ ryzyka raka piersi, ale ↑ ryzyko zakrzepicy żylnej."},
+{n:"Cynakalcet",mod:"kosc",grp:"inne_kosc",g:"Inne",kl:"kalcymimetyk",mech:"↑ wrażliwości receptora wapniowego → ↓ PTH.",use:"Wtórna nadczynność przytarczyc, rak przytarczyc",key:"Obniża PTH i wapń."},
+{n:"Sewelamer",mod:"kosc",grp:"inne_kosc",g:"Inne",kl:"lek wiążący fosforany (bez wapnia)",mech:"Wiąże fosforany w jelicie.",use:"Hiperfosfatemia w przewlekłej chorobie nerek",key:"Nie zawiera wapnia."},
+/* ===================== TARCZYCA ===================== */
+{n:"Lewotyroksyna (T4)",mod:"tarcz",grp:"niedoczynnosc",g:"W niedoczynności",kl:"syntetyczny T4 (prohormon)",mech:"Przekształcana w T3 → reguluje metabolizm.",use:"Niedoczynność tarczycy — lek z wyboru",key:"Często pytane: niska biodostępność doustna — przyjmować na czczo; wchłanianie zależne od jedzenia/leków/pH; stabilniejsza niż T3."},
+{n:"Liotyronina (T3)",mod:"tarcz",grp:"niedoczynnosc",g:"W niedoczynności",kl:"syntetyczny T3",mech:"Aktywny hormon tarczycy.",use:"Niektóre stany (np. śpiączka hipometaboliczna)",key:"Szybkie, krótkie działanie; mniej stabilna niż T4."},
+{n:"Tiamazol (metimazol)",mod:"tarcz",grp:"nadczynnosc",g:"W nadczynności",kl:"tyreostatyk (tionamid)",mech:"Hamuje peroksydazę tarczycową → ↓ syntezy hormonów.",use:"Nadczynność tarczycy (lek 1. wyboru)",key:"Często pytane: hamuje peroksydazę; agranulocytoza; teratogen (I trymestr → PTU)."},
+{n:"Propylotiouracyl (PTU)",mod:"tarcz",grp:"nadczynnosc",g:"W nadczynności",kl:"tyreostatyk (tionamid)",mech:"Hamuje peroksydazę + obwodową konwersję T4→T3.",use:"Nadczynność (I trymestr ciąży, przełom tarczycowy)",key:"Hepatotoksyczność; preferowany w ciąży (I trymestr) i w przełomie."},
+{n:"Jod (Lugol / jodek potasu)",mod:"tarcz",grp:"nadczynnosc",g:"W nadczynności",kl:"jod nieorganiczny",mech:"Duże dawki hamują uwalnianie hormonów (efekt Wolffa-Chaikoffa).",use:"Przełom tarczycowy, przygotowanie do operacji",key:"Działa przejściowo; zmniejsza unaczynienie tarczycy."},
+{n:"Jod promieniotwórczy (I-131)",mod:"tarcz",grp:"nadczynnosc",g:"W nadczynności",kl:"radiojod",mech:"Niszczy komórki pęcherzykowe tarczycy.",use:"Nadczynność (choroba Gravesa), rak tarczycy",key:"Przeciwwskazany w ciąży; częsta niedoczynność po leczeniu."},
+{n:"Propranolol (w nadczynności)",mod:"tarcz",grp:"nadczynnosc",g:"W nadczynności",kl:"β-bloker (objawowo)",mech:"↓ objawów adrenergicznych; hamuje konwersję T4→T3.",use:"Kontrola objawów nadczynności / przełomu",key:"Łagodzi tachykardię i drżenie."},
+/* ===================== HORMONY GONADOWE ===================== */
+{n:"Estradiol",mod:"gonad",grp:"estr_prog",g:"Estrogeny i progestageny",kl:"estrogen",mech:"Agonista receptora estrogenowego.",use:"HTZ, antykoncepcja, hipogonadyzm",key:"↑ ryzyko zakrzepicy; bez progestagenu → rozrost endometrium."},
+{n:"Etynyloestradiol",mod:"gonad",grp:"estr_prog",g:"Estrogeny i progestageny",kl:"syntetyczny estrogen",mech:"Agonista receptora estrogenowego.",use:"Antykoncepcja (z progestagenem)",key:"Składnik tabletek antykoncepcyjnych."},
+{n:"Progesteron",mod:"gonad",grp:"estr_prog",g:"Estrogeny i progestageny",kl:"progestagen",mech:"Agonista receptora progesteronowego.",use:"HTZ, podtrzymanie ciąży, antykoncepcja",key:"Chroni endometrium przed działaniem estrogenu."},
+{n:"Lewonorgestrel",mod:"gonad",grp:"estr_prog",g:"Estrogeny i progestageny",kl:"progestagen syntetyczny",mech:"Agonista receptora progesteronowego.",use:"Antykoncepcja (też awaryjna), wkładki",key:"Stosowany w antykoncepcji awaryjnej."},
+{n:"Medroksyprogesteron",mod:"gonad",grp:"estr_prog",g:"Estrogeny i progestageny",kl:"progestagen syntetyczny",mech:"Agonista receptora progesteronowego.",use:"Antykoncepcja (depot), HTZ, endometrioza",key:"Postać o przedłużonym działaniu (depot)."},
+{n:"Tamoksyfen",mod:"gonad",grp:"serm_anti_e",g:"SERM / antyestrogeny",kl:"SERM",mech:"Antagonista ER w piersi, agonista w macicy/kości.",use:"Rak piersi ER+ (przed menopauzą)",key:"Często pytane: ↑ ryzyka raka endometrium i zakrzepicy żylnej."},
+{n:"Raloksyfen",mod:"gonad",grp:"serm_anti_e",g:"SERM / antyestrogeny",kl:"SERM",mech:"Agonista ER w kości, antagonista w piersi.",use:"Osteoporoza, profilaktyka raka piersi",key:"↑ ryzyko zakrzepicy; nie pobudza endometrium."},
+{n:"Klomifen",mod:"gonad",grp:"serm_anti_e",g:"SERM / antyestrogeny",kl:"SERM (antyestrogen w podwzgórzu)",mech:"Blokuje ujemne sprzężenie zwrotne → ↑ FSH/LH.",use:"Indukcja owulacji (niepłodność)",key:"Stymuluje owulację; ryzyko ciąży mnogiej."},
+{n:"Anastrozol",mod:"gonad",grp:"serm_anti_e",g:"SERM / antyestrogeny",kl:"inhibitor aromatazy",mech:"↓ syntezy estrogenów.",use:"Rak piersi ER+ po menopauzie",key:"Osteoporoza, bóle stawów."},
+{n:"Fulwestrant",mod:"gonad",grp:"serm_anti_e",g:"SERM / antyestrogeny",kl:"antagonista receptora estrogenowego (SERD)",mech:"Niszczy receptor estrogenowy.",use:"Rak piersi ER+ (zaawansowany)",key:"Czysty antagonista ER (i.m.)."},
+{n:"Testosteron",mod:"gonad",grp:"androg",g:"Androgeny i antyandrogeny",kl:"androgen",mech:"Agonista receptora androgenowego.",use:"Hipogonadyzm męski",key:"Nadużywany jako anabolik; policytemia, ↓ spermatogenezy."},
+{n:"Finasteryd",mod:"gonad",grp:"androg",g:"Androgeny i antyandrogeny",kl:"inhibitor 5-α-reduktazy",mech:"↓ konwersji testosteronu do DHT.",use:"Przerost prostaty (BPH), łysienie androgenowe",key:"Często pytane: hamuje 5-α-reduktazę; ↓ libido; obniża PSA."},
+{n:"Flutamid",mod:"gonad",grp:"androg",g:"Androgeny i antyandrogeny",kl:"antyandrogen (niesteroidowy)",mech:"Blokuje receptor androgenowy.",use:"Rak prostaty",key:"Hepatotoksyczność."},
+{n:"Cyproteron",mod:"gonad",grp:"androg",g:"Androgeny i antyandrogeny",kl:"antyandrogen (steroidowy)",mech:"Blokuje receptor androgenowy + działanie progestagenne.",use:"Rak prostaty, hirsutyzm",key:"Działanie antyandrogenowe i progestagenne."},
+{n:"Spironolakton (antyandrogen)",mod:"gonad",grp:"androg",g:"Androgeny i antyandrogeny",kl:"antagonista aldosteronu + antyandrogen",mech:"Blokuje też receptor androgenowy.",use:"Hirsutyzm, trądzik (off-label)",key:"Ginekomastia (działanie antyandrogenowe)."},
+{n:"Leuprolid",mod:"gonad",grp:"gnrh",g:"Analogi GnRH",kl:"agonista GnRH",mech:"Ciągła stymulacja → desensytyzacja → ↓ FSH/LH.",use:"Rak prostaty, endometrioza, przedwczesne dojrzewanie",key:"Często pytane: początkowy „flare” (przejściowy wzrost), potem supresja."},
+{n:"Goserelina",mod:"gonad",grp:"gnrh",g:"Analogi GnRH",kl:"agonista GnRH",mech:"Jak leuprolid.",use:"Rak prostaty, rak piersi",key:"Początkowy „flare”; implant depot."},
+{n:"Degareliks",mod:"gonad",grp:"gnrh",g:"Analogi GnRH",kl:"antagonista GnRH",mech:"Natychmiast blokuje receptor GnRH.",use:"Rak prostaty",key:"Bez efektu „flare” (w odróżnieniu od agonistów GnRH)."}
+];
+
+/* ====================== SILNIK ====================== */
+let activeMod=MODULES[0].id, activeGroup="wszystkie", activeView="list";
+let deck=[], dpos=0, flipped=false, shuffleOn=false, learnMode=false;
+
+/* postępy: umiem / do nauki (zapisywane w przeglądarce, osobno dla każdego pliku) */
+const STORE_KEY='mastery:'+((location.pathname.split('/').pop())||'deck');
+let known=new Set();
+try{const raw=localStorage.getItem(STORE_KEY); if(raw) known=new Set(JSON.parse(raw));}catch(e){}
+function saveKnown(){try{localStorage.setItem(STORE_KEY,JSON.stringify([...known]));}catch(e){}}
+function idOf(d){return d.mod+'|'+d.n;}
+function isKnown(d){return known.has(idOf(d));}
+function setKnown(d,val){const id=idOf(d); if(val)known.add(id); else known.delete(id); saveKnown();}
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+
+const modbarEl=document.getElementById('modbar');
+const chipsEl=document.getElementById('chips');
+const listEl=document.getElementById('list');
+const emptyEl=document.getElementById('empty');
+const flashEl=document.getElementById('flashview');
+const searchEl=document.getElementById('search');
+const countNote=document.getElementById('countNote');
+const filterToggle=document.getElementById('filterToggle');
+const filterCluster=document.getElementById('filterCluster');
+
+function modCount(id){return DRUGS.filter(d=>d.mod===id).length;}
+function buildModbar(){
+  modbarEl.innerHTML="";
+  MODULES.forEach(m=>{
+    const b=document.createElement('button');
+    b.className='modbtn'+(m.id===activeMod?' on':'');
+    b.dataset.mod=m.id;
+    b.innerHTML=m.label+'<span class="sub">'+modCount(m.id)+' leków</span>';
+    b.onclick=()=>{
+      activeMod=m.id;activeGroup="wszystkie";
+      [...modbarEl.children].forEach(x=>x.classList.toggle('on',x.dataset.mod===m.id));
+      buildChips();render();window.scrollTo({top:0,behavior:'smooth'});
+    };
+    modbarEl.appendChild(b);
+  });
+}
+function buildChips(){
+  chipsEl.innerHTML="";
+  (GROUPS[activeMod]||[]).forEach(([id,label])=>{
+    const b=document.createElement('button');
+    b.className='chip'+(id===activeGroup?' on':'');
+    b.textContent=label;b.dataset.g=id;
+    b.onclick=()=>{activeGroup=id;[...chipsEl.children].forEach(c=>c.classList.toggle('on',c.dataset.g===id));render();};
+    chipsEl.appendChild(b);
+  });
+}
+function getFiltered(){
+  const q=searchEl.value.trim().toLowerCase();
+  return DRUGS.filter(d=>d.mod===activeMod
+    &&(activeGroup==="wszystkie"||d.grp===activeGroup)
+    &&(!q||(d.n+' '+d.kl+' '+d.g+' '+d.use+' '+d.mech).toLowerCase().includes(q)));
+}
+function cardHTML(d){
+  const id=idOf(d), kn=known.has(id);
+  return `<div class="card${kn?' known':''}">
+    <button class="mark${kn?' on':''}" data-id="${esc(id)}" title="Przełącz: umiem / do nauki">${kn?'✓ umiem':'○ do nauki'}</button>
+    <div class="drug">${d.n}</div>
+    <span class="kl">${d.kl}</span>
+    <div class="row"><span class="ic">→</span><span class="tx">${d.mech}</span></div>
+    <div class="row use"><span class="ic">+</span><span class="tx">${d.use}</span></div>
+    <div class="keybox"><div class="inner"><b class="h">Zapamiętaj</b>${d.key}</div></div>
+  </div>`;
+}
+/* flashcards */
+function flashInner(d){
+  return `<div class="flip-inner">
+    <div class="flip-face flip-front"><div class="fc-name">${d.n}</div><div class="fc-hint">kliknij / spacja, aby odwrócić</div></div>
+    <div class="flip-face flip-back">
+      <div class="bk-name">${d.n}</div>
+      <span class="kl">${d.kl}</span>
+      <div class="row"><span class="ic">→</span><span class="tx">${d.mech}</span></div>
+      <div class="row use"><span class="ic">+</span><span class="tx">${d.use}</span></div>
+      <div class="keybox"><div class="inner"><b class="h">Zapamiętaj</b>${d.key}</div></div>
+    </div>
+  </div>`;
+}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}}
+function buildDeck(){
+  deck=getFiltered();
+  if(learnMode) deck=deck.filter(d=>!known.has(idOf(d)));
+  if(shuffleOn)shuffle(deck);
+  if(dpos>=deck.length)dpos=0;
+}
+function flip(){flipped=!flipped;const c=document.getElementById('flashcard');if(c)c.classList.toggle('flipped',flipped);}
+function go(step){if(!deck.length)return;dpos=(dpos+step+deck.length)%deck.length;flipped=false;renderCard();}
+function afterMark(knownNow){
+  if(learnMode && knownNow){ buildDeck(); if(dpos>=deck.length)dpos=Math.max(0,deck.length-1); flipped=false; renderCard(); }
+  else { if(deck.length>1) go(1); else { flipped=false; renderCard(); } }
+}
+function wireLearnbar(){
+  const seg=document.getElementById('learnseg');
+  if(seg) seg.querySelectorAll('button').forEach(b=>b.onclick=()=>{ learnMode=(b.dataset.lm==='learn'); dpos=0; flipped=false; buildDeck(); renderCard(); });
+  const rb=document.getElementById('resetKnown');
+  if(rb) rb.onclick=()=>{ if(confirm('Wyczyścić zapisane postępy (umiem / do nauki) dla tego zestawu?')){ known.clear(); saveKnown(); dpos=0; flipped=false; buildDeck(); renderCard(); } };
+}
+function learnbarHTML(){
+  const all=getFiltered(), total=all.length, kc=all.filter(d=>known.has(idOf(d))).length;
+  return `<div class="learnbar">
+    <span>Tryb:</span>
+    <div class="learnseg" id="learnseg">
+      <button data-lm="all" class="${learnMode?'':'on'}">Wszystkie</button>
+      <button data-lm="learn" class="${learnMode?'on':''}">Tylko do nauki</button>
+    </div>
+    <span class="mstats"><span class="ok">✓ ${kc}</span> · do nauki <b>${total-kc}</b> · razem ${total}</span>
+    <button class="linkbtn" id="resetKnown">wyczyść postępy</button>
+  </div>`;
+}
+function renderCard(){
+  if(!deck.length){
+    const all=getFiltered(), allKnown=learnMode&&all.length>0&&all.every(d=>known.has(idOf(d)));
+    flashEl.innerHTML=`<div class="flashstage">${learnbarHTML()}<div class="flash-empty">${allKnown?'Wszystko opanowane w tym zestawie! 🎉 Przełącz na „Wszystkie”, aby powtarzać.':'Brak fiszek dla tego filtra.'}</div></div>`;
+    wireLearnbar();return;
+  }
+  if(dpos>=deck.length)dpos=0;
+  const d=deck[dpos], kn=known.has(idOf(d));
+  flashEl.innerHTML=`<div class="flashstage">
+    ${learnbarHTML()}
+    <div class="flashcard${flipped?' flipped':''}" id="flashcard" tabindex="0" role="button" aria-label="Fiszka, kliknij aby odwrócić">${flashInner(d)}</div>
+    <div class="markbtns">
+      <button class="relearn" id="mRelearn">↻ Do powtórki <span class="kbd">P</span></button>
+      <button class="know" id="mKnow">${kn?'✓ Opanowane':'✓ Umiem'} <span class="kbd">U</span></button>
+    </div>
+    <div class="flashnav">
+      <button id="fcPrev">‹ Poprzednia</button>
+      <button class="flip-btn" id="fcFlip">Odwróć</button>
+      <button id="fcNext">Następna ›</button>
+    </div>
+    <div class="flashmeta"><span>${dpos+1} / ${deck.length}</span><button id="fcShuffle">${shuffleOn?'wył. tasowanie':'tasuj'}</button><button id="fcReset">do początku</button></div>
+  </div>`;
+  document.getElementById('flashcard').onclick=flip;
+  document.getElementById('flashcard').onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();flip();}};
+  document.getElementById('fcPrev').onclick=e=>{e.stopPropagation();go(-1);};
+  document.getElementById('fcNext').onclick=e=>{e.stopPropagation();go(1);};
+  document.getElementById('fcFlip').onclick=e=>{e.stopPropagation();flip();};
+  document.getElementById('mKnow').onclick=()=>{setKnown(deck[dpos],true);afterMark(true);};
+  document.getElementById('mRelearn').onclick=()=>{setKnown(deck[dpos],false);afterMark(false);};
+  document.getElementById('fcShuffle').onclick=()=>{shuffleOn=!shuffleOn;dpos=0;flipped=false;buildDeck();renderCard();};
+  document.getElementById('fcReset').onclick=()=>{dpos=0;flipped=false;renderCard();};
+  wireLearnbar();
+}
+function render(){
+  const filtered=getFiltered();
+  const kc=filtered.filter(d=>known.has(idOf(d))).length;
+  countNote.innerHTML=`${filtered.length} leków · <span style="color:#1E6F3A">✓ ${kc}</span> · do nauki ${filtered.length-kc}`;
+  if(activeView==='list'){
+    flashEl.style.display='none';listEl.style.display='';
+    const byG={};filtered.forEach(d=>{(byG[d.g]=byG[d.g]||[]).push(d);});
+    let html="";
+    Object.keys(byG).forEach(gl=>{
+      html+=`<div class="grp-label">${gl}<span class="c">${byG[gl].length}</span></div><div class="grid">`;
+      html+=byG[gl].map(cardHTML).join('')+'</div>';
+    });
+    listEl.innerHTML=html;
+    emptyEl.style.display=filtered.length?'none':'block';
+  }else{
+    listEl.style.display='none';emptyEl.style.display='none';flashEl.style.display='';
+    dpos=0;flipped=false;buildDeck();renderCard();
+  }
+}
+/* filtry zwijane */
+function setFilters(open){
+  filterCluster.classList.toggle('hidden',!open);
+  filterToggle.classList.toggle('collapsed',!open);
+  filterToggle.setAttribute('aria-expanded',open?'true':'false');
+  syncModbarH();
+}
+filterToggle.onclick=()=>setFilters(filterCluster.classList.contains('hidden'));
+/* view toggle */
+document.querySelectorAll('#viewseg button').forEach(b=>{
+  b.onclick=()=>{
+    activeView=b.dataset.view;
+    document.querySelectorAll('#viewseg button').forEach(x=>x.classList.toggle('on',x===b));
+    document.body.classList.toggle('cards-view',activeView==='cards');
+    setFilters(false);
+    syncModbarH();render();
+  };
+});
+/* oznaczanie z listy (delegacja) */
+listEl.addEventListener('click',e=>{
+  const b=e.target.closest('.mark');if(!b)return;
+  e.preventDefault();
+  const id=b.dataset.id;
+  if(known.has(id))known.delete(id);else known.add(id);
+  saveKnown();render();
+});
+/* klawiatura */
+document.addEventListener('keydown',e=>{
+  if(activeView!=='cards')return;
+  if(e.target&&(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA'))return;
+  if(e.key==='ArrowLeft'){e.preventDefault();go(-1);}
+  else if(e.key==='ArrowRight'){e.preventDefault();go(1);}
+  else if(e.key==='u'||e.key==='U'){if(deck.length){e.preventDefault();setKnown(deck[dpos],true);afterMark(true);}}
+  else if(e.key==='p'||e.key==='P'){if(deck.length){e.preventDefault();setKnown(deck[dpos],false);afterMark(false);}}
+  else if(e.key===' '&&e.target.tagName!=='BUTTON'){e.preventDefault();flip();}
+});
+searchEl.addEventListener('input',render);
+/* sticky offset + slim po przewinięciu */
+function syncModbarH(){const h=document.querySelector('.modbar').offsetHeight;if(h)document.documentElement.style.setProperty('--modbar-h',h+'px');}
+let _scrolled=false;
+window.addEventListener('scroll',()=>{const s=window.scrollY>14;if(s!==_scrolled){_scrolled=s;document.body.classList.toggle('scrolled',s);syncModbarH();}},{passive:true});
+window.addEventListener('resize',syncModbarH);
+window.addEventListener('load',syncModbarH);
+setTimeout(syncModbarH,300);
+
+buildModbar();buildChips();render();syncModbarH();
+</script>
+</body>
+</html>
